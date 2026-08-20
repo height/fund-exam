@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { askTerm, getKey } from '../lib/ai'
 import { Md } from '../lib/format'
+import { Icon } from './ui'
 
 /**
  * 划词解释：选中任意文字浮出「解释」按钮，点开是流式 AI 气泡。
@@ -50,7 +51,7 @@ export default function SelectionTip({ go }) {
       {tip && (
         <button className="sel-tip" style={{ left: tip.x, top: tip.y }}
           onPointerDown={e => { e.preventDefault(); open() }}>
-          ✦ 解释「{tip.term.slice(0, 8)}{tip.term.length > 8 ? '…' : ''}」
+          <Icon name="sparkle" /> 解释「{tip.term.slice(0, 8)}{tip.term.length > 8 ? '…' : ''}」
         </button>
       )}
       {stack.map((b, i) => (
@@ -93,7 +94,7 @@ function Bubble({ term, ctx, lift, depth, go, onClose }) {
       style={{ zIndex: 21 + lift, transform: `translateY(${-9 * depth}px)` }}>
       <div className="row between">
         <b className="bubble-term">{term}</b>
-        <button className="btn-sm btn-ghost" onClick={onClose} aria-label="关闭">✕</button>
+        <button className="btn-sm btn-ghost" onClick={onClose} aria-label="关闭"><Icon name="x" /></button>
       </div>
       {state === 'nokey' ? (
         <div className="row between">

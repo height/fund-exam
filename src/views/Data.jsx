@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Icon } from '../components/ui'
 import { PRESETS, loadStore, pingAI, provDefault, saveStore } from '../lib/ai'
 import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
@@ -140,7 +141,7 @@ export default function Data() {
               value={cur.key} onChange={e => editAi({ key: e.target.value })} />
             <button type="button" className="btn-sm btn-ghost" onClick={() => setShowKey(s => !s)}
               aria-label={showKey ? '隐藏 Key' : '显示 Key'} aria-pressed={showKey}>
-              {showKey ? '🙈' : '👁'}
+              <Icon name={showKey ? 'eyeOff' : 'eye'} />
             </button>
           </div>
         </label>

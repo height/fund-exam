@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { SubjectSeg, ThemeToggle } from '../components/ui'
+import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
 import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, stats } from '../lib/bank'
 import { idb, kvGet } from '../lib/db'
 import { useStore } from '../lib/store'
@@ -82,7 +82,7 @@ export default function Home({ go }) {
       </div>
 
       <button className="go" onClick={() => go('practice', { scope: 'all', order: 'seq' })}>
-        <span className="go-mark" aria-hidden="true">▶</span>
+        <span className="go-mark" aria-hidden="true"><Icon name="play" size={13} /></span>
         <span className="go-body">
           {cursor > 0 ? '继续练习' : '开始练习'}
           <small>{cursor > 0 ? `按章节顺序，从第 ${cursor + 1} 题接着来` : '按章节顺序，选完立刻出解析'}</small>

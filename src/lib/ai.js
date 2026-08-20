@@ -81,7 +81,15 @@ async function* streamChat(userContent, signal) {
       reasoning_effort: 'medium',
       stream: true,
       messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
+        {
+          role: 'system',
+          content:
+            '你是基金从业资格考试的辅导老师。铁律：严禁编造任何不属实的信息。' +
+            '数字、比例、金额、期限、时间点、法规条款，必须完全有把握才能说；' +
+            '题目自带的解析是权威依据，事实以它为准，不得与之矛盾；' +
+            '记不准的具体数字宁可不提，也绝不能猜——考生会把你的话当标准答案背下来，说错会让人在考场丢分，非常严重。' +
+            '比喻和口诀可以发挥，但其中的事实必须准确。',
+        },
         { role: 'user', content: userContent },
       ],
     }),

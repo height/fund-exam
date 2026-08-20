@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { SubjectSeg } from '../components/ui'
+import { Icon, SubjectSeg } from '../components/ui'
 import { KNOWLEDGE } from '../data/knowledge'
 import { PASS, SUBJ_SHORT, chapterStats } from '../lib/bank'
 import { useStore } from '../lib/store'
@@ -168,7 +168,7 @@ export default function KnowledgeMap({ go }) {
         <div className="map-detail card" role="dialog" aria-label={sel.n.t}>
           <div className="row between">
             <b>{sel.n.t}</b>
-            <button className="btn-sm btn-ghost" onClick={() => setSel(null)} aria-label="关闭">✕</button>
+            <button className="btn-sm btn-ghost" onClick={() => setSel(null)} aria-label="关闭"><Icon name="x" /></button>
           </div>
           {sel.n.d && <p>{sel.n.d}</p>}
           <button className="btn-sm" onClick={() => go('practice', { scope: `ch:${sel.chapter}`, order: 'seq' })}>
