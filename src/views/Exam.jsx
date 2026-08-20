@@ -10,7 +10,7 @@ const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
 /** 一场考试全程存在 kv.activeExam 里：关掉页面倒计时照走，回来能接着考 */
 export default function Exam({ go, setLeaveGuard }) {
-  const { subject, records, setRecords, toast } = useStore()
+  const { subject, records, setRecords, toast, ask } = useStore()
   const [stage, setStage] = useState('loading') // loading | resume | intro | running | result
   const [ex, setEx] = useState(null)
   const [result, setResult] = useState(null)
@@ -99,7 +99,7 @@ export default function Exam({ go, setLeaveGuard }) {
     </>
   )
 
-  if (stage === 'running') return <Running ex={ex} setEx={setEx} onSubmit={submit} toast={toast} />
+  if (stage === 'running') return <Running ex={ex} setEx={setEx} onSubmit={submit} toast={toast} ask={ask} />
   if (stage === 'result') return <Result rec={result} go={go} />
 
   const n = Math.min(EXAM_N, bySubject(subject).length)
@@ -128,7 +128,7 @@ export default function Exam({ go, setLeaveGuard }) {
   )
 }
 
-function Running({ ex, setEx, onSubmit, toast }) {
+function Running({ ex, setEx, onSubmit, toast, ask }) {
   const [left, setLeft] = useState(() => ex.endTs - Date.now())
   const [sheet, setSheet] = useState(false)
   const submitted = useRef(false)
@@ -156,9 +156,13 @@ function Running({ ex, setEx, onSubmit, toast }) {
   const prev = () => { if (ex.i > 0) patch({ i: ex.i - 1 }) }
   const next = () => { if (ex.i < qs.length - 1) patch({ i: ex.i + 1 }) }
 
-  function confirmSubmit() {
+  async function confirmSubmit() {
     const miss = qs.length - answered
-    if (miss && !confirm(`还有 ${miss} 题没作答，未作答按错计分。确定交卷？`)) return
+    if (miss && !await ask({
+      title: `还有 ${miss} 题没作答`,
+      body: '未作答按错计分，会自动进错题本。',
+      ok: '确定交卷', cancel: '回去补答',
+    })) return
     fire(ex)
   }
 

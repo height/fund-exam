@@ -1,7 +1,46 @@
 /* 几个视图里反复出现的小块 */
+import { useEffect, useRef } from 'react'
 import { SUBJECTS, SUBJ_SHORT, stats } from '../lib/bank'
 import { ExplainBody, Plain } from '../lib/format'
 import { useStore } from '../lib/store'
+
+/**
+ * 应用内确认框。挂在 App 顶层，由 store.ask() 驱动。
+ * 打开时焦点移到主按钮，Esc 取消——原生 confirm 白送的两件事得自己补回来。
+ * 三态返回：主按钮 true、次按钮 false、点外面或 Esc 是 null（= 什么都别做）。
+ * 这样「合并 / 覆盖 / 取消」这类三选一不用叠第二个弹层。
+ */
+export function Dialog() {
+  const { dialog } = useStore()
+  const okRef = useRef(null)
+
+  useEffect(() => {
+    if (!dialog) return
+    okRef.current?.focus()
+    const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); dialog.resolve(null) } }
+    document.addEventListener('keydown', onKey, true)
+    return () => document.removeEventListener('keydown', onKey, true)
+  }, [dialog])
+
+  if (!dialog) return null
+  const { title, body, ok = '确定', cancel, danger, resolve } = dialog
+  return (
+    <div className="overlay center" role="dialog" aria-modal="true" aria-label={title}
+      onClick={e => { if (e.target === e.currentTarget) resolve(null) }}>
+      <div className="panel">
+        <div>
+          <b className="dialog-title">{title}</b>
+          {body && <div className="muted" style={{ marginTop: 6 }}>{body}</div>}
+        </div>
+        <div className={cancel ? 'grid2' : ''}>
+          {cancel && <button onClick={() => resolve(false)}>{cancel}</button>}
+          <button ref={okRef} className={danger ? 'btn-danger' : 'btn-pri'}
+            onClick={() => resolve(true)}>{ok}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function SubjectSeg() {
   const { records, subject, setSubject } = useStore()

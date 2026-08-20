@@ -53,8 +53,12 @@ def run():
         pg.click('button:has-text("答题卡")')
         pg.wait_for_selector(".overlay .sheet button")
         assert pg.locator(".overlay .sheet button").count() == 100, "没抽满 100 题"
-        pg.once("dialog", lambda d: d.accept())
+        # 交卷确认走应用内弹层，不该再触发系统弹窗
+        pg.on("dialog", lambda d: errs.append(f"冒出了原生弹窗：{d.message}"))
         pg.click('.overlay button:has-text("交卷")')
+        pg.wait_for_selector('.overlay.center[role="dialog"]')
+        assert pg.locator("text=还有 100 题没作答").count() == 1
+        pg.click('.overlay.center button:has-text("确定交卷")')
         pg.wait_for_selector("text=模拟考成绩")
         assert pg.locator("text=差 60 分及格").count() == 1, "全不答应该是 0 分"
 
@@ -74,6 +78,17 @@ def run():
         pg.click('nav button:has-text("数据")')
         # 考试记录是异步从 IndexedDB 读的，用 wait 而不是立刻断言
         pg.wait_for_selector('.list-item:has-text("考试记录") b:text-is("1")')
+
+        # 清空进度：危险操作要二次确认，点外面等于取消
+        pg.click('button:has-text("清空全部进度")')
+        pg.wait_for_selector("text=清空全部进度？")
+        pg.mouse.click(195, 60)  # 点弹层外的遮罩
+        pg.wait_for_selector('.overlay.center', state="detached")
+        pg.wait_for_selector('.list-item:has-text("考试记录") b:text-is("1")')
+
+        # 跳过导航链接：第一个 Tab 就能拿到
+        pg.keyboard.press("Tab")
+        assert pg.evaluate("document.activeElement.className") == "skip"
 
         # 刷新后进度还在（IndexedDB 落盘了）
         pg.reload()

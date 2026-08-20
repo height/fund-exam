@@ -15,6 +15,7 @@ export function StoreProvider({ children }) {
   const [autoNext, setAutoNextState] = useState(true)
   const [theme, setThemeState] = useState('auto')
   const [toastMsg, setToastMsg] = useState('')
+  const [dialog, setDialog] = useState(null)
   const [systemDark, setSystemDark] = useState(() => matchMedia('(prefers-color-scheme:dark)').matches)
   const toastTimer = useRef(0)
   const isDark = theme === 'dark' || (theme === 'auto' && systemDark)
@@ -53,6 +54,14 @@ export function StoreProvider({ children }) {
     toastTimer.current = setTimeout(() => setToastMsg(''), 1700)
   }, [])
 
+  /**
+   * 应用内确认弹层，替掉原生 confirm/alert——装到主屏后系统弹窗会把 app 的壳撕开。
+   * 返回 Promise<boolean>；不传 cancel 就是单按钮的提示框。
+   */
+  const ask = useCallback(opts => new Promise(resolve => {
+    setDialog({ ...opts, resolve: v => { setDialog(null); resolve(v) } })
+  }), [])
+
   const setSubject = useCallback(s => { setSubjectState(s); kvSet('subject', s) }, [])
   const setAutoNext = useCallback(v => { setAutoNextState(v); kvSet('autoNext', v) }, [])
   const setTheme = useCallback(t => { setThemeState(t); kvSet('theme', t) }, [])
@@ -87,7 +96,7 @@ export function StoreProvider({ children }) {
 
   const value = {
     ready, records, setRecords, subject, setSubject, autoNext, setAutoNext,
-    theme, setTheme, isDark, toast, toastMsg, recordAnswer, patchRecord,
+    theme, setTheme, isDark, toast, toastMsg, recordAnswer, patchRecord, ask, dialog,
   }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

@@ -4,7 +4,7 @@ import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
 
 export default function Data() {
-  const { records, setRecords, theme, setTheme, toast } = useStore()
+  const { records, setRecords, theme, setTheme, toast, ask } = useStore()
   const [exams, setExams] = useState([])
   const fileRef = useRef(null)
 
@@ -30,7 +30,14 @@ export default function Data() {
     try {
       const d = JSON.parse(await f.text())
       if (d.app !== 'fund-quiz') throw new Error('这不是本应用导出的文件')
-      const merge = confirm('点“确定”与现有进度合并，点“取消”清空后覆盖导入')
+      // 三态：覆盖 / 合并 / 什么都不做（点外面或 Esc）
+      const overwrite = await ask({
+        title: '导入进度',
+        body: `文件里有 ${(d.records || []).length} 条做题记录。与现有进度合并，还是清空后覆盖？`,
+        ok: '清空后覆盖', cancel: '合并', danger: true,
+      })
+      if (overwrite === null) { e.target.value = ''; return }
+      const merge = !overwrite
       let next = merge ? { ...records } : {}
       if (!merge) { await idb.clear('records'); await idb.clear('exams') }
       for (const r of d.records || []) {
@@ -50,13 +57,17 @@ export default function Data() {
       reload()
       toast(`导入成功，${(d.records || []).length} 条做题记录`)
     } catch (err) {
-      alert('导入失败：' + err.message + '。请选择本应用导出的 JSON 文件。')
+      await ask({ title: '导入失败', body: `${err.message}。请选择本应用导出的 JSON 文件。`, ok: '知道了' })
     }
     e.target.value = ''
   }
 
   async function reset() {
-    if (!confirm('清空所有做题记录、错题本和考试成绩？删了找不回来。')) return
+    if (!await ask({
+      title: '清空全部进度？',
+      body: '做题记录、错题本和考试成绩都会删掉，找不回来。题库不受影响。',
+      ok: '清空', cancel: '再想想', danger: true,
+    })) return
     await idb.clear('records')
     await idb.clear('exams')
     await kvSet('activeExam', null)
@@ -101,9 +112,7 @@ export default function Data() {
       </div>
 
       <div className="card">
-        <button className="btn-ghost" style={{ color: 'var(--bad)', borderColor: 'var(--bad)' }} onClick={reset}>
-          清空全部进度
-        </button>
+        <button className="btn-danger btn-ghost" onClick={reset}>清空全部进度</button>
         <div className="muted">删除做题记录、错题本和考试成绩，题库不受影响。</div>
       </div>
     </>

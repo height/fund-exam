@@ -59,6 +59,10 @@ body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.
   text-wrap:pretty}
 #app{max-width:660px;margin:0 auto;padding:20px 16px 24px;display:flex;flex-direction:column;gap:14px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+/* 跳过导航直达题目，键盘用户第一个 Tab 就能拿到 */
+.skip{position:absolute;left:-9999px;top:8px;z-index:var(--z-toast);
+  background:var(--accent);color:var(--on-accent);padding:10px 16px;border-radius:var(--r-m);font-size:14px}
+.skip:focus{left:50%;transform:translateX(-50%)}
 @media (prefers-reduced-motion:no-preference){
   .fade{animation:fade .2s var(--ease)}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -96,6 +100,13 @@ button:disabled{opacity:.42;cursor:default}
 .btn-pri{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
 @media (hover:hover){.btn-pri:hover:not(:disabled){filter:brightness(1.08)}}
 .btn-ghost{background:transparent}
+/* 破坏性操作：实心用在弹层主按钮，配 .btn-ghost 则退成描边 */
+.btn-danger{background:var(--bad);color:var(--sheet);border-color:transparent;font-weight:600}
+.btn-danger.btn-ghost{background:transparent;color:var(--bad);border-color:var(--bad);font-weight:400}
+@media (hover:hover){
+  .btn-danger:hover:not(:disabled){filter:brightness(1.08);border-color:transparent}
+  .btn-danger.btn-ghost:hover:not(:disabled){background:var(--bad-soft);border-color:var(--bad);filter:none}
+}
 .btn-sm{padding:7px 11px;font-size:13px;border-radius:var(--r-s)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -212,9 +223,18 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .overlay{position:fixed;inset:0;z-index:var(--z-overlay);background:rgba(10,14,26,.5);display:flex;align-items:flex-end}
 .overlay>.panel{background:var(--sheet) var(--grain);border-top-left-radius:var(--r-xl);border-top-right-radius:var(--r-xl);
   width:100%;max-width:660px;margin:0 auto;padding:16px 16px calc(20px + env(safe-area-inset-bottom));
-  max-height:76vh;overflow:auto;display:flex;flex-direction:column;gap:14px}
+  max-height:76dvh;overflow:auto;display:flex;flex-direction:column;gap:14px}
 @media (prefers-reduced-motion:no-preference){.overlay>.panel{animation:up .2s ease-out}
   @keyframes up{from{transform:translateY(14px)}to{transform:none}}}
+
+/* 确认框：不贴底、四角都收圆，跟从下方推上来的答题卡区分开 */
+.overlay.center{align-items:center;padding:20px}
+.overlay.center>.panel{max-width:380px;border-radius:var(--r-xl);padding:20px;max-height:none}
+@media (prefers-reduced-motion:no-preference){
+  .overlay.center>.panel{animation:pop .18s var(--ease)}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+}
+.dialog-title{font-size:17px;font-weight:600;line-height:1.4;text-wrap:balance}
 
 /* ---- 底部导航 ---- */
 nav{position:fixed;left:0;right:0;bottom:0;z-index:var(--z-nav);display:flex;background:var(--sheet);
@@ -234,7 +254,8 @@ nav .dot{position:absolute;transform:translate(14px,-3px);width:6px;height:6px;b
 .list{display:flex;flex-direction:column}
 .list-item{padding:11px 0;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px}
 .list-item:last-child{border-bottom:0}
-.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%) translateY(6px);z-index:var(--z-toast);
+.toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(6px);z-index:var(--z-toast);
   background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:99px;font-size:14px;
   opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;max-width:88vw}
 .toast.on{opacity:1;transform:translateX(-50%)}

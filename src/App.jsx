@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Dialog } from './components/ui'
 import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
 import Data from './views/Data'
@@ -18,13 +19,17 @@ const NAV = [
 ]
 
 export default function App() {
-  const { ready, records, toastMsg } = useStore()
+  const { ready, records, toastMsg, ask } = useStore()
   const [view, setView] = useState('home')
   const [params, setParams] = useState({})
   const [leaveGuard, setLeaveGuard] = useState(false)
 
-  function go(v, p = {}) {
-    if (leaveGuard && v !== view && !confirm('考试还在进行，离开会保留进度。确定离开？')) return
+  async function go(v, p = {}) {
+    if (leaveGuard && v !== view && !await ask({
+      title: '考试还在进行',
+      body: '离开会保留进度，回来能接着考。',
+      ok: '确定离开', cancel: '继续答题',
+    })) return
     setView(v)
     setParams(p)
     window.scrollTo(0, 0)
@@ -39,13 +44,14 @@ export default function App() {
 
   return (
     <>
-      <div id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}`}>
+      <a className="skip" href="#app">跳到主要内容</a>
+      <main id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}`}>
         {view === 'home' && <Home go={go} />}
         {view === 'practice' && <Practice initialScope={params.scope} />}
         {view === 'exam' && <Exam go={go} setLeaveGuard={setLeaveGuard} />}
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'data' && <Data />}
-      </div>
+      </main>
 
       <nav>
         {NAV.map(({ v, label, paths, circle }) => (
@@ -55,11 +61,12 @@ export default function App() {
               {paths.map(d => <path key={d} d={d} />)}
             </svg>
             {label}
-            {v === 'wrong' && wrongCount > 0 && <span className="dot" />}
+            {v === 'wrong' && wrongCount > 0 && <span className="dot" aria-label={`${wrongCount} 道错题待清`} />}
           </button>
         ))}
       </nav>
 
+      <Dialog />
       <div className={`toast ${toastMsg ? 'on' : ''}`} role="status" aria-live="polite">{toastMsg}</div>
     </>
   )
