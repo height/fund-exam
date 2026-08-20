@@ -101,6 +101,10 @@ export default function Home({ go }) {
             ? <small><span className="n">{st.wrong}</span> 道待消灭</small>
             : <small>暂时是空的</small>}
         </button>
+        <button className="tile wide" onClick={() => go('map')}>
+          <b>知识图谱</b>
+          <small>考点脉络一张图 · 章节 → 主题 → 必背要点，逐层点开啃</small>
+        </button>
       </div>
 
       {chs.length > 0 && (

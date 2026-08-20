@@ -5,6 +5,7 @@ import { useStore } from './lib/store'
 import Data from './views/Data'
 import Exam from './views/Exam'
 import Home from './views/Home'
+import KnowledgeMap from './views/KnowledgeMap'
 import Practice from './views/Practice'
 import Wrong from './views/Wrong'
 
@@ -50,6 +51,7 @@ export default function App() {
         {view === 'practice' && <Practice initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setLeaveGuard={setLeaveGuard} />}
         {view === 'wrong' && <Wrong go={go} />}
+        {view === 'map' && <KnowledgeMap go={go} />}
         {view === 'data' && <Data />}
       </main>
 

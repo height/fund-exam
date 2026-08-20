@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path(__file__).resolve().parents[1] / "public"
-BG, FG = "#2563EB", "#FFFFFF"   # --accent / 白字
+BG, FG = "#1266D6", "#FFFFFF"   # --accent / 白字
 
 
 def pick_font(px):

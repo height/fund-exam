@@ -37,6 +37,24 @@ def run():
         # 今日/累计：没做过题时都是 0
         assert pg.locator(".today").inner_text().replace("\n", " ").startswith("今日练习0题")
 
+        # 知识图谱：首页进入，展开一章 -> 点要点出详情 -> 「练这章」跳进练习
+        pg.click('button:has-text("知识图谱")')
+        pg.wait_for_selector('svg[role="tree"]')
+        assert pg.locator(".map-node.d0").count() >= 8, "章节节点少于 8 个"
+        assert pg.locator(".map-node.d1").count() == 0, "初始就该只展开到章节层"
+        pg.click(".map-node.d0 >> nth=0")
+        pg.wait_for_selector(".map-node.d1")
+        pg.click(".map-node.d1 >> nth=0")
+        pg.wait_for_selector(".map-node.leaf")
+        pg.click(".map-node.leaf >> nth=0")
+        pg.wait_for_selector(".map-detail")
+        assert pg.locator(".map-detail p").inner_text(), "要点详情是空的"
+        pg.click('.map-detail button:has-text("去练")')
+        pg.wait_for_selector(".stem")
+        pg.click('button:has-text("退出")')
+        pg.click('nav button:has-text("首页")')
+        pg.wait_for_selector(".hero-verdict")
+
         # 练习：选一个选项 -> 立刻出解析，正确答案标绿
         pg.click('nav button:has-text("练习")')
         pg.click('button:has-text("开始练习")')

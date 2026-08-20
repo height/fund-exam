@@ -11,10 +11,11 @@
   --rule:#DCDFE5;       /* 分隔线 */
   --ink:#14181F;        /* 正文墨色 */
   --ink2:#626C7C;       /* 次要信息 */
-  --accent:#2563EB;     /* 亮蓝，填充用 */
-  --accent-ink:#1D4ED8; /* 蓝的文字版，白底上 7:1 */
+  /* 浅色走深藏青：白字压上去 9.9:1，同一支色当文字也够，不用分两个值 */
+  --accent:#2F3D73;
+  --accent-ink:#2F3D73;
   --on-accent:#FFFFFF;
-  --accent-soft:#DCE7FE;
+  --accent-soft:#DDE2F0;
   --ok:#0F7B54;   --ok-soft:#D6EFE3;
   --bad:#C42F42;  --bad-soft:#FADFE3;
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
@@ -32,9 +33,9 @@
 }
 /* 深色是这套配色的主场：冷炭底、蓝色提亮，颗粒回来撑住大片暗面 */
 @media (prefers-color-scheme:dark){ :root{
-  --paper:#101319; --sheet:#191D25; --sheet2:#232935; --rule:#2F3746;
-  --ink:#E8EAEF; --ink2:#8A93A3;
-  --accent:#6C9BFF; --accent-ink:#6C9BFF; --on-accent:#0B1220; --accent-soft:#1B2740;
+  --paper:#0B0D10; --sheet:#15181D; --sheet2:#1E232A; --rule:#2B3138;
+  --ink:#E9ECF1; --ink2:#8B94A1;
+  --accent:#1266D6; --accent-ink:#6FA6FF; --on-accent:#FFFFFF; --accent-soft:#16304F;
   --ok:#3FB984; --ok-soft:#143326; --bad:#E8586A; --bad-soft:#3A1D25;
   /* 卡片改回描边分层，阴影在暗背景上看不见 */
   --card-line:var(--rule);
@@ -44,15 +45,15 @@
 /* 阅读器的明暗开关必须盖过系统偏好，两个方向都要 */
 :root[data-theme="light"]{
   --paper:#F1F2F4;--sheet:#FFFFFF;--sheet2:#E9EBEF;--rule:#DCDFE5;--ink:#14181F;--ink2:#626C7C;
-  --accent:#2563EB;--accent-ink:#1D4ED8;--on-accent:#FFFFFF;--accent-soft:#DCE7FE;
+  --accent:#2F3D73;--accent-ink:#2F3D73;--on-accent:#FFFFFF;--accent-soft:#DDE2F0;
   --ok:#0F7B54;--ok-soft:#D6EFE3;--bad:#C42F42;--bad-soft:#FADFE3;
   --card-line:transparent;
   --shadow:0 1px 2px rgba(20,24,31,.05),0 8px 24px -18px rgba(20,24,31,.35);
   --grain:none;
 }
 :root[data-theme="dark"]{
-  --paper:#101319;--sheet:#191D25;--sheet2:#232935;--rule:#2F3746;--ink:#E8EAEF;--ink2:#8A93A3;
-  --accent:#6C9BFF;--accent-ink:#6C9BFF;--on-accent:#0B1220;--accent-soft:#1B2740;
+  --paper:#0B0D10;--sheet:#15181D;--sheet2:#1E232A;--rule:#2B3138;--ink:#E9ECF1;--ink2:#8B94A1;
+  --accent:#1266D6;--accent-ink:#6FA6FF;--on-accent:#FFFFFF;--accent-soft:#16304F;
   --ok:#3FB984;--ok-soft:#143326;--bad:#E8586A;--bad-soft:#3A1D25;
   --card-line:var(--rule);
   --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
@@ -194,6 +195,29 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .tile b{font-size:14px;font-weight:600}
 .tile small{font-size:12px;color:var(--ink2)}
 .tile .n{font:700 15px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--bad)}
+.tile.wide{grid-column:1/-1}
+
+/* ---- 知识图谱 ---- */
+.map-hint{margin:0;font-size:12px}
+.map-wrap{padding:8px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.map-wrap svg{display:block}
+.map-edge{fill:none;stroke:var(--rule);stroke-width:1.5}
+.map-node{cursor:pointer}
+.map-node rect{fill:var(--sheet2);stroke:var(--rule)}
+.map-node text{fill:var(--ink)}
+.map-node.d0 rect{fill:var(--accent-soft);stroke:transparent}
+.map-node.d0 text{fill:var(--accent-ink);font-weight:600}
+.map-node.leaf rect{fill:transparent;stroke:var(--rule);stroke-dasharray:3 3}
+.map-node.sel rect{stroke:var(--accent);stroke-width:2;stroke-dasharray:none}
+.map-caret{fill:var(--ink2);font-size:10px}
+.map-node.d0 .map-caret{fill:var(--accent-ink)}
+.map-acc{fill:var(--ok);font-size:11px;font-weight:600}
+.map-acc.under{fill:var(--bad)}
+.map-detail{position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));
+  z-index:5;max-width:636px;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.18);
+  display:flex;flex-direction:column;gap:8px}
+.map-detail p{margin:0;font-size:14px;line-height:1.8}
+.map-detail .btn-sm{align-self:flex-start}
 
 /* 页脚：版本与题库时间。谁都不看，但出问题时第一个要问的就是它 */
 .colophon{margin-top:10px;padding-top:14px;border-top:1px solid var(--rule);
