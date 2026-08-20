@@ -379,11 +379,19 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .demo-frame{width:100%;height:380px;border:1px solid var(--rule);border-radius:var(--r-m);background:#fff}
 .demo-wait{font-size:13px;display:flex;align-items:center;gap:6px}
 .demo-box{position:relative}
-.demo-fs{position:absolute;top:8px;right:8px;z-index:1;background:var(--sheet);opacity:.92;
+.fs-btn{position:absolute;top:8px;right:8px;z-index:1;background:var(--sheet);opacity:.92;
   padding:6px 8px;line-height:1}
 .demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff;display:flex}
 .demo-full .demo-frame{flex:1;height:auto;border:0;border-radius:0}
-.demo-full .demo-fs{top:calc(10px + env(safe-area-inset-top));right:12px}
+.demo-full .fs-btn,.ai-full .fs-btn{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px}
+
+/* AI 文字解析的全屏态：铺满、可滚、字放大一档 */
+.ai-box{position:relative}
+.ai-box .fs-btn{top:6px;right:6px}
+.ai-full{position:fixed;inset:0;z-index:var(--z-overlay);margin:0;border-radius:0;overflow-y:auto;
+  background:var(--paper);
+  padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
+.ai-full .ai-text{font-size:16px;line-height:1.9;max-width:660px;margin:0 auto;width:100%}
 
 /* 喇叭按钮：收紧内边距别撑行高 */
 /* 纯图标按钮：正方形，跟同排的文字按钮共用一套内边距 */

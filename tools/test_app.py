@@ -132,7 +132,7 @@ def run():
         pg.click('.explain-tabs button:has-text("图解")')
         pg.wait_for_selector('iframe.demo-frame')
         assert pg.locator("iframe.demo-frame").get_attribute("sandbox") == "allow-scripts", "iframe 没关沙箱"
-        pg.click('button[aria-label="全屏查看"]')
+        pg.click('.demo-box button[aria-label="全屏查看"]')
         pg.wait_for_selector(".demo-full")
         pg.keyboard.press("Escape")
         pg.wait_for_selector(".demo-full", state="detached")
@@ -142,6 +142,12 @@ def run():
         pg.wait_for_selector('iframe.demo-frame')
         assert len(ai_hits) == h0 + 1, f"切 tab 不该重发请求，多了 {len(ai_hits) - h0 - 1} 次"
         pg.click('.explain-tabs button:has-text("AI 解析")')
+
+        # AI 文字解析同样能全屏
+        pg.click('.ai-box button[aria-label="全屏查看"]')
+        pg.wait_for_selector(".ai-full .ai-text b")
+        pg.keyboard.press("Escape")
+        pg.wait_for_selector(".ai-full", state="detached")
 
         # 重新解析：真发一次新请求；换题再回来走内存缓存，不再请求
         n0 = len(ai_hits)
