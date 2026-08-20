@@ -12,11 +12,10 @@
   --accent-soft:#dde3ef;
   --ok:#1c6a68;   --ok-soft:#d8e8e6;
   --bad:#a83a2e;  --bad-soft:#f2ded9;
-  --warn:#8a5a12; --warn-soft:#f0e5cf;
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
   --f-num:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
   /* 圆角有层级：外层容器松，内层控件紧，别一个数用到底 */
-  --r-s:6px; --r-m:10px; --r-l:14px; --r-xl:22px;
+  --r-s:6px; --r-m:10px; --r-l:14px; --r-xl:18px;
   --ease:cubic-bezier(.2,.8,.3,1);
   /* 浅色下卡片只靠阴影分层，不再「描边＋阴影」双重打扮 */
   --card-line:transparent;
@@ -31,7 +30,6 @@
     --paper:#12172a; --sheet:#1a2138; --sheet2:#232b46; --rule:#313b5c;
     --ink:#e4e7f0; --ink2:#98a1bc; --accent:#8faeeb; --on-accent:#111828; --accent-soft:#27314f;
     --ok:#5ec9c0; --ok-soft:#123b39; --bad:#f08c7e; --bad-soft:#3f2521;
-    --warn:#e0a94c; --warn-soft:#3a2f16;
     /* 深色下阴影带底色的蓝，纯黑会发脏；卡片改回描边分层，阴影在暗背景上看不见 */
     --card-line:var(--rule);
     --shadow:0 1px 2px rgba(5,8,20,.55),0 14px 34px -24px rgba(2,6,22,.95);
@@ -41,14 +39,14 @@
 :root[data-theme="light"]{
   --paper:#e7e9e3;--sheet:#fcfcfa;--sheet2:#f0f1eb;--rule:#d4d7cd;--ink:#1b2233;--ink2:#697088;
   --accent:#2e4a7d;--on-accent:#f7f8f4;--accent-soft:#dde3ef;
-  --ok:#1c6a68;--ok-soft:#d8e8e6;--bad:#a83a2e;--bad-soft:#f2ded9;--warn:#8a5a12;--warn-soft:#f0e5cf;
+  --ok:#1c6a68;--ok-soft:#d8e8e6;--bad:#a83a2e;--bad-soft:#f2ded9;
   --card-line:transparent;
   --shadow:0 1px 2px rgba(46,74,125,.07),0 10px 30px -22px rgba(46,74,125,.45);
 }
 :root[data-theme="dark"]{
   --paper:#12172a;--sheet:#1a2138;--sheet2:#232b46;--rule:#313b5c;--ink:#e4e7f0;--ink2:#98a1bc;
   --accent:#8faeeb;--on-accent:#111828;--accent-soft:#27314f;
-  --ok:#5ec9c0;--ok-soft:#123b39;--bad:#f08c7e;--bad-soft:#3f2521;--warn:#e0a94c;--warn-soft:#3a2f16;
+  --ok:#5ec9c0;--ok-soft:#123b39;--bad:#f08c7e;--bad-soft:#3f2521;
   --card-line:var(--rule);
   --shadow:0 1px 2px rgba(5,8,20,.55),0 14px 34px -24px rgba(2,6,22,.95);
 }
@@ -85,6 +83,11 @@ h2{font-size:13px;margin:0;color:var(--ink2);letter-spacing:.02em;font-weight:60
 /* ---- 容器 ---- */
 .card{background:var(--sheet) var(--grain);border:1px solid var(--card-line);border-radius:var(--r-xl);
   padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+/* 不是所有分组都配当一张卡。只有首页战绩那种「要抬起来看」的才用 .card，
+   其余用小标题 + 一道细线分段，页面才有节奏，不然就是一摞同款圆角方块 */
+.section{display:flex;flex-direction:column;gap:12px;padding:4px 2px 0}
+.section>.section-head{display:flex;align-items:baseline;justify-content:space-between;
+  padding-bottom:9px;border-bottom:1px solid var(--rule)}
 .row{display:flex;gap:10px;align-items:center}
 .between{justify-content:space-between}
 .grow{flex:1}
@@ -141,16 +144,18 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .stats.lead .stat:nth-child(1) b i{font-size:18px}
 .stats.lead .stat:nth-child(1) span{font-size:12px;letter-spacing:.06em}
 .stats.lead .stat:nth-child(n+2) b{font-size:21px}
-/* 还没做题时别拿一个 48px 的破折号唬人 */
-.stats.lead .stat b.none{font-size:21px;color:var(--ink2)}
+/* 还没做题时别拿一个 48px 的破折号唬人。这一格放的是句子不是数字，
+   等宽字体会把中文和数字之间撑开，退回正文字体 */
+.stats.lead .stat b.none{font-size:21px;color:var(--ink2);font-family:var(--f-body);letter-spacing:0}
 .bar{height:5px;background:var(--sheet2);border-radius:99px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+/* 掌握度：条子只用墨色，低于及格线才转红。四种颜色排一列是彩虹，不是信息 */
 .meter{display:grid;grid-template-columns:1fr 42px;gap:10px;align-items:center;font-size:13px}
 .meter .bar{grid-column:1/-1;margin-top:-4px}
 .meter b{font:600 13px/1 var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
-.meter .bar i{background:var(--ok)}
+.meter .bar i{background:var(--accent)}
 .meter.weak .bar i{background:var(--bad)}
-.meter.mid .bar i{background:var(--warn)}
+.meter.weak b{color:var(--bad)}
 .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:99px;
   background:var(--sheet2);color:var(--ink2);border:1px solid var(--rule);white-space:nowrap}
 .chip.alert{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent);background:var(--bad-soft)}
@@ -265,4 +270,7 @@ details summary::-webkit-details-marker{display:none}
 .empty{padding:20px 4px 6px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;
   align-items:flex-start;gap:12px}
 .empty::before{content:"";width:34px;height:2px;background:var(--rule);border-radius:2px}
+/* section 自己已经有一道分隔线了，空状态再画一道就成了两条平行线 */
+.section>.empty{padding-top:6px}
+.section>.empty::before{display:none}
 .empty b{display:block;color:var(--ink);font-size:15px;font-weight:600;margin-bottom:3px}

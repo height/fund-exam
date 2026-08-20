@@ -27,8 +27,10 @@ def run():
         # 首页：题库加载出来了
         pg.wait_for_selector("text=基金从业刷题")
         assert pg.locator("nav button", has_text="首页").count() == 1
-        chip = pg.locator(".chip").first.inner_text()
-        assert int(chip.split()[0]) > 800, f"题库只有 {chip}"
+        # 科目条上的题数就是题库规模，首页不再单独挂一个总数标签
+        counts = [int(t.split("·")[-1].strip().rstrip(" 题"))
+                  for t in pg.locator(".seg button small").all_inner_texts()]
+        assert sum(counts) > 800, f"题库只有 {counts}"
 
         # 练习：选一个选项 -> 立刻出解析，正确答案标绿
         pg.click('nav button:has-text("练习")')
