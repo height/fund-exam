@@ -1,23 +1,22 @@
-/* ============ 设计令牌：暖黑 + 橙 ============
-   底是暖近黑（偏褐，不是蓝黑），主色橙。
-   橙和「错＝红」离得近，容易在小尺寸下糊成一片，所以把红往玫红推开约 45° 色相；
-   绿留给「对＝绿」不动——这两个约定在考试里动不得。
-   浅色下橙只做填充且压深字（白字压橙才 3.2:1，不够），
-   当文字用 --accent-ink（烧橙，白底 5.3:1）。 */
+/* ============ 设计令牌：冷炭 + 亮蓝 ============
+   底色从灰绿纸换成中性冷灰：那层绿是「文档」的味道，不是 app 的。
+   主色从发闷的藏青提到亮蓝——原来的问题不是色相，是通篇低饱和，没有一处敢出声。
+   对＝绿、错＝红是考试里不能动的约定，所以主色只能走蓝这一路。
+   --accent 用于填充，--accent-ink 是它的文字版（浅色下压深到能读）。 */
 :root{
   color-scheme:light dark;
-  --paper:#F5F1EC;      /* 暖纸 */
-  --sheet:#FFFDFB;      /* 卡片 */
-  --sheet2:#EDE7E0;     /* 内嵌块 */
-  --rule:#DDD5CC;       /* 分隔线 */
-  --ink:#1C1714;        /* 正文墨色，暖近黑 */
-  --ink2:#6E635B;       /* 次要信息 */
-  --accent:#E8700D;     /* 橙，填充用 */
-  --accent-ink:#B4530A; /* 橙的文字版，白底 5.3:1 */
-  --on-accent:#1A0F03;  /* 压在橙上的字：深色才够对比 */
-  --accent-soft:#FCE7CF;
+  --paper:#F1F2F4;      /* 冷调浅灰，不是米色纸——那个一眼就是文档 */
+  --sheet:#FFFFFF;      /* 卡片 */
+  --sheet2:#E9EBEF;     /* 内嵌块 */
+  --rule:#DCDFE5;       /* 分隔线 */
+  --ink:#14181F;        /* 正文墨色 */
+  --ink2:#626C7C;       /* 次要信息 */
+  --accent:#2563EB;     /* 亮蓝，填充用 */
+  --accent-ink:#1D4ED8; /* 蓝的文字版，白底上 7:1 */
+  --on-accent:#FFFFFF;
+  --accent-soft:#DCE7FE;
   --ok:#0F7B54;   --ok-soft:#D6EFE3;
-  --bad:#C81E43;  --bad-soft:#FBDDE4;
+  --bad:#C42F42;  --bad-soft:#FADFE3;
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
   --f-num:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
   /* 圆角有层级：外层容器松，内层控件紧，别一个数用到底 */
@@ -25,39 +24,39 @@
   --ease:cubic-bezier(.2,.8,.3,1);
   /* 浅色下卡片只靠阴影分层，不再「描边＋阴影」双重打扮 */
   --card-line:transparent;
-  --shadow:0 1px 2px rgba(28,23,20,.05),0 8px 24px -18px rgba(28,23,20,.4);
+  --shadow:0 1px 2px rgba(20,24,31,.05),0 8px 24px -18px rgba(20,24,31,.35);
   /* 颗粒只留给深色：大片暗面需要它撑质感，浅色留着继续像文档 */
   --grain:none;
   /* z-index 分层，别再随手写数字：内容 0 / 吸顶条 5 / 底栏 10 / 浮层 20 / toast 30 */
   --z-bar:5; --z-nav:10; --z-overlay:20; --z-toast:30;
 }
-/* 深色是这套配色的主场：暖近黑底、橙发亮，颗粒回来撑住大片暗面 */
+/* 深色是这套配色的主场：冷炭底、蓝色提亮，颗粒回来撑住大片暗面 */
 @media (prefers-color-scheme:dark){ :root{
-  --paper:#12100E; --sheet:#1C1917; --sheet2:#262220; --rule:#37312D;
-  --ink:#F0EBE6; --ink2:#9C918A;
-  --accent:#FF8A1E; --accent-ink:#FF9A3D; --on-accent:#1A0F03; --accent-soft:#3A2410;
-  --ok:#46B97E; --ok-soft:#14301F; --bad:#F2556E; --bad-soft:#3B1C24;
+  --paper:#101319; --sheet:#191D25; --sheet2:#232935; --rule:#2F3746;
+  --ink:#E8EAEF; --ink2:#8A93A3;
+  --accent:#6C9BFF; --accent-ink:#6C9BFF; --on-accent:#0B1220; --accent-soft:#1B2740;
+  --ok:#3FB984; --ok-soft:#143326; --bad:#E8586A; --bad-soft:#3A1D25;
   /* 卡片改回描边分层，阴影在暗背景上看不见 */
   --card-line:var(--rule);
   --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
 }}
 /* 阅读器的明暗开关必须盖过系统偏好，两个方向都要 */
 :root[data-theme="light"]{
-  --paper:#F5F1EC;--sheet:#FFFDFB;--sheet2:#EDE7E0;--rule:#DDD5CC;--ink:#1C1714;--ink2:#6E635B;
-  --accent:#E8700D;--accent-ink:#B4530A;--on-accent:#1A0F03;--accent-soft:#FCE7CF;
-  --ok:#0F7B54;--ok-soft:#D6EFE3;--bad:#C81E43;--bad-soft:#FBDDE4;
+  --paper:#F1F2F4;--sheet:#FFFFFF;--sheet2:#E9EBEF;--rule:#DCDFE5;--ink:#14181F;--ink2:#626C7C;
+  --accent:#2563EB;--accent-ink:#1D4ED8;--on-accent:#FFFFFF;--accent-soft:#DCE7FE;
+  --ok:#0F7B54;--ok-soft:#D6EFE3;--bad:#C42F42;--bad-soft:#FADFE3;
   --card-line:transparent;
-  --shadow:0 1px 2px rgba(28,23,20,.05),0 8px 24px -18px rgba(28,23,20,.4);
+  --shadow:0 1px 2px rgba(20,24,31,.05),0 8px 24px -18px rgba(20,24,31,.35);
   --grain:none;
 }
 :root[data-theme="dark"]{
-  --paper:#12100E;--sheet:#1C1917;--sheet2:#262220;--rule:#37312D;--ink:#F0EBE6;--ink2:#9C918A;
-  --accent:#FF8A1E;--accent-ink:#FF9A3D;--on-accent:#1A0F03;--accent-soft:#3A2410;
-  --ok:#46B97E;--ok-soft:#14301F;--bad:#F2556E;--bad-soft:#3B1C24;
+  --paper:#101319;--sheet:#191D25;--sheet2:#232935;--rule:#2F3746;--ink:#E8EAEF;--ink2:#8A93A3;
+  --accent:#6C9BFF;--accent-ink:#6C9BFF;--on-accent:#0B1220;--accent-soft:#1B2740;
+  --ok:#3FB984;--ok-soft:#143326;--bad:#E8586A;--bad-soft:#3A1D25;
   --card-line:var(--rule);
   --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -182,7 +181,7 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 
 /* 唯一主行动：通栏、够大、一眼知道点它 */
 .go{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;
-  border-radius:var(--r-xl);background:var(--accent);color:var(--on-accent);border:0;font-weight:700}
+  border-radius:var(--r-xl);background:var(--accent);color:var(--on-accent);border:0;font-weight:600}
 .go .go-mark{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
   background:color-mix(in srgb,var(--on-accent) 18%,transparent);font-size:13px}
 .go .go-body{flex:1;display:flex;flex-direction:column;gap:2px}
