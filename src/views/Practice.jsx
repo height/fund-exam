@@ -8,14 +8,14 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
-export default function Practice({ initialScope }) {
+export default function Practice({ initialScope, initialOrder }) {
   const { subject, records, toast } = useStore()
   const [session, setSession] = useState(null)
 
-  // 从错题本点「错题重练」进来，跳过选范围直接开练
+  // 首页「继续练习」和错题本「错题重练」都跳过选范围，直接开练
   useEffect(() => {
-    if (initialScope) start(initialScope, 'rand')
-  }, [initialScope])
+    if (initialScope) start(initialScope, initialOrder || 'rand')
+  }, [initialScope, initialOrder])
 
   async function start(scope, order) {
     let qs = bySubject(subject)

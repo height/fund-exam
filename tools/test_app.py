@@ -25,12 +25,15 @@ def run():
         pg.goto(APP)
 
         # 首页：题库加载出来了
-        pg.wait_for_selector("text=基金从业刷题")
+        pg.wait_for_selector(".appbar .seg button.on")
         assert pg.locator("nav button", has_text="首页").count() == 1
-        # 科目条上的题数就是题库规模，首页不再单独挂一个总数标签
-        counts = [int(t.split("·")[-1].strip().rstrip(" 题"))
-                  for t in pg.locator(".seg button small").all_inner_texts()]
-        assert sum(counts) > 800, f"题库只有 {counts}"
+        # 题库规模和更新时间都落在页脚
+        colophon = pg.locator(".colophon").inner_text()
+        assert "应用更新" in colophon and "题库更新" in colophon, colophon
+        n = int(colophon.split("共")[1].split("题")[0].strip())
+        assert n > 800, f"题库只有 {n} 题"
+        # 首页只有一个主行动
+        assert pg.locator(".go").count() == 1
 
         # 练习：选一个选项 -> 立刻出解析，正确答案标绿
         pg.click('nav button:has-text("练习")')
@@ -94,7 +97,7 @@ def run():
 
         # 刷新后进度还在（IndexedDB 落盘了）
         pg.reload()
-        pg.wait_for_selector("text=基金从业刷题")
+        pg.wait_for_selector(".appbar .seg button.on")
         pg.click('nav button:has-text("错题本")')
         pg.wait_for_selector("text=道待消灭")
         assert int(pg.locator(".card .num").first.inner_text()) == n, "刷新后错题本对不上"

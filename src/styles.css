@@ -1,17 +1,22 @@
-/* ============ 设计令牌：答题卡 + 蓝黑墨水 ============ */
+/* ============ 设计令牌：冷炭 + 亮蓝 ============
+   底色从灰绿纸换成中性冷灰：那层绿是「文档」的味道，不是 app 的。
+   主色从发闷的藏青提到亮蓝——原来的问题不是色相，是通篇低饱和，没有一处敢出声。
+   对＝绿、错＝红是考试里不能动的约定，所以主色只能走蓝这一路。
+   --accent 用于填充，--accent-ink 是它的文字版（浅色下压深到能读）。 */
 :root{
   color-scheme:light dark;
-  --paper:#e7e9e3;      /* 试卷底色，冷调新闻纸 */
-  --sheet:#fcfcfa;      /* 卡片 */
-  --sheet2:#f0f1eb;     /* 内嵌块 */
-  --rule:#d4d7cd;       /* 分隔线 */
-  --ink:#1b2233;        /* 正文墨色 */
-  --ink2:#697088;       /* 次要信息 */
-  --accent:#2e4a7d;     /* 蓝黑墨水 */
-  --on-accent:#f7f8f4;
-  --accent-soft:#dde3ef;
-  --ok:#1c6a68;   --ok-soft:#d8e8e6;
-  --bad:#a83a2e;  --bad-soft:#f2ded9;
+  --paper:#F1F2F4;      /* 冷调浅灰，不是米色纸——那个一眼就是文档 */
+  --sheet:#FFFFFF;      /* 卡片 */
+  --sheet2:#E9EBEF;     /* 内嵌块 */
+  --rule:#DCDFE5;       /* 分隔线 */
+  --ink:#14181F;        /* 正文墨色 */
+  --ink2:#626C7C;       /* 次要信息 */
+  --accent:#2563EB;     /* 亮蓝，填充用 */
+  --accent-ink:#1D4ED8; /* 蓝的文字版，白底上 7:1 */
+  --on-accent:#FFFFFF;
+  --accent-soft:#DCE7FE;
+  --ok:#0F7B54;   --ok-soft:#D6EFE3;
+  --bad:#C42F42;  --bad-soft:#FADFE3;
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
   --f-num:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
   /* 圆角有层级：外层容器松，内层控件紧，别一个数用到底 */
@@ -19,36 +24,39 @@
   --ease:cubic-bezier(.2,.8,.3,1);
   /* 浅色下卡片只靠阴影分层，不再「描边＋阴影」双重打扮 */
   --card-line:transparent;
-  --shadow:0 1px 2px rgba(46,74,125,.07),0 10px 30px -22px rgba(46,74,125,.45);
-  /* 纸张颗粒：内联 SVG 噪声，中性灰，浅色下压暗、深色下提亮，一张图两边都能用 */
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  --shadow:0 1px 2px rgba(20,24,31,.05),0 8px 24px -18px rgba(20,24,31,.35);
+  /* 颗粒只留给深色：大片暗面需要它撑质感，浅色留着继续像文档 */
+  --grain:none;
   /* z-index 分层，别再随手写数字：内容 0 / 吸顶条 5 / 底栏 10 / 浮层 20 / toast 30 */
   --z-bar:5; --z-nav:10; --z-overlay:20; --z-toast:30;
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --paper:#12172a; --sheet:#1a2138; --sheet2:#232b46; --rule:#313b5c;
-    --ink:#e4e7f0; --ink2:#98a1bc; --accent:#8faeeb; --on-accent:#111828; --accent-soft:#27314f;
-    --ok:#5ec9c0; --ok-soft:#123b39; --bad:#f08c7e; --bad-soft:#3f2521;
-    /* 深色下阴影带底色的蓝，纯黑会发脏；卡片改回描边分层，阴影在暗背景上看不见 */
-    --card-line:var(--rule);
-    --shadow:0 1px 2px rgba(5,8,20,.55),0 14px 34px -24px rgba(2,6,22,.95);
-  }
-}
+/* 深色是这套配色的主场：冷炭底、蓝色提亮，颗粒回来撑住大片暗面 */
+@media (prefers-color-scheme:dark){ :root{
+  --paper:#101319; --sheet:#191D25; --sheet2:#232935; --rule:#2F3746;
+  --ink:#E8EAEF; --ink2:#8A93A3;
+  --accent:#6C9BFF; --accent-ink:#6C9BFF; --on-accent:#0B1220; --accent-soft:#1B2740;
+  --ok:#3FB984; --ok-soft:#143326; --bad:#E8586A; --bad-soft:#3A1D25;
+  /* 卡片改回描边分层，阴影在暗背景上看不见 */
+  --card-line:var(--rule);
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
+}}
 /* 阅读器的明暗开关必须盖过系统偏好，两个方向都要 */
 :root[data-theme="light"]{
-  --paper:#e7e9e3;--sheet:#fcfcfa;--sheet2:#f0f1eb;--rule:#d4d7cd;--ink:#1b2233;--ink2:#697088;
-  --accent:#2e4a7d;--on-accent:#f7f8f4;--accent-soft:#dde3ef;
-  --ok:#1c6a68;--ok-soft:#d8e8e6;--bad:#a83a2e;--bad-soft:#f2ded9;
+  --paper:#F1F2F4;--sheet:#FFFFFF;--sheet2:#E9EBEF;--rule:#DCDFE5;--ink:#14181F;--ink2:#626C7C;
+  --accent:#2563EB;--accent-ink:#1D4ED8;--on-accent:#FFFFFF;--accent-soft:#DCE7FE;
+  --ok:#0F7B54;--ok-soft:#D6EFE3;--bad:#C42F42;--bad-soft:#FADFE3;
   --card-line:transparent;
-  --shadow:0 1px 2px rgba(46,74,125,.07),0 10px 30px -22px rgba(46,74,125,.45);
+  --shadow:0 1px 2px rgba(20,24,31,.05),0 8px 24px -18px rgba(20,24,31,.35);
+  --grain:none;
 }
 :root[data-theme="dark"]{
-  --paper:#12172a;--sheet:#1a2138;--sheet2:#232b46;--rule:#313b5c;--ink:#e4e7f0;--ink2:#98a1bc;
-  --accent:#8faeeb;--on-accent:#111828;--accent-soft:#27314f;
-  --ok:#5ec9c0;--ok-soft:#123b39;--bad:#f08c7e;--bad-soft:#3f2521;
+  --paper:#101319;--sheet:#191D25;--sheet2:#232935;--rule:#2F3746;--ink:#E8EAEF;--ink2:#8A93A3;
+  --accent:#6C9BFF;--accent-ink:#6C9BFF;--on-accent:#0B1220;--accent-soft:#1B2740;
+  --ok:#3FB984;--ok-soft:#143326;--bad:#E8586A;--bad-soft:#3A1D25;
   --card-line:var(--rule);
-  --shadow:0 1px 2px rgba(5,8,20,.55),0 14px 34px -24px rgba(2,6,22,.95);
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -116,12 +124,77 @@ button:disabled{opacity:.42;cursor:default}
 select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(--rule);
   border-radius:var(--r-m);padding:11px;width:100%}
 
-/* 科目切换：像准考证上的两联 */
-.seg{display:flex;gap:0;border:1px solid var(--rule);border-radius:var(--r-l);overflow:hidden;background:var(--sheet)}
-.seg button{flex:1;border:0;border-radius:0;background:transparent;padding:11px 8px;font-size:14px;line-height:1.3}
-.seg button+button{border-left:1px solid var(--rule)}
-.seg button.on{background:var(--accent);color:var(--on-accent);font-weight:600}
-.seg small{display:block;font-size:11px;opacity:.72;font-weight:400}
+/* 科目切换：上下文切换器，不是内容。压成一行，别占掉首屏 */
+.seg{display:flex;gap:0;border:1px solid var(--rule);border-radius:99px;overflow:hidden;
+  background:var(--sheet2);padding:3px}
+.seg button{flex:1;border:0;border-radius:99px;background:transparent;padding:7px 8px;font-size:13px;
+  line-height:1.3;white-space:nowrap;color:var(--ink2)}
+.seg button.on{background:var(--sheet);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.seg small{font-size:12px;opacity:.7;font-weight:400;margin-left:5px}
+
+/* 顶栏：科目切换 + 主题。首页不再顶一个 26px 的 app 名字——图标已经说过了 */
+.appbar{display:flex;align-items:center;gap:10px}
+.appbar .seg{flex:1}
+
+/* ============ 签名元素：及格线刻度 ============
+   这门考试只有一个事实——60 分及格，100 题答对 60 题。所以正确率、章节掌握度、
+   模拟考成绩全都画在同一条标尺上，60 那格钉一道虚线。数字脱离这条线没有意义。 */
+.gauge{position:relative;padding-bottom:15px}
+.gauge-track{height:10px;background:var(--sheet2);border-radius:99px;overflow:hidden}
+.gauge-track>i{display:block;height:100%;border-radius:99px;background:var(--accent);
+  transition:width .45s var(--ease)}
+.gauge.under .gauge-track>i{background:var(--bad)}
+/* 刻度线穿出轨道上下各 4px，落在 --at 指定的百分比位置 */
+.gauge-tick{position:absolute;left:var(--at);top:-4px;height:18px;width:0;
+  border-left:1px dashed var(--ink2);opacity:.85}
+.gauge-tick::after{content:"及格 " attr(data-at);position:absolute;top:17px;left:-1px;
+  font:600 10px/1 var(--f-num);letter-spacing:.04em;color:var(--ink2);white-space:nowrap}
+/* 刻度贴右边时标签会溢出，翻到线的左侧 */
+.gauge-tick.flip::after{left:auto;right:-1px}
+/* 章节条用的迷你版：只留刻度，不带标签 */
+.gauge.mini{padding-bottom:0}
+.gauge.mini .gauge-track{height:5px}
+.gauge.mini .gauge-tick{top:-3px;height:11px}
+.gauge.mini .gauge-tick::after{display:none}
+
+/* ---- 首页 ---- */
+/* 主数字 + 判词并排：判词才是人要的答案，数字是证据 */
+.hero-top{display:flex;align-items:flex-end;gap:14px}
+.hero-num{font:700 56px/.85 var(--f-num);font-variant-numeric:tabular-nums;
+  letter-spacing:-.05em;color:var(--accent-ink)}
+.hero-num i{font:inherit;font-size:20px;font-weight:400;font-style:normal;color:var(--ink2)}
+.hero-num.flat{font-family:var(--f-body);font-size:22px;letter-spacing:0;color:var(--ink2);line-height:1.3}
+.hero-verdict{padding-bottom:5px;display:flex;flex-direction:column;gap:2px}
+.hero-verdict b{font-size:15px;font-weight:600;line-height:1.3}
+.hero-verdict.under b{color:var(--bad)}
+.hero-foot{display:flex;gap:0;border-top:1px solid var(--rule);padding-top:11px}
+.hero-foot>span{flex:1;font-size:12px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.hero-foot>span+span{border-left:1px solid var(--rule);padding-left:14px}
+.hero-foot b{font:700 17px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--ink)}
+.hero-foot b:not(.num-ok){letter-spacing:0}
+.hero-foot b i{font:inherit;font-size:12px;font-weight:400;font-style:normal;color:var(--ink2)}
+
+/* 唯一主行动：通栏、够大、一眼知道点它 */
+.go{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;
+  border-radius:var(--r-xl);background:var(--accent);color:var(--on-accent);border:0;font-weight:600}
+.go .go-mark{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--on-accent) 18%,transparent);font-size:13px}
+.go .go-body{flex:1;display:flex;flex-direction:column;gap:2px}
+.go .go-body small{font-size:12px;font-weight:400;opacity:.78}
+.go .go-arrow{flex:none;opacity:.65;font-size:17px}
+@media (hover:hover){.go:hover{filter:brightness(1.08)}}
+
+/* 次级入口：两栏，靠数字说话 */
+.tile{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;padding:13px 15px}
+.tile b{font-size:14px;font-weight:600}
+.tile small{font-size:12px;color:var(--ink2)}
+.tile .n{font:700 15px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--bad)}
+
+/* 页脚：版本与题库时间。谁都不看，但出问题时第一个要问的就是它 */
+.colophon{margin-top:10px;padding-top:14px;border-top:1px solid var(--rule);
+  display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink2);line-height:1.7}
+.colophon .row{gap:6px}
+.colophon b{font-family:var(--f-num);font-weight:500;font-variant-numeric:tabular-nums;color:var(--ink2)}
 
 /* ---- 首页数据 ---- */
 /* 规格条：等宽三栏只用来陈列参数（抽题/分钟/及格分），不用来讲进度 */
@@ -140,7 +213,7 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .stats.lead .stat:nth-child(1){grid-area:a;padding:2px 0 16px;gap:2px;border-bottom:1px solid var(--rule)}
 .stats.lead .stat:nth-child(2){grid-area:b}
 .stats.lead .stat:nth-child(3){grid-area:c;padding-left:18px;border-left:1px solid var(--rule)}
-.stats.lead .stat:nth-child(1) b{font-size:48px;letter-spacing:-.045em;color:var(--accent)}
+.stats.lead .stat:nth-child(1) b{font-size:48px;letter-spacing:-.045em;color:var(--accent-ink)}
 .stats.lead .stat:nth-child(1) b i{font-size:18px}
 .stats.lead .stat:nth-child(1) span{font-size:12px;letter-spacing:.06em}
 .stats.lead .stat:nth-child(n+2) b{font-size:21px}
@@ -149,13 +222,11 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .stats.lead .stat b.none{font-size:21px;color:var(--ink2);font-family:var(--f-body);letter-spacing:0}
 .bar{height:5px;background:var(--sheet2);border-radius:99px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
-/* 掌握度：条子只用墨色，低于及格线才转红。四种颜色排一列是彩虹，不是信息 */
-.meter{display:grid;grid-template-columns:1fr 42px;gap:10px;align-items:center;font-size:13px}
-.meter .bar{grid-column:1/-1;margin-top:-4px}
+/* 掌握度：每根条都带 60 刻度，低于及格线才转红。四种颜色排一列是彩虹，不是信息 */
+.meter{display:grid;grid-template-columns:1fr 42px;gap:10px 10px;align-items:center;font-size:13px}
+.meter .gauge{grid-column:1/-1;margin-top:-2px}
 .meter b{font:600 13px/1 var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
-.meter .bar i{background:var(--accent)}
-.meter.weak .bar i{background:var(--bad)}
-.meter.weak b{color:var(--bad)}
+.meter b.under{color:var(--bad)}
 .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:99px;
   background:var(--sheet2);color:var(--ink2);border:1px solid var(--rule);white-space:nowrap}
 .chip.alert{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent);background:var(--bad-soft)}
@@ -197,12 +268,12 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .explain-body p.itm{padding-left:2em;text-indent:-2em}
 .plain{margin-top:12px;padding-top:12px;border-top:1px dashed var(--rule)}
 .plain>summary{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;
-  color:var(--accent);cursor:pointer;padding:2px 0}
+  color:var(--accent-ink);cursor:pointer;padding:2px 0}
 .plain>summary::before{content:"▸";transition:transform .15s}
 .plain[open]>summary::before{transform:rotate(90deg)}
 .plain-body{display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:14px;line-height:1.85}
 .plain-body p{margin:0;padding-left:1em;text-indent:-1em}
-.plain-body b{color:var(--accent);font-weight:600;margin-right:6px}
+.plain-body b{color:var(--accent-ink);font-weight:600;margin-right:6px}
 
 /* ---- 常驻状态条 / 操作条 ---- */
 .topbar{position:sticky;top:0;z-index:var(--z-bar);margin:-18px -16px 0;padding:10px 16px;
@@ -248,7 +319,7 @@ nav button{flex:1;border:0;background:transparent;border-radius:0;padding:8px 0 
   color:var(--ink2);display:flex;flex-direction:column;gap:3px;align-items:center;letter-spacing:.02em;
   position:relative}
 nav button:active:not(:disabled){transform:none}
-nav button.on{color:var(--accent);font-weight:600}
+nav button.on{color:var(--accent-ink);font-weight:600}
 /* 当前页在顶端画一小段实线，光靠变色在小图标上不够明确 */
 nav button.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
   width:26px;height:2px;border-radius:0 0 2px 2px;background:var(--accent)}

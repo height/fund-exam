@@ -45,9 +45,9 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#app">跳到主要内容</a>
-      <main id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}`}>
+      <main id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
-        {view === 'practice' && <Practice initialScope={params.scope} />}
+        {view === 'practice' && <Practice initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setLeaveGuard={setLeaveGuard} />}
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'data' && <Data />}

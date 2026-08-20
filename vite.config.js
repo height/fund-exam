@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -29,8 +29,16 @@ self.addEventListener('fetch',e=>{
   }
 }
 
+// 页脚要显示的两个时间：构建时刻 + 题库文件最后一次改动
+const buildTime = new Date().toISOString()
+const bankTime = statSync('src/data/questions.json').mtime.toISOString()
+
 export default defineConfig({
   base: './',
+  define: {
+    __BUILD_TIME__: JSON.stringify(buildTime),
+    __BANK_TIME__: JSON.stringify(bankTime),
+  },
   plugins: [react(), viteSingleFile(), serviceWorker()],
   build: { assetsInlineLimit: Infinity },
 })

@@ -50,8 +50,9 @@ export function SubjectSeg() {
         const st = stats(records, s)
         return (
           <button key={s} role="tab" aria-selected={s === subject}
+            aria-label={`${s} ${SUBJ_SHORT[s]}，共 ${st.total} 题`}
             className={s === subject ? 'on' : ''} onClick={() => setSubject(s)}>
-            {s}<small>{SUBJ_SHORT[s]} · {st.total} 题</small>
+            {s}<small>{SUBJ_SHORT[s]}</small>
           </button>
         )
       })}
