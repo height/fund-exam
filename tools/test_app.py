@@ -73,8 +73,9 @@ def run():
         pg.wait_for_selector(".overlay.center")
         pg.click('.overlay.center button:has-text("退出")')
         pg.wait_for_selector(".overlay.center", state="detached")
+        # setQuiz(false) 在 effect 里跑，比「练什么」晚一帧，等底栏自己回来
         pg.wait_for_selector("text=练什么")
-        assert pg.locator("nav").count() == 1, "退出后底栏该回来"
+        pg.wait_for_selector("nav")
         pg.click('nav button:has-text("首页")')
         pg.wait_for_selector(".hero-verdict")
 

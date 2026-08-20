@@ -281,7 +281,7 @@ function AiExplain({ q, picked }) {
   )
 
   return (
-    <div className="ai-box">
+    <FullWrap className="ai-box" fullClass="ai-box ai-full">
       {(text || state === 'loading') && (
         // 推理模型先想后说，内容没到之前给个交代，别只闪光标
         <div className="ai-text"><Md text={state === 'loading' ? `${text || '正在思考'}▍` : text} /></div>
@@ -298,7 +298,7 @@ function AiExplain({ q, picked }) {
         <div className="row"><span className="muted grow">{err}</span>
           <button className="btn-sm" onClick={ask}>重试</button></div>
       )}
-    </div>
+    </FullWrap>
   )
 }
 
@@ -308,20 +308,36 @@ function AiExplain({ q, picked }) {
  */
 const DEMO_CACHE = new Map() // q.id -> html，会话级
 
-function Demo({ q }) {
-  const [html, setHtml] = useState(DEMO_CACHE.get(q.id) || '')
-  const [prog, setProg] = useState(0)
-  const [err, setErr] = useState('')
+/**
+ * 全屏包装：右上角切换按钮，Esc 退出。全屏层 portal 到 body 下——
+ * 祖先的 transform/滚动容器会把 position:fixed 圈住（iOS 上尤其），必须逃出去。
+ * iOS 没有元素级原生全屏，走 CSS 覆盖层。
+ */
+function FullWrap({ className, fullClass, children }) {
   const [full, setFull] = useState(false)
-  const ctlRef = useRef(null)
-
-  // 全屏态支持 Esc 退出（iOS 没有 iframe 原生全屏，走 CSS 覆盖层）
   useEffect(() => {
     if (!full) return
     const onKey = e => { if (e.key === 'Escape') setFull(false) }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [full])
+  const box = (
+    <div className={full ? fullClass : className}>
+      <button className="btn-sm fs-btn" onClick={() => setFull(f => !f)}
+        aria-label={full ? '退出全屏' : '全屏查看'}>
+        <Icon name={full ? 'shrink' : 'expand'} size={14} />
+      </button>
+      {children}
+    </div>
+  )
+  return full ? createPortal(box, document.body) : box
+}
+
+function Demo({ q }) {
+  const [html, setHtml] = useState(DEMO_CACHE.get(q.id) || '')
+  const [prog, setProg] = useState(0)
+  const [err, setErr] = useState('')
+  const ctlRef = useRef(null)
 
   async function run() {
     ctlRef.current?.abort()
@@ -352,16 +368,10 @@ function Demo({ q }) {
       <Icon name="loader" /> 正在画图解…{prog > 1 ? `已写 ${(prog / 1000).toFixed(1)}k 字符` : '正在连接'}
     </div>
   )
-  const box = (
-    <div className={full ? 'demo-full' : 'demo-box'}>
-      <button className="btn-sm demo-fs" onClick={() => setFull(f => !f)}
-        aria-label={full ? '退出全屏' : '全屏查看'}>
-        <Icon name={full ? 'shrink' : 'expand'} size={14} />
-      </button>
+  return (
+    <FullWrap className="demo-box" fullClass="demo-full">
       {/* ponytail: 切全屏会换 DOM 父级，iframe 重载、演示步骤回到第一步；要保状态得上 postMessage */}
       <iframe className="demo-frame" sandbox="allow-scripts" srcDoc={html} title="图解演示" />
-    </div>
+    </FullWrap>
   )
-  // 全屏层挂到 body 下：祖先的 transform/滚动容器会把 fixed 圈住（iOS 上尤其），portal 逃出去
-  return full ? createPortal(box, document.body) : box
 }
