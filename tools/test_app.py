@@ -40,11 +40,11 @@ def run():
         # 知识图谱：首页进入，展开一章 -> 点要点出详情 -> 「练这章」跳进练习
         pg.click('button:has-text("知识图谱")')
         pg.wait_for_selector('svg[role="tree"]')
-        assert pg.locator(".map-node.d0").count() >= 8, "章节节点少于 8 个"
-        assert pg.locator(".map-node.d1").count() == 0, "初始就该只展开到章节层"
-        pg.click(".map-node.d0 >> nth=0")
-        pg.wait_for_selector(".map-node.d1")
+        assert pg.locator(".map-node.d1").count() >= 8, "章节节点少于 8 个"
+        assert pg.locator(".map-node.d2").count() == 0, "初始就该只展开到章节层"
         pg.click(".map-node.d1 >> nth=0")
+        pg.wait_for_selector(".map-node.d2")
+        pg.click(".map-node.d2 >> nth=0")
         pg.wait_for_selector(".map-node.leaf")
         pg.click(".map-node.leaf >> nth=0")
         pg.wait_for_selector(".map-detail")
@@ -69,6 +69,34 @@ def run():
         pg.click('button:has-text("下一题")')
         pg.wait_for_function(
             "s=>document.querySelector('.stem').innerText!==s", arg=stem)
+
+        # AI 解析：只在答错时出现，没 Key 先就地要一个（不发真实请求）
+        for _ in range(6):  # 连做几题，总会错一道
+            pg.click('[data-pick="0"]')
+            pg.wait_for_selector(".explain")
+            if pg.locator(".opt.bad").count():
+                break
+            pg.click('button:has-text("下一题")')
+        assert pg.locator(".ai-ask").count() == 1, "答错了却没有 AI 入口"
+        pg.click(".ai-ask")
+        pg.wait_for_selector(".ai-key input")
+        assert "分开" in pg.locator(".ai-key .muted").inner_text(), "没有说明 Key 的隔离存放"
+
+        # 假流式响应：SSE 解析和 Markdown 渲染都过一遍，不发真实请求
+        sse = (
+            'data: {"choices":[{"delta":{"content":"考点：**不可分性**\\n**一句话**：拆不开\\n---\\n"}}]}\n\n'
+            'data: {"choices":[{"delta":{"content":"1. 金额大\\n2. 拆不开"}}]}\n\n'
+            "data: [DONE]\n\n"
+        )
+        pg.route("**/chat/completions", lambda r: r.fulfill(
+            status=200, content_type="text/event-stream", body=sse))
+        pg.fill(".ai-key input", "sk-test")
+        pg.click('button:has-text("开讲")')
+        pg.wait_for_selector(".ai-text b")
+        md = pg.locator(".ai-text").inner_text()
+        assert "*" not in md, "Markdown 粗体没渲染成 <b>（整行加粗开头是重灾区）"
+        assert "---" not in md, "分隔线不该进正文"
+        assert pg.locator(".ai-text ol li").count() == 2, "编号列表没渲染"
 
         # 模拟考：开考 -> 直接交卷（全不答）-> 出成绩，错题全进错题本
         pg.click('nav button:has-text("模拟考")')
@@ -100,10 +128,34 @@ def run():
         pg.wait_for_selector("text=练什么")
         assert pg.locator('button:has-text("章节顺序")').count() == 1
 
-        # 数据页：存量统计对得上
-        pg.click('nav button:has-text("数据")')
+        # 设置页：存量统计对得上
+        pg.click('nav button:has-text("设置")')
         # 考试记录是异步从 IndexedDB 读的，用 wait 而不是立刻断言
         pg.wait_for_selector('.list-item:has-text("考试记录") b:text-is("1")')
+
+        # AI 配置：切预设自动带出地址和模型名
+        pg.click('.seg button:has-text("智谱 GLM")')
+        assert pg.locator(".ai-field input").nth(1).input_value() == "glm-5.3"
+        assert "bigmodel.cn" in pg.locator(".ai-field input").nth(0).input_value()
+        pg.click('.seg button:has-text("DeepSeek")')
+        assert pg.locator(".ai-field input").nth(1).input_value() == "deepseek-v4-pro"
+
+        # 保存前先试调用：通了才落盘（沿用上面注册的假接口），401 则保存失败
+        pg.click('button:has-text("保存并测试")')
+        pg.wait_for_selector('.toast:has-text("已保存")')
+        pg.unroute("**/chat/completions")
+        pg.route("**/chat/completions", lambda r: r.fulfill(status=401, body="{}"))
+        pg.click('button:has-text("保存并测试")')
+        pg.wait_for_selector('.toast:has-text("保存失败：Key 无效")')
+
+        # tab 即默认模型：切到 GLM 后刷新，还停在 GLM；DeepSeek 那份配置也没丢
+        pg.click('.seg button:has-text("智谱 GLM")')
+        pg.reload()
+        pg.wait_for_selector(".appbar .seg button.on")
+        pg.click('nav button:has-text("设置")')
+        assert pg.locator('.card:has-text("AI 解析") .seg button.on').inner_text() == "智谱 GLM"
+        pg.click('.seg button:has-text("DeepSeek")')
+        assert pg.locator(".ai-field input").nth(2).input_value() == "sk-test", "DeepSeek 的 Key 没记住"
 
         # 清空进度：危险操作要二次确认，点外面等于取消
         pg.click('button:has-text("清空全部进度")')

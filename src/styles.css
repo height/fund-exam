@@ -199,18 +199,26 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 
 /* ---- 知识图谱 ---- */
 .map-hint{margin:0;font-size:12px}
-.map-wrap{padding:8px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.map-wrap{padding:8px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .map-wrap svg{display:block}
-.map-edge{fill:none;stroke:var(--rule);stroke-width:1.5}
+.map-edge{fill:none;stroke:var(--rule);stroke-width:1.25}
 .map-node{cursor:pointer}
-.map-node rect{fill:var(--sheet2);stroke:var(--rule)}
+.map-node rect{fill:var(--sheet2)}
 .map-node text{fill:var(--ink)}
-.map-node.d0 rect{fill:var(--accent-soft);stroke:transparent}
-.map-node.d0 text{fill:var(--accent-ink);font-weight:600}
-.map-node.leaf rect{fill:transparent;stroke:var(--rule);stroke-dasharray:3 3}
-.map-node.sel rect{stroke:var(--accent);stroke-width:2;stroke-dasharray:none}
-.map-caret{fill:var(--ink2);font-size:10px}
-.map-node.d0 .map-caret{fill:var(--accent-ink)}
+.map-caret{fill:none;stroke:var(--ink2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .18s var(--ease)}
+.map-node.d0 rect{fill:var(--accent)}
+.map-node.d0 text{fill:var(--on-accent);font-weight:700}
+.map-node.d1 rect{fill:var(--accent-soft)}
+.map-node.d1 text{fill:var(--accent-ink);font-weight:600}
+.map-node.d1 .map-caret{stroke:var(--accent-ink)}
+.map-node.leaf rect{fill:transparent}
+.map-node.leaf circle{fill:var(--rule)}
+.map-node.sel rect{fill:var(--accent-soft)}
+.map-node.sel text{fill:var(--accent-ink);font-weight:600}
+.map-node.sel circle{fill:var(--accent-ink)}
+.map-node:focus{outline:none}
+.map-node:focus-visible rect{stroke:var(--accent);stroke-width:2}
 .map-acc{fill:var(--ok);font-size:11px;font-weight:600}
 .map-acc.under{fill:var(--bad)}
 .map-detail{position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));
@@ -302,6 +310,34 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .plain[open]>summary::before{transform:rotate(90deg)}
 .plain-body{display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:14px;line-height:1.85}
 .plain-body p{margin:0;padding-left:1em;text-indent:-1em}
+
+/* AI 追问：挂在解析尾部，答错才出现 */
+.ai-ask{margin-top:12px;color:var(--accent-ink)}
+.ai-key{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.ai-key input{flex:1;min-width:0;font:inherit;font-size:13px;padding:9px 11px;
+  border:1px solid var(--rule);border-radius:var(--r-m);background:var(--sheet);color:inherit}
+.ai-key .muted{font-size:12px}
+.ai-box{margin-top:12px;background:var(--sheet);border-radius:var(--r-m);padding:10px 12px;
+  display:flex;flex-direction:column;gap:6px}
+.ai-head{display:flex;justify-content:space-between;align-items:center;min-height:24px;
+  font-size:12px;color:var(--ink2);font-weight:600}
+.ai-text{font-size:14px;line-height:1.8}
+.ai-text .md{display:flex;flex-direction:column;gap:7px}
+.ai-text p,.ai-text ol,.ai-text ul{margin:0}
+.ai-text ol,.ai-text ul{padding-left:1.5em;display:flex;flex-direction:column;gap:4px}
+.ai-text code{font-family:var(--f-num);font-size:13px;background:var(--sheet2);
+  padding:1px 5px;border-radius:4px}
+.md-h{display:block;font-size:14px}
+/* 表格自己横向滚，别把整页撑宽 */
+.md-table{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:2px 0}
+.md-table table{border-collapse:collapse;font-size:13px;min-width:100%}
+/* 窄屏上宁可整表横滚，也别把单元格折成三行 */
+.md-table th,.md-table td{border:1px solid var(--rule);padding:6px 10px;text-align:left;
+  vertical-align:top;white-space:nowrap}
+.md-table th{background:var(--sheet2);font-weight:600}
+.ai-field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink2)}
+.ai-field input{font:inherit;font-size:14px;color:var(--ink);width:100%;padding:10px 11px;
+  border:1px solid var(--rule);border-radius:var(--r-m);background:var(--sheet2)}
 .plain-body b{color:var(--accent-ink);font-weight:600;margin-right:6px}
 
 /* ---- 常驻状态条 / 操作条 ---- */

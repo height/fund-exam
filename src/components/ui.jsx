@@ -1,7 +1,8 @@
 /* 几个视图里反复出现的小块 */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { askAI, getCfg, getKey, setKey } from '../lib/ai'
 import { SUBJECTS, SUBJ_SHORT, stats } from '../lib/bank'
-import { ExplainBody, Plain } from '../lib/format'
+import { ExplainBody, Md, Plain } from '../lib/format'
 import { useStore } from '../lib/store'
 
 /**
@@ -109,6 +110,67 @@ export function Explain({ q, picked }) {
       </div>
       <ExplainBody text={q.explain} />
       <Plain id={q.id} />
+      {!ok && <AiExplain q={q} picked={picked} key={q.id} />}
+    </div>
+  )
+}
+
+/**
+ * 答错时的 AI 追问。流式出字，别让 reasoning 模型的思考时间变成白屏。
+ * 没 Key 先就地要一个；401 由 ai.js 清 Key，这里退回输入态。
+ */
+function AiExplain({ q, picked }) {
+  const [state, setState] = useState('idle') // idle | key | loading | done | error
+  const [text, setText] = useState('')
+  const [err, setErr] = useState('')
+  const inputRef = useRef(null)
+
+  async function ask() {
+    if (!getKey()) return setState('key')
+    setState('loading')
+    setText('')
+    try {
+      for await (const chunk of askAI(q, picked)) setText(t => t + chunk)
+      setState('done')
+    } catch (e) {
+      setErr(e.message)
+      setState(getKey() ? 'error' : 'key')
+    }
+  }
+
+  if (state === 'idle') return (
+    <button className="btn-sm btn-ghost ai-ask" onClick={ask}>✦ 还是不明白？让 AI 换个讲法</button>
+  )
+
+  if (state === 'key') return (
+    <div className="ai-key">
+      <div className="row">
+        <input ref={inputRef} type="password" placeholder="API Key"
+          aria-label="API Key"
+          onKeyDown={e => { if (e.key === 'Enter' && e.target.value.trim()) { setKey(e.target.value.trim()); ask() } }} />
+        <button className="btn-sm btn-pri" onClick={() => {
+          const v = inputRef.current.value.trim()
+          if (v) { setKey(v); ask() }
+        }}>开讲</button>
+      </div>
+      <span className="muted">
+        {err || `Key 只存本机浏览器，与做题记录分开，只发给 ${getCfg().url.match(/\/\/([^/]+)/)?.[1] || '你配置的接口'}；可在「设置」页换模型`}
+      </span>
+    </div>
+  )
+
+  return (
+    <div className="ai-box">
+      {/* 换 Key 的入口收在「设置」页，答题时不该被配置项打断 */}
+      <div className="ai-head"><span>✦ AI 解析</span></div>
+      {(text || state === 'loading') && (
+        // 推理模型先想后说，内容没到之前给个交代，别只闪光标
+        <div className="ai-text"><Md text={state === 'loading' ? `${text || '正在思考'}▍` : text} /></div>
+      )}
+      {state === 'error' && (
+        <div className="row"><span className="muted grow">{err}</span>
+          <button className="btn-sm" onClick={ask}>重试</button></div>
+      )}
     </div>
   )
 }

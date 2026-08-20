@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { PRESETS, loadStore, pingAI, provDefault, saveStore } from '../lib/ai'
 import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
@@ -6,7 +7,31 @@ import { THEMES, useStore } from '../lib/store'
 export default function Data() {
   const { records, setRecords, theme, setTheme, toast, ask } = useStore()
   const [exams, setExams] = useState([])
+  const [ai, setAi] = useState(loadStore)
+  const [testing, setTesting] = useState(false)
+  const [showKey, setShowKey] = useState(false)
   const fileRef = useRef(null)
+
+  // 两家各存一份，tab 就是默认模型开关：一点立即生效并记住
+  const cur = { ...provDefault(ai.active), ...ai.providers[ai.active] }
+  const switchAi = k => {
+    setAi(s => ({ ...s, active: k }))
+    saveStore({ ...loadStore(), active: k }) // 只持久化默认指向，编辑中的字段仍等「保存并测试」
+  }
+  // 字段编辑只动本地状态；「保存并测试」真调一次接口，调通了才落盘
+  const editAi = patch =>
+    setAi(s => ({ ...s, providers: { ...s.providers, [s.active]: { ...cur, ...patch } } }))
+  async function saveAi() {
+    setTesting(true)
+    try {
+      await pingAI(cur)
+      saveStore({ ...loadStore(), active: ai.active, providers: { ...loadStore().providers, [ai.active]: cur } })
+      toast('调用成功，配置已保存')
+    } catch (e) {
+      toast(`保存失败：${e.message}`)
+    }
+    setTesting(false)
+  }
 
   const reload = () => idb.all('exams').then(setExams)
   useEffect(() => { reload() }, [])
@@ -79,8 +104,8 @@ export default function Data() {
   return (
     <>
       <div>
-        <h1>数据</h1>
-        <div className="muted">进度只存在这台设备的浏览器里</div>
+        <h1>设置</h1>
+        <div className="muted">配置和进度只存在这台设备的浏览器里</div>
       </div>
 
       <div className="card">
@@ -90,6 +115,36 @@ export default function Data() {
             <button key={v} className={theme === v ? 'on' : ''} onClick={() => setTheme(v)}>{t}</button>
           ))}
         </div>
+      </div>
+
+      <div className="card">
+        <h2>AI 解析</h2>
+        <div className="muted">答错题时可以让 AI 换个讲法。两家可以都配好，选中的 tab 就是默认模型；配置和 Key 只存本机浏览器，与做题记录分开，只发给下面这个接口。</div>
+        <div className="seg">
+          {Object.entries(PRESETS).map(([k, p]) => (
+            <button key={k} className={ai.active === k ? 'on' : ''}
+              onClick={() => switchAi(k)}>{p.label}</button>
+          ))}
+        </div>
+        <label className="ai-field">接口地址
+          <input value={cur.url} onChange={e => editAi({ url: e.target.value })} />
+        </label>
+        <label className="ai-field">模型名称
+          <input value={cur.model} onChange={e => editAi({ model: e.target.value })} />
+        </label>
+        <label className="ai-field">API Key
+          <div className="row">
+            <input className="grow" type={showKey ? 'text' : 'password'} placeholder="sk-…"
+              value={cur.key} onChange={e => editAi({ key: e.target.value })} />
+            <button type="button" className="btn-sm btn-ghost" onClick={() => setShowKey(s => !s)}
+              aria-label={showKey ? '隐藏 Key' : '显示 Key'} aria-pressed={showKey}>
+              {showKey ? '🙈' : '👁'}
+            </button>
+          </div>
+        </label>
+        <button className="btn-pri" disabled={testing} onClick={saveAi}>
+          {testing ? '正在试调用…' : '保存并测试'}
+        </button>
       </div>
 
       <div className="card">
