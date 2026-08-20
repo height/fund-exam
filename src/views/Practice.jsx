@@ -182,7 +182,7 @@ function Runner({ session: s, setSession, onQuit }) {
   return (
     <>
       <div className="topbar">
-        <button className="btn-sm btn-ghost" onClick={quit} aria-label="退出练习"><Icon name="logout" /></button>
+        <button className="btn-sm btn-ghost" onClick={quit} aria-label="退出练习"><Icon name="back" /></button>
         <div className="bar"><i style={{ width: `${((s.i + 1) / s.qs.length) * 100}%` }} /></div>
         <div className="num muted">{s.i + 1}/{s.qs.length}</div>
       </div>

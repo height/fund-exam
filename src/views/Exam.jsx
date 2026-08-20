@@ -181,7 +181,7 @@ function Running({ ex, setEx, onSubmit, toast, ask, go }) {
     <>
       <div className="topbar">
         {/* 底栏在考试中收起了，这里得留一个出口——离开不交卷，倒计时照走 */}
-        <button className="btn-sm btn-ghost" onClick={leave} aria-label="退出考试"><Icon name="logout" /></button>
+        <button className="btn-sm btn-ghost" onClick={leave} aria-label="退出考试"><Icon name="back" /></button>
         <div className={`timer ${left < 10 * 60000 ? 'low' : ''}`}>{fmtTime(left)}</div>
         <div className="bar"><i style={{ width: `${(answered / qs.length) * 100}%` }} /></div>
         <button className="btn-sm" onClick={() => setSheet(true)} aria-label="答题卡">

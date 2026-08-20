@@ -4,7 +4,7 @@ Tabler Icons — MIT License
 https://github.com/tabler/tabler-icons
 
 src/components/ui.jsx 的 ICONS 表中，以下条目的路径数据取自 Tabler Icons：
-dice / exam / wrong / map / logout / send / grid / left / right /
+dice / exam / wrong / map / back / send / grid / left / right /
 download / upload / trash / list / done
 
 只抄用到的路径而非引入整个包：构建产物是单文件 PWA，任何依赖都会整份内联进
