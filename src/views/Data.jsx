@@ -123,7 +123,9 @@ export default function Data() {
         <div className="seg">
           {Object.entries(PRESETS).map(([k, p]) => (
             <button key={k} className={ai.active === k ? 'on' : ''}
-              onClick={() => switchAi(k)}>{p.label}</button>
+              onClick={() => switchAi(k)}>
+              {p.label}{ai.active === k && <small>✓ 默认</small>}
+            </button>
           ))}
         </div>
         <label className="ai-field">接口地址
@@ -145,6 +147,15 @@ export default function Data() {
         <button className="btn-pri" disabled={testing} onClick={saveAi}>
           {testing ? '正在试调用…' : '保存并测试'}
         </button>
+      </div>
+
+      <div className="card">
+        <h2>语音朗读</h2>
+        <div className="muted">MiMo TTS 的 Key，用来朗读题目和 AI 解析。输入即存，只存本机浏览器。</div>
+        <label className="ai-field">语音 API Key
+          <input type="password" placeholder="sk-…" defaultValue={loadStore().ttsKey || ''}
+            onChange={e => saveStore({ ...loadStore(), ttsKey: e.target.value.trim() })} />
+        </label>
       </div>
 
       <div className="card">

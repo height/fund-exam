@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Explain, Options, SubjectSeg } from '../components/ui'
+import { Explain, Options, Speaker, SubjectSeg } from '../components/ui'
+import { qToSpeech } from '../lib/ai'
 import { bySubject, chapterStats, shuffle, stats } from '../lib/bank'
 import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
@@ -170,6 +171,8 @@ function Runner({ session: s, setSession, onQuit }) {
               本轮 {s.right}/{s.done} 对
             </span>
           )}
+          {/* key 换题重挂载，顺带停掉上一题没读完的音 */}
+          <Speaker key={q.id} getText={() => qToSpeech(q)} label="朗读题目" />
         </div>
         <Stem text={q.q} />
         <Options q={q} picked={picked} reveal={shown} onPick={pick} />

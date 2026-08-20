@@ -4,6 +4,9 @@
 只驱动界面，不碰内部变量，所以重构不会把测试一起带塌。
 用法: python3 tools/test_app.py（需要 playwright + 本机 Chrome）
 """
+import base64
+import json
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -63,6 +66,7 @@ def run():
         pg.wait_for_selector(".explain")
         assert pg.locator(".opt.ok").count() == 1, "没有标出正确答案"
         assert pg.locator(".opt[disabled]").count() == 4, "揭晓后选项还能点"
+        assert pg.locator(".explain-tabs").count() == 1, "答对答错都该有 AI 解析 tab"
 
         # 翻页：下一题换题干
         stem = pg.locator(".stem").inner_text()
@@ -77,19 +81,22 @@ def run():
             if pg.locator(".opt.bad").count():
                 break
             pg.click('button:has-text("下一题")')
-        assert pg.locator(".ai-ask").count() == 1, "答错了却没有 AI 入口"
-        pg.click(".ai-ask")
+        assert pg.locator(".explain-tabs").count() == 1, "答错了却没有 AI 解析 tab"
+        pg.click('.explain-tabs button:has-text("AI 解析")')
         pg.wait_for_selector(".ai-key input")
         assert "分开" in pg.locator(".ai-key .muted").inner_text(), "没有说明 Key 的隔离存放"
 
         # 假流式响应：SSE 解析和 Markdown 渲染都过一遍，不发真实请求
+        wide = "对比项" + "很长的内容" * 30
         sse = (
             'data: {"choices":[{"delta":{"content":"考点：**不可分性**\\n**一句话**：拆不开\\n---\\n"}}]}\n\n'
-            'data: {"choices":[{"delta":{"content":"1. 金额大\\n2. 拆不开"}}]}\n\n'
+            'data: {"choices":[{"delta":{"content":"1. 金额大\\n2. 拆不开\\n'
+            f'|项目|{wide}|\\n|---|---|\\n|甲|乙|"}}}}]}}\n\n'
             "data: [DONE]\n\n"
         )
-        pg.route("**/chat/completions", lambda r: r.fulfill(
-            status=200, content_type="text/event-stream", body=sse))
+        ai_hits = []
+        pg.route("**/chat/completions", lambda r: (ai_hits.append(1), r.fulfill(
+            status=200, content_type="text/event-stream", body=sse))[-1])
         pg.fill(".ai-key input", "sk-test")
         pg.click('button:has-text("开讲")')
         pg.wait_for_selector(".ai-text b")
@@ -97,6 +104,59 @@ def run():
         assert "*" not in md, "Markdown 粗体没渲染成 <b>（整行加粗开头是重灾区）"
         assert "---" not in md, "分隔线不该进正文"
         assert pg.locator(".ai-text ol li").count() == 2, "编号列表没渲染"
+        assert pg.locator(".md-table td").count() == 2, "表格没渲染"
+
+        # 重新解析：真发一次新请求；换题再回来走内存缓存，不再请求
+        n0 = len(ai_hits)
+        pg.click('button:has-text("重新解析")')
+        pg.wait_for_selector('button:has-text("重新解析")')
+        assert len(ai_hits) == n0 + 1, "重新解析没有发新请求"
+        pg.click('button:has-text("下一题")')
+        pg.wait_for_selector(".stem")
+        pg.click('button:has-text("上一题")')
+        pg.click('.explain-tabs button:has-text("AI 解析")')
+        pg.wait_for_selector(".ai-text b")
+        assert len(ai_hits) == n0 + 1, "缓存没生效，回到旧题又发请求了"
+
+        # 划词解释：选中题干两个字 -> 浮出按钮 -> 气泡；气泡里再选词叠一层，关掉回一层
+        select = """sel => {
+            const el = document.querySelector(sel)
+            const r = document.createRange()
+            r.setStart(el.firstChild, 0); r.setEnd(el.firstChild, 2)
+            const s = getSelection(); s.removeAllRanges(); s.addRange(r)
+        }"""
+        pg.evaluate(select, ".stem")
+        pg.wait_for_selector(".sel-tip")
+        pg.click(".sel-tip")
+        pg.wait_for_selector(".bubble .ai-text b")  # 假接口的 markdown 渲染出来了
+        pg.evaluate(select, ".bubble-body p")
+        pg.wait_for_selector(".sel-tip")
+        pg.click(".sel-tip")
+        pg.wait_for_function("document.querySelectorAll('.bubble').length === 2")
+        pg.locator('.bubble button[aria-label="关闭"]').last.click()
+        pg.wait_for_function("document.querySelectorAll('.bubble').length === 1")
+        pg.locator('.bubble button[aria-label="关闭"]').click()
+
+        # 朗读：假 TTS 接口回一段静音 WAV，题目和 AI 解析的喇叭都能出声
+        wav = (b"RIFF" + struct.pack("<I", 36 + 320) + b"WAVEfmt "
+               + struct.pack("<IHHIIHH", 16, 1, 1, 8000, 16000, 2, 16)
+               + b"data" + struct.pack("<I", 320) + b"\x00" * 320)
+        tts_body = json.dumps({"choices": [{"message": {"audio": {
+            "data": base64.b64encode(wav).decode()}}}]})
+        tts_hits = []
+        pg.route("**/api.xiaomimimo.com/**", lambda r: (tts_hits.append(1), r.fulfill(
+            status=200, content_type="application/json", body=tts_body))[-1])
+        pg.evaluate("""() => {
+            const s = JSON.parse(localStorage.getItem('ai-config'))
+            s.ttsKey = 'tts-test'
+            localStorage.setItem('ai-config', JSON.stringify(s))
+        }""")
+        pg.click('button[aria-label="朗读题目"]')
+        pg.wait_for_timeout(400)
+        pg.click('button[aria-label="朗读解析"]')
+        pg.wait_for_timeout(400)
+        assert len(tts_hits) == 2, f"TTS 该被调用两次，实际 {len(tts_hits)}"
+        assert "语音" not in (pg.locator(".toast").inner_text() or ""), "朗读报错了"
 
         # 模拟考：开考 -> 直接交卷（全不答）-> 出成绩，错题全进错题本
         pg.click('nav button:has-text("模拟考")')
@@ -149,11 +209,12 @@ def run():
         pg.wait_for_selector('.toast:has-text("保存失败：Key 无效")')
 
         # tab 即默认模型：切到 GLM 后刷新，还停在 GLM；DeepSeek 那份配置也没丢
+        # 顺带验证 hash 路由：刷新后还在设置页，不用重新点导航
         pg.click('.seg button:has-text("智谱 GLM")')
         pg.reload()
-        pg.wait_for_selector(".appbar .seg button.on")
-        pg.click('nav button:has-text("设置")')
-        assert pg.locator('.card:has-text("AI 解析") .seg button.on').inner_text() == "智谱 GLM"
+        pg.wait_for_selector('h1:has-text("设置")')
+        on = pg.locator('.card:has-text("AI 解析") .seg button.on').inner_text()
+        assert "智谱 GLM" in on and "默认" in on, f"默认标记不见了：{on}"
         pg.click('.seg button:has-text("DeepSeek")')
         assert pg.locator(".ai-field input").nth(2).input_value() == "sk-test", "DeepSeek 的 Key 没记住"
 
@@ -168,9 +229,9 @@ def run():
         pg.keyboard.press("Tab")
         assert pg.evaluate("document.activeElement.className") == "skip"
 
-        # 刷新后进度还在（IndexedDB 落盘了）
+        # 刷新后进度还在（IndexedDB 落盘了）；hash 路由让刷新停在原页，这里在设置页
         pg.reload()
-        pg.wait_for_selector(".appbar .seg button.on")
+        pg.wait_for_selector('h1:has-text("设置")')
         pg.click('nav button:has-text("错题本")')
         pg.wait_for_selector("text=道待消灭")
         assert int(pg.locator(".card .num").first.inner_text()) == n, "刷新后错题本对不上"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import SelectionTip from './components/SelectionTip'
 import { Dialog } from './components/ui'
 import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
@@ -19,11 +20,27 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map']
+
+// 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
+function parseHash() {
+  const [v, qs] = location.hash.replace(/^#\/?/, '').split('?')
+  return {
+    view: VIEWS.includes(v) ? v : 'home',
+    params: Object.fromEntries(new URLSearchParams(qs)),
+  }
+}
+
 export default function App() {
   const { ready, records, toastMsg, ask } = useStore()
-  const [view, setView] = useState('home')
-  const [params, setParams] = useState({})
+  const [{ view, params }, setNav] = useState(parseHash)
   const [leaveGuard, setLeaveGuard] = useState(false)
+
+  useEffect(() => {
+    const on = () => setNav(parseHash())
+    window.addEventListener('hashchange', on)
+    return () => window.removeEventListener('hashchange', on)
+  }, [])
 
   async function go(v, p = {}) {
     if (leaveGuard && v !== view && !await ask({
@@ -31,8 +48,10 @@ export default function App() {
       body: '离开会保留进度，回来能接着考。',
       ok: '确定离开', cancel: '继续答题',
     })) return
-    setView(v)
-    setParams(p)
+    const qs = new URLSearchParams(p).toString()
+    const hash = `#/${v}${qs ? `?${qs}` : ''}`
+    if (hash === location.hash) setNav({ view: v, params: p }) // 同址重进也要刷新状态
+    else location.hash = hash // 状态更新交给 hashchange，后退键走的也是同一条路
     window.scrollTo(0, 0)
   }
 
@@ -69,6 +88,7 @@ export default function App() {
       </nav>
 
       <Dialog />
+      <SelectionTip go={go} />
       <div className={`toast ${toastMsg ? 'on' : ''}`} role="status" aria-live="polite">{toastMsg}</div>
     </>
   )

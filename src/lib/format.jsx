@@ -6,9 +6,16 @@ export const fmtTime = ms => {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 }
 
+/**
+ * 从 PDF 抽出来的题干，有 36 道的 Ⅰ Ⅱ Ⅲ 是跟正文连成一行的（另 118 道自带换行）。
+ * 渲染时补上断行，但「Ⅰ、Ⅱ、Ⅲ」这类并列引用不能拆——所以前一个字符是顿号、
+ * 连词、括号或另一个罗马数字时就跳过。全库跑过：36 道被补，已有换行的一道没被多拆。
+ */
+const ENUM = /(?<![\n、，,／/和与或及（(\sⅠ-Ⅹ])(?=[Ⅰ-Ⅹ])/g
+
 /** 题干里的 Ⅰ、Ⅱ… 各占一行，悬挂缩进 */
 export function Stem({ text, style }) {
-  const [first, ...rest] = String(text).split('\n')
+  const [first, ...rest] = String(text).replace(ENUM, '\n').split('\n')
   return (
     <div className="stem" style={style}>
       {first}

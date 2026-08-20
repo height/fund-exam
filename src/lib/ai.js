@@ -67,32 +67,22 @@ export async function pingAI(cfg) {
   }
 }
 
-/** 流式返回讲解文本片段。401 时顺手清掉坏 Key，让 UI 重新要一个 */
-export async function* askAI(q, picked) {
+/** 流式对话。401 时顺手清掉坏 Key，让 UI 重新要一个 */
+async function* streamChat(userContent, signal) {
   const cfg = getCfg()
   const res = await fetch(cfg.url, {
     method: 'POST',
+    signal,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.key}` },
     body: JSON.stringify({
       model: cfg.model,
       thinking: { type: 'enabled' },
-      // 讲一道选择题用不着深思熟虑，medium 起答快、够用
+      // 讲考点用不着深思熟虑，medium 起答快、够用
       reasoning_effort: 'medium',
       stream: true,
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },
-        {
-          role: 'user',
-          content: [
-            q.q,
-            ...q.options.map((o, i) => `${'ABCD'[i]}\n${o}`),
-            `正确答案 ${'ABCD'[q.answer]}`,
-            picked === undefined ? '你没有作答' : `你选了 ${'ABCD'[picked]}`,
-            q.explain,
-            '',
-            '这道题为啥没做对，我该如何记住这道题的正确答案，我是一个基金小白，请教教我，要言简意赅，模仿阮一峰的风格(但不要外化阮一峰等无关帮助理解的相关信息)',
-          ].join('\n'),
-        },
+        { role: 'user', content: userContent },
       ],
     }),
   })
@@ -116,3 +106,81 @@ export async function* askAI(q, picked) {
     }
   }
 }
+
+/** 答错题的整题讲解 */
+export function askAI(q, picked, signal) {
+  return streamChat([
+    q.q,
+    ...q.options.map((o, i) => `${'ABCD'[i]}\n${o}`),
+    `正确答案 ${'ABCD'[q.answer]}`,
+    picked === undefined ? '你没有作答'
+      : picked === q.answer ? '我答对了' : `你选了 ${'ABCD'[picked]}`,
+    q.explain,
+    '',
+    '我是基金小白，不用分析我选得对不对。直接讲三件事：' +
+    '1）正确答案是什么，一两句话说透背后的考点；' +
+    '2）怎么记住它，给一个生活化的比喻；' +
+    '3）如果有易混选项或相近的数字时限，用一张小表格对比强化记忆。' +
+    '语言平实直接，不复述题目，不写总结，全文不超过250字。',
+  ].join('\n'), signal)
+}
+
+/** 划词解释：选中一个词/短语，就地讲明白 */
+export function askTerm(term, ctx, signal) {
+  return streamChat(
+    `我在备考基金从业资格考试，看到「${term}」这个说法不太懂` +
+    (ctx ? `，它出现在这段话里：「${ctx}」` : '') +
+    '。用大白话讲给零基础的人：先一句话说它是什么，再给一个好记的类比或对比；有常考数字或易混概念就顺带点一句。用 Markdown，不超过150字，直接讲，不要客套。', signal)
+}
+
+/* ---- 语音朗读（MiMo TTS）。Key 同样存 ai-config，与做题记录隔离 ---- */
+
+let audioEl = null
+export function stopSpeak() { audioEl?.pause(); audioEl = null }
+
+/** 合成并播放。再次调用会顶掉上一段；返回 Audio 以便监听 ended */
+export async function speak(text, signal) {
+  const { ttsKey } = loadStore()
+  if (!ttsKey) throw new Error('先在「设置」页填好语音 Key')
+  const res = await fetch('https://api.xiaomimimo.com/v1/chat/completions', {
+    method: 'POST',
+    signal,
+    headers: { 'Content-Type': 'application/json', 'api-key': ttsKey },
+    body: JSON.stringify({
+      model: 'mimo-v2.5-tts',
+      messages: [
+        { role: 'user', content: '用清晰平稳、不快不慢的朗读语气，像老师念题一样，读下面这段话。' },
+        { role: 'assistant', content: String(text).slice(0, 2000) },
+      ],
+      audio: { format: 'wav', voice: 'mimo_default' },
+    }),
+  })
+  if (!res.ok) throw new Error(res.status === 401 ? '语音 Key 无效' : `语音接口返回 ${res.status}`)
+  const b64 = (await res.json()).choices?.[0]?.message?.audio?.data
+  if (!b64) throw new Error('语音接口没返回音频')
+  // 合成期间用户已经翻题/关面板，别再出声
+  if (signal?.aborted) throw new DOMException('已中止', 'AbortError')
+  stopSpeak()
+  audioEl = new Audio(`data:audio/wav;base64,${b64}`)
+  await audioEl.play()
+  return audioEl
+}
+
+// TTS 不认罗马数字，Ⅰ Ⅱ Ⅲ Ⅳ 全被念成「一」，组合题先翻成「第几项」
+const ROMAN = 'ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ'
+const CN = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二']
+const speakable = s => String(s)
+  .replace(/[Ⅰ-Ⅻ]/g, c => `第${CN[ROMAN.indexOf(c)]}项`)
+  .replace(/。+/g, '。')
+
+/** 题目念稿：只读题干 + 选项，永远不念答案 */
+export const qToSpeech = q => speakable([
+  q.q.replace(/（\s*）|\(\s*\)/g, '什么'),
+  ...q.options.map((o, i) => `选项${'ABCD'[i]}，${o}`),
+].join('。'))
+
+/** Markdown 念稿：把排版符号扒掉 */
+export const mdToSpeech = t => speakable(String(t)
+  .replace(/\*\*|`|^#+\s*/gm, '')
+  .replace(/^[-*_]{3,}\s*$/gm, '')
+  .replace(/\|/g, '，'))
