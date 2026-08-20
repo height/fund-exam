@@ -3,7 +3,8 @@
    只抄用到的路径而不是装整个包：产物是单文件 PWA，依赖会整份内联进 index.html。
    许可与出处见 NOTICE。 */
 import { useEffect, useRef, useState } from 'react'
-import { askAI, getCfg, getKey, mdToSpeech, setKey, speak, stopSpeak } from '../lib/ai'
+import { createPortal } from 'react-dom'
+import { askAI, askDemo, getCfg, getKey, mdToSpeech, setKey, speak, stopSpeak } from '../lib/ai'
 import { SUBJECTS, SUBJ_SHORT, stats } from '../lib/bank'
 import { ExplainBody, Md, Plain } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -21,6 +22,9 @@ const ICONS = {
   sun: ['M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z', 'M12 2v2', 'M12 20v2', 'M2 12h2', 'M20 12h2', 'M4.9 4.9l1.4 1.4', 'M17.7 17.7l1.4 1.4', 'M4.9 19.1l1.4-1.4', 'M17.7 6.3l1.4-1.4'],
   moon: ['M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'],
   play: ['M7 5l12 7-12 7z'],
+  chart: ['M3 3v18h18', 'M8 17v-5', 'M13 17V8', 'M18 17v-8'],
+  expand: ['M15 3h6v6', 'M9 21H3v-6', 'M21 3l-7 7', 'M3 21l7-7'],
+  shrink: ['M4 14h6v6', 'M20 10h-6V4', 'M14 10l7-7', 'M3 21l7-7'],
   back: ['M15 6l-6 6l6 6'],
   dice: ['M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14', 'M8 8.5a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0', 'M15 8.5a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0', 'M15 15.5a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0', 'M8 15.5a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0', 'M11.5 12a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0'],
   exam: ['M12 7v5l2 2', 'M17 22l5 -3l-5 -3l0 6', 'M13.017 20.943a9 9 0 1 1 7.831 -7.292'],
@@ -177,8 +181,10 @@ export function Speaker({ getText, label = '朗读' }) {
 export function Explain({ q, picked }) {
   const ok = picked === q.answer
   const [tab, setTab] = useState('book')
-  const [aiOn, setAiOn] = useState(false) // AI 开过就保持挂载，切回教材不丢流式进度
-  useEffect(() => { setTab('book'); setAiOn(false) }, [q.id])
+  // 开过的面板保持挂载只切显隐：来回切 tab 不重发请求，流式进度也不丢
+  const [aiOn, setAiOn] = useState(false)
+  const [demoOn, setDemoOn] = useState(false)
+  useEffect(() => { setTab('book'); setAiOn(false); setDemoOn(false) }, [q.id])
   return (
     <div className={`explain ${ok ? 'right' : 'wrong'}`}>
       <div className="explain-head">
@@ -192,6 +198,8 @@ export function Explain({ q, picked }) {
           <button className={tab === 'book' ? 'on' : ''} onClick={() => setTab('book')}>解析</button>
           <button className={tab === 'ai' ? 'on' : ''}
             onClick={() => { setAiOn(true); setTab('ai') }}><Icon name="sparkle" /> AI 解析</button>
+          <button className={tab === 'demo' ? 'on' : ''}
+            onClick={() => { setDemoOn(true); setTab('demo') }}><Icon name="chart" /> 图解</button>
         </span>
       </div>
       <div style={tab === 'book' ? null : { display: 'none' }}>
@@ -201,6 +209,11 @@ export function Explain({ q, picked }) {
       {aiOn && (
         <div style={tab === 'ai' ? null : { display: 'none' }}>
           <AiExplain q={q} picked={picked} key={q.id} />
+        </div>
+      )}
+      {demoOn && (
+        <div style={tab === 'demo' ? null : { display: 'none' }}>
+          <Demo q={q} key={q.id} />
         </div>
       )}
     </div>
@@ -287,4 +300,68 @@ function AiExplain({ q, picked }) {
       )}
     </div>
   )
+}
+
+/**
+ * 图解演示：AI 生成自包含 HTML，在沙箱 iframe 里渲染。
+ * sandbox 只给 allow-scripts：无同源权限，拿不到 localStorage 里的 Key，导不了航。
+ */
+const DEMO_CACHE = new Map() // q.id -> html，会话级
+
+function Demo({ q }) {
+  const [html, setHtml] = useState(DEMO_CACHE.get(q.id) || '')
+  const [prog, setProg] = useState(0)
+  const [err, setErr] = useState('')
+  const [full, setFull] = useState(false)
+  const ctlRef = useRef(null)
+
+  // 全屏态支持 Esc 退出（iOS 没有 iframe 原生全屏，走 CSS 覆盖层）
+  useEffect(() => {
+    if (!full) return
+    const onKey = e => { if (e.key === 'Escape') setFull(false) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [full])
+
+  async function run() {
+    ctlRef.current?.abort()
+    const ctl = (ctlRef.current = new AbortController())
+    setErr('')
+    setHtml('')
+    setProg(1)
+    try {
+      const out = await askDemo(q, ctl.signal, setProg)
+      if (ctl.signal.aborted) return
+      DEMO_CACHE.set(q.id, out)
+      setHtml(out)
+    } catch (e) {
+      if (!ctl.signal.aborted) setErr(e.message)
+    }
+  }
+  useEffect(() => {
+    if (!DEMO_CACHE.has(q.id)) run()
+    return () => ctlRef.current?.abort()
+  }, [])
+
+  if (err) return (
+    <div className="row"><span className="muted grow">{err}</span>
+      <button className="btn-sm" onClick={run}>重试</button></div>
+  )
+  if (!html) return (
+    <div className="muted demo-wait">
+      <Icon name="loader" /> 正在画图解…{prog > 1 ? `已写 ${(prog / 1000).toFixed(1)}k 字符` : '正在连接'}
+    </div>
+  )
+  const box = (
+    <div className={full ? 'demo-full' : 'demo-box'}>
+      <button className="btn-sm demo-fs" onClick={() => setFull(f => !f)}
+        aria-label={full ? '退出全屏' : '全屏查看'}>
+        <Icon name={full ? 'shrink' : 'expand'} size={14} />
+      </button>
+      {/* ponytail: 切全屏会换 DOM 父级，iframe 重载、演示步骤回到第一步；要保状态得上 postMessage */}
+      <iframe className="demo-frame" sandbox="allow-scripts" srcDoc={html} title="图解演示" />
+    </div>
+  )
+  // 全屏层挂到 body 下：祖先的 transform/滚动容器会把 fixed 圈住（iOS 上尤其），portal 逃出去
+  return full ? createPortal(box, document.body) : box
 }

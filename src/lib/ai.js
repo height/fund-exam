@@ -67,8 +67,8 @@ export async function pingAI(cfg) {
   }
 }
 
-/** 流式对话。401 时顺手清掉坏 Key，让 UI 重新要一个 */
-async function* streamChat(userContent, signal) {
+/** 流式对话。401 时顺手清掉坏 Key，让 UI 重新要一个。think=false 关掉推理，秒出正文 */
+async function* streamChat(userContent, signal, { think = true } = {}) {
   const cfg = getCfg()
   const res = await fetch(cfg.url, {
     method: 'POST',
@@ -76,9 +76,9 @@ async function* streamChat(userContent, signal) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.key}` },
     body: JSON.stringify({
       model: cfg.model,
-      thinking: { type: 'enabled' },
+      thinking: { type: think ? 'enabled' : 'disabled' },
       // 讲考点用不着深思熟虑，medium 起答快、够用
-      reasoning_effort: 'medium',
+      ...(think && { reasoning_effort: 'medium' }),
       stream: true,
       messages: [
         {
@@ -129,6 +129,9 @@ export function askAI(q, picked, signal) {
     '1）正确答案是什么，一两句话说透背后的考点；' +
     '2）怎么记住它，给一个生活化的比喻；' +
     '3）如果有易混选项或相近的数字时限，用一张小表格对比强化记忆。' +
+    '如果这是计算题，换成讲：1）用人话解释公式里每个符号是什么；' +
+    '2）分步代入，每一步写出中间数字，算到答案；' +
+    '3）教一个不用精确计算也能锁定选项的招（比如先用简单利率估个大概、判断答案该比它大还是小，再排除）。' +
     '语言平实直接，不复述题目，不写总结，全文不超过250字。',
   ].join('\n'), signal)
 }
@@ -139,6 +142,40 @@ export function askTerm(term, ctx, signal) {
     `我在备考基金从业资格考试，看到「${term}」这个说法不太懂` +
     (ctx ? `，它出现在这段话里：「${ctx}」` : '') +
     '。用大白话讲给零基础的人：先一句话说它是什么，再给一个好记的类比或对比；有常考数字或易混概念就顺带点一句。用 Markdown，不超过150字，直接讲，不要客套。', signal)
+}
+
+/**
+ * 图解演示：让模型产出自包含 HTML（可内嵌 SVG/动画），由沙箱 iframe 渲染。
+ * onProgress 每收到一段就回调累计长度，生成要一阵子，得给用户看到活着的进度。
+ */
+export async function askDemo(q, signal, onProgress) {
+  let html = ''
+  const prompt = [
+    q.q,
+    ...q.options.map((o, i) => `${'ABCD'[i]}. ${o}`),
+    `正确答案 ${'ABCD'[q.answer]}`,
+    q.explain,
+    '',
+    '请生成一个自包含的 HTML 演示页，教一个完全没有金融基础的人看懂这道题。' +
+    '信息结构从上到下固定四块，每块有编号小标题，读者按顺序读完刚好懂：' +
+    '① 一句话结论：正确答案 + 这道题考什么，放最上面、字最大；' +
+    '② 打个比方：用一个生活化比喻配 SVG 或图形示意，先建立直觉，别上术语；' +
+    '③ 一步一步看：把推导或计算拆成 2~4 步做成「下一步」按钮交互，每步只讲一件事，' +
+    '一行式子配一句大白话，当前步高亮、已走过的步保留；' +
+    '④ 记住这一句：一行加粗口诀收尾。' +
+    '排版要求：只输出完整 HTML 文档，内联全部 CSS/JS，禁止外部资源；' +
+    '宽度自适应手机屏，白底深字，正文不小于 15px、行距 1.7，每块之间留足空白；' +
+    '术语第一次出现必须紧跟一句大白话解释；不要使用 emoji；' +
+    '所有数字和结论必须与题目、解析完全一致，严禁编造。除 HTML 本身外不要输出任何说明文字。',
+  ].join('\n')
+  // 画页面是体力活不是脑力活：关掉思考模式，正文立刻开始流，进度才有的看
+  for await (const c of streamChat(prompt, signal, { think: false })) {
+    html += c
+    onProgress?.(html.length)
+  }
+  // 模型习惯裹 ``` 围栏，剥掉；没裹就原样用
+  const m = html.match(/```(?:html)?\n?([\s\S]*?)```/)
+  return (m ? m[1] : html).trim()
 }
 
 /* ---- 语音朗读（MiMo TTS）。Key 同样存 ai-config，与做题记录隔离 ---- */

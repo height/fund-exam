@@ -61,6 +61,10 @@
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* 双击放大在答题时最烦：连点两个选项就被当成双击。manipulation 只掐双击缩放，
+   保留滚动和双指缩放，是这一条里唯一不伤无障碍的做法。
+   双指缩放另由 meta 的 user-scalable=no + main.jsx 里拦 gesturestart 处理 */
+html{touch-action:manipulation}
 body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.65 var(--f-body);
   padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;
   text-wrap:pretty}
@@ -328,7 +332,7 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 
 /* AI 解析面板：解析区里的第二个 tab 页 */
 .ai-key{display:flex;flex-direction:column;gap:6px}
-.ai-key input{flex:1;min-width:0;font:inherit;font-size:13px;padding:9px 11px;
+.ai-key input{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 11px;
   border:1px solid var(--rule);border-radius:var(--r-m);background:var(--sheet);color:inherit}
 .ai-key .muted{font-size:12px}
 .ai-box{background:var(--sheet);border-radius:var(--r-m);padding:10px 12px;
@@ -371,6 +375,16 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
   @keyframes spin{to{transform:rotate(360deg)}}
 }
 
+/* 图解演示：AI 生成的 HTML 关在沙箱 iframe 里，可切全屏覆盖层 */
+.demo-frame{width:100%;height:380px;border:1px solid var(--rule);border-radius:var(--r-m);background:#fff}
+.demo-wait{font-size:13px;display:flex;align-items:center;gap:6px}
+.demo-box{position:relative}
+.demo-fs{position:absolute;top:8px;right:8px;z-index:1;background:var(--sheet);opacity:.92;
+  padding:6px 8px;line-height:1}
+.demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff;display:flex}
+.demo-full .demo-frame{flex:1;height:auto;border:0;border-radius:0}
+.demo-full .demo-fs{top:calc(10px + env(safe-area-inset-top));right:12px}
+
 /* 喇叭按钮：收紧内边距别撑行高 */
 /* 纯图标按钮：正方形，跟同排的文字按钮共用一套内边距 */
 .spk{align-self:stretch;aspect-ratio:1;padding:7px}
@@ -388,7 +402,7 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .bubble-term{font-size:15px}
 
 .ai-field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink2)}
-.ai-field input{font:inherit;font-size:14px;color:var(--ink);width:100%;padding:10px 11px;
+.ai-field input{font:inherit;font-size:16px;color:var(--ink);width:100%;padding:10px 11px;
   border:1px solid var(--rule);border-radius:var(--r-m);background:var(--sheet2)}
 .plain-body b{color:var(--accent-ink);font-weight:600;margin-right:6px}
 

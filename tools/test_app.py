@@ -35,6 +35,12 @@ def run():
         assert "应用更新" in colophon and "题库更新" in colophon, colophon
         n = int(colophon.split("共")[1].split("题")[0].strip())
         assert n > 800, f"题库只有 {n} 题"
+        # 缩放全禁：双击、双指、以及 iOS 聚焦输入框时的自动放大
+        assert "user-scalable=no" in pg.eval_on_selector("meta[name=viewport]", "e=>e.content")
+        assert pg.eval_on_selector("html", "e=>getComputedStyle(e).touchAction") == "manipulation"
+        assert pg.evaluate("()=>{const e=new Event('gesturestart',{cancelable:true});"
+                           "document.dispatchEvent(e);return e.defaultPrevented}"), "iOS 双指缩放没拦住"
+
         # 首页两个刷题入口并排：顺序 + 随机
         assert pg.locator(".go").count() == 2
         assert pg.locator(".go-seq").inner_text().startswith("开始刷题")
@@ -119,6 +125,22 @@ def run():
         assert "---" not in md, "分隔线不该进正文"
         assert pg.locator(".ai-text ol li").count() == 2, "编号列表没渲染"
         assert pg.locator(".md-table td").count() == 2, "表格没渲染"
+
+        # 图解 tab：出沙箱 iframe；三档 tab 来回切不重发请求
+        h0 = len(ai_hits)
+        pg.click('.explain-tabs button:has-text("图解")')
+        pg.wait_for_selector('iframe.demo-frame')
+        assert pg.locator("iframe.demo-frame").get_attribute("sandbox") == "allow-scripts", "iframe 没关沙箱"
+        pg.click('button[aria-label="全屏查看"]')
+        pg.wait_for_selector(".demo-full")
+        pg.keyboard.press("Escape")
+        pg.wait_for_selector(".demo-full", state="detached")
+        pg.click('.explain-tabs button:text-is("解析")')
+        pg.click('.explain-tabs button:has-text("AI 解析")')
+        pg.click('.explain-tabs button:has-text("图解")')
+        pg.wait_for_selector('iframe.demo-frame')
+        assert len(ai_hits) == h0 + 1, f"切 tab 不该重发请求，多了 {len(ai_hits) - h0 - 1} 次"
+        pg.click('.explain-tabs button:has-text("AI 解析")')
 
         # 重新解析：真发一次新请求；换题再回来走内存缓存，不再请求
         n0 = len(ai_hits)
@@ -226,6 +248,10 @@ def run():
         pg.click('nav button:has-text("设置")')
         # 考试记录是异步从 IndexedDB 读的，用 wait 而不是立刻断言
         pg.wait_for_selector('.list-item:has-text("考试记录") b:text-is("1")')
+        small = pg.eval_on_selector_all(
+            "input", "es=>es.filter(e=>!e.hidden&&getComputedStyle(e).display!=='none')"
+                     ".map(e=>parseFloat(getComputedStyle(e).fontSize)).filter(s=>s<16)")
+        assert not small, f"输入框字号 {small} 小于 16px，iOS 聚焦时会自动放大页面"
 
         # AI 配置：切预设自动带出地址和模型名
         pg.click('.seg button:has-text("智谱 GLM")')
