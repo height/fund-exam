@@ -324,17 +324,30 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .ai-box{background:var(--sheet);border-radius:var(--r-m);padding:10px 12px;
   display:flex;flex-direction:column;gap:6px}
 .ai-text{font-size:14px;line-height:1.8}
-.ai-text .md{display:flex;flex-direction:column;gap:7px}
+
+/* ---- Markdown 排版 ----
+   .md 显式设色，不吃继承：之前没设色，塞进哪个容器就跟着那个容器变灰，
+   划词气泡里整段正文因此糊成一片读不了。
+   层级靠「字号 + 字重 + 颜色」三样一起拉开：
+   标题＝更大更重的墨色，行内重点＝主色，正文＝墨色常规字重。
+   全走令牌，明暗两套主题各自成立。 */
+.md{color:var(--ink);display:flex;flex-direction:column;gap:7px}
 .ai-text p,.ai-text ol,.ai-text ul{margin:0}
-.ai-text ol,.ai-text ul{padding-left:1.5em;display:flex;flex-direction:column;gap:4px}
+.ai-text ol,.ai-text ul{padding-left:1.4em;display:flex;flex-direction:column;gap:5px}
+.ai-text li::marker{color:var(--ink2)}
 .ai-text code{font-family:var(--f-num);font-size:13px;background:var(--sheet2);
-  padding:1px 5px;border-radius:4px}
-.md-h{display:block;font-size:14px}
+  color:var(--ink);padding:1px 5px;border-radius:4px}
+/* 标题：比正文大一号、更重，左边一道主色短杠，一眼看出是分节 */
+.md-h{display:block;font-size:15px;font-weight:700;line-height:1.5;color:var(--ink);
+  margin-top:4px;padding-left:9px;border-left:3px solid var(--accent);border-radius:1px}
+.md>.md-h:first-child{margin-top:0}
+/* 行内重点：用主色跟标题区分开——同样加粗但不是分节 */
+.md b:not(.md-h){font-weight:600;color:var(--accent-ink)}
 /* 表格自己横向滚，别把整页撑宽 */
 .md-table{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:2px 0}
 .md-table table{border-collapse:collapse;font-size:13px;min-width:100%}
 /* 窄屏上宁可整表横滚，也别把单元格折成三行 */
-.md-table th,.md-table td{border:1px solid var(--rule);padding:6px 10px;text-align:left;
+.md-table th,.md-table td{border:1px solid var(--rule);padding:6px 10px;text-align:left;color:var(--ink);
   vertical-align:top;white-space:nowrap}
 .md-table th{background:var(--sheet2);font-weight:600}
 /* 内联图标：跟文字混排时压到基线附近；实心的几只不描边 */
