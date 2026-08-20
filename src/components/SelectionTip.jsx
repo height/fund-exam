@@ -28,9 +28,12 @@ export default function SelectionTip({ go }) {
         // 带上所在句子当上下文，同一个词在不同题里意思可能不一样
         const ctx = sel.anchorNode?.parentElement
           ?.closest('p,li,td,.stem,.opt,.bubble-body')?.innerText.slice(0, 160) || ''
+        // 默认挂在选区下方：手指和光标都在选区上沿，浮在上面会挡住刚划的词。
+        // 底部有导航条和操作条，放不下就翻回上方
+        const below = rect.bottom + 10
         setTip({
           x: Math.min(Math.max(rect.left + rect.width / 2, 60), innerWidth - 60),
-          y: Math.max(rect.top - 44, 10),
+          y: below < innerHeight - 130 ? below : Math.max(rect.top - 44, 10),
           term, ctx,
         })
       }, 250)

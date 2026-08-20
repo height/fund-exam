@@ -5,12 +5,29 @@ import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
 
+/** 带小眼睛的 Key 输入。AI 和语音两处共用，别各写一遍 */
+function KeyField({ label, value, onChange }) {
+  const [show, setShow] = useState(false)
+  return (
+    <label className="ai-field">{label}
+      <div className="row">
+        <input className="grow" type={show ? 'text' : 'password'} placeholder="sk-…"
+          value={value} onChange={e => onChange(e.target.value)} />
+        <button type="button" className="btn-sm btn-ghost" onClick={() => setShow(s => !s)}
+          aria-label={show ? '隐藏 Key' : '显示 Key'} aria-pressed={show}>
+          <Icon name={show ? 'eyeOff' : 'eye'} />
+        </button>
+      </div>
+    </label>
+  )
+}
+
 export default function Data() {
   const { records, setRecords, theme, setTheme, toast, ask } = useStore()
   const [exams, setExams] = useState([])
   const [ai, setAi] = useState(loadStore)
   const [testing, setTesting] = useState(false)
-  const [showKey, setShowKey] = useState(false)
+  const [ttsKey, setTtsKey] = useState(() => loadStore().ttsKey || '')
   const fileRef = useRef(null)
 
   // 两家各存一份，tab 就是默认模型开关：一点立即生效并记住
@@ -135,16 +152,7 @@ export default function Data() {
         <label className="ai-field">模型名称
           <input value={cur.model} onChange={e => editAi({ model: e.target.value })} />
         </label>
-        <label className="ai-field">API Key
-          <div className="row">
-            <input className="grow" type={showKey ? 'text' : 'password'} placeholder="sk-…"
-              value={cur.key} onChange={e => editAi({ key: e.target.value })} />
-            <button type="button" className="btn-sm btn-ghost" onClick={() => setShowKey(s => !s)}
-              aria-label={showKey ? '隐藏 Key' : '显示 Key'} aria-pressed={showKey}>
-              <Icon name={showKey ? 'eyeOff' : 'eye'} />
-            </button>
-          </div>
-        </label>
+        <KeyField label="API Key" value={cur.key} onChange={v => editAi({ key: v })} />
         <button className="btn-pri" disabled={testing} onClick={saveAi}>
           {testing ? '正在试调用…' : '保存并测试'}
         </button>
@@ -153,10 +161,8 @@ export default function Data() {
       <div className="card">
         <h2>语音朗读</h2>
         <div className="muted">MiMo TTS 的 Key，用来朗读题目和 AI 解析。输入即存，只存本机浏览器。</div>
-        <label className="ai-field">语音 API Key
-          <input type="password" placeholder="sk-…" defaultValue={loadStore().ttsKey || ''}
-            onChange={e => saveStore({ ...loadStore(), ttsKey: e.target.value.trim() })} />
-        </label>
+        <KeyField label="语音 API Key" value={ttsKey}
+          onChange={v => { setTtsKey(v); saveStore({ ...loadStore(), ttsKey: v.trim() }) }} />
       </div>
 
       <div className="card">
