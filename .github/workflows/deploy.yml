@@ -29,7 +29,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # enablement 让 action 自己把 Pages 打开，省得去 Settings 点
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
