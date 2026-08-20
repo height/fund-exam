@@ -82,9 +82,10 @@ function Setup({ onStart }) {
 
       <div className="card">
         <h2>怎么练</h2>
+        {/* 题库本来就是按 (科目, 章节) 排好的，所以「顺序」实际就是章节顺序，标签照实写 */}
         <div className="seg">
           <button className={order === 'seq' ? 'on' : ''} onClick={() => setOrder('seq')}>
-            顺序<small>接着上次</small>
+            章节顺序<small>接着上次</small>
           </button>
           <button className={order === 'rand' ? 'on' : ''} onClick={() => setOrder('rand')}>
             随机<small>打乱抽题</small>

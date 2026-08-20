@@ -34,6 +34,8 @@ def run():
         assert n > 800, f"题库只有 {n} 题"
         # 首页只有一个主行动
         assert pg.locator(".go").count() == 1
+        # 今日/累计：没做过题时都是 0
+        assert pg.locator(".today").inner_text().replace("\n", " ").startswith("今日练习0题")
 
         # 练习：选一个选项 -> 立刻出解析，正确答案标绿
         pg.click('nav button:has-text("练习")')
@@ -78,6 +80,7 @@ def run():
         assert pg.locator('button:has-text("退出")').count() == 1
         pg.click('button:has-text("退出")')
         pg.wait_for_selector("text=练什么")
+        assert pg.locator('button:has-text("章节顺序")').count() == 1
 
         # 数据页：存量统计对得上
         pg.click('nav button:has-text("数据")')

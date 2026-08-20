@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SubjectSeg, ThemeToggle } from '../components/ui'
-import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, stats } from '../lib/bank'
+import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, stats } from '../lib/bank'
 import { idb, kvGet } from '../lib/db'
 import { useStore } from '../lib/store'
 
@@ -40,6 +40,7 @@ export default function Home({ go }) {
   const chs = chapterStats(records, subject).filter(c => c.done >= 3)
   const total = bySubject(subject).length
   const last = exams[0]
+  const ef = effort(records)
 
   return (
     <>
@@ -75,11 +76,16 @@ export default function Home({ go }) {
         </div>
       </div>
 
+      <div className="today">
+        <span>今日练习<b>{ef.today}</b>题</span>
+        <span>累计作答<b>{ef.answers}</b>次，覆盖<b>{ef.covered}</b>题</span>
+      </div>
+
       <button className="go" onClick={() => go('practice', { scope: 'all', order: 'seq' })}>
         <span className="go-mark" aria-hidden="true">▶</span>
         <span className="go-body">
           {cursor > 0 ? '继续练习' : '开始练习'}
-          <small>{cursor > 0 ? `从第 ${cursor + 1} 题接着来` : '选完立刻出答案和解析'}</small>
+          <small>{cursor > 0 ? `按章节顺序，从第 ${cursor + 1} 题接着来` : '按章节顺序，选完立刻出解析'}</small>
         </span>
         <span className="go-arrow" aria-hidden="true">›</span>
       </button>

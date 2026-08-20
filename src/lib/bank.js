@@ -42,6 +42,21 @@ export function stats(records, s) {
   }
 }
 
+/**
+ * 今日与累计的练习量，跨科目统计——「我今天学了多少」跟当前看的是哪一科无关。
+ * 今日按 lastTs 落在今天算：同一题今天答过两遍只记一次，宁可少算不多算。
+ */
+export function effort(records) {
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+  const rs = Object.values(records)
+  return {
+    today: rs.filter(r => (r.lastTs || 0) >= start.getTime()).length,
+    answers: rs.reduce((a, r) => a + (r.seen || 0), 0),
+    covered: rs.length,
+  }
+}
+
 /** 各知识点掌握度，最弱的排前面 */
 export function chapterStats(records, s) {
   const m = {}
