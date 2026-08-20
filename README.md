@@ -1,1 +1,72 @@
-# fund-exam
+# 基金从业刷题
+
+科目一（基金法律法规）/ 科目二（证券投资基金基础）的刷题 App。React + Vite 本地开发，
+打包成**单文件 HTML + PWA**，双击就能开，装到手机主屏后能离线用。
+做题进度存在浏览器 IndexedDB，不上传任何东西。
+
+## 开发
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # -> dist/（index.html 已内联全部 js/css/题库）
+python3 tools/test_app.py   # 先 build 再端到端自检（需要 playwright + 本机 Chrome）
+```
+
+`dist/` 是纯静态产物，扔到任何静态托管（GitHub Pages / Vercel / Netlify）都能跑，
+也可以直接双击 `dist/index.html` 打开——所有资源都内联在里面了。
+
+## 目录
+
+```
+src/                  前端源码
+  main.jsx              入口
+  App.jsx               底部导航 + 视图切换 + toast
+  views/                首页 / 练习 / 模拟考 / 错题本 / 数据
+  components/ui.jsx     科目切换、选项列表、解析块等复用片段
+  lib/
+    bank.js               题库读取、统计、分层抽题（纯函数）
+    db.js                 IndexedDB 封装
+    store.jsx             全局状态：做题记录、科目、主题、toast
+    format.jsx            题干 / 解析 / 白话讲解的排版
+    useQuestionNav.js     键盘 A/B/C/D、← →，手机左右滑动
+  data/                 题库数据，由 tools/ 生成，别手改
+    questions.json        1071 题
+    plain.json            99 条白话讲解
+  styles.css            设计令牌 + 全部样式
+public/               manifest 与图标，原样进 dist
+tools/                Python 数据管线
+  extract.py            从 materials/ 的备考 PDF 抽题 -> src/data/questions.json
+  merge_plain.py        合并 tmp/extract-batches/plain*.json -> src/data/plain.json（带校验）
+  test_app.py           端到端自检，只驱动界面
+docs/                 资料整理索引与处理记录
+materials/            备考 PDF 素材（约 900 MB，不入 git）
+tmp/                  历史版本与抽题中间产物（不入 git）
+```
+
+素材和中间产物都在 `.gitignore` 里，仓库里只有代码和题库。
+`materials/` 的内容清单见 [docs/资料索引.md](docs/资料索引.md)。
+
+## 功能
+
+- **练习模式**：选完立刻出答案和解析；可按全部 / 未做过 / 错题 / 知识点筛选，顺序或随机；答对可自动跳下一题；翻回上一题会回显当时的作答和解析。
+- **模拟考试**：120 分钟倒计时、100 道单选、按章节分层抽题；答题卡浮层跳转；交卷算分（60 分及格），错题自动进错题本。关掉页面倒计时按真实时间走，回来可继续，到点自动交卷。
+- **错题本**：答错自动收录，再答对自动移出；一键错题重练、手动标记已掌握。
+- **数据**：导出/导入 JSON 进度，可合并或覆盖；主题支持跟随系统 / 浅色 / 深色。
+- 键盘 A/B/C/D 作答、← → 翻题；手机左右滑动翻题。
+
+## 题库
+
+1071 题（科目一 647 / 科目二 424），全部带答案解析，来源为 `materials/` 下的备考 PDF：
+4 套临考押题 × 2 科 + 3 套 2026 模考金题 + 2025 年 11 月真题。
+
+题目 id 是「题干+选项集合」的内容哈希，同一道题不管从哪份 PDF 抽出来都是同一个 id。
+抽题时会去掉：内容完全相同的题；相似度 ≥0.85 的近似题；选项集合与答案都相同且题干相似 ≥0.7 的题；
+题干一字不差且四个选项中三个相同的题。重复时保留来源更可信（真题 > 模考 > 押题）、解析更全的那份。
+
+其中 99 道解析最薄弱的题另有「白话讲解」：考点 / 为什么选 X / 其他选项错在哪 / 怎么记，
+折叠显示在原解析下方。原始解析一字不改地保留，方便核对。
+
+章节标签是关键词启发式打的，不是官方大纲章节，只用于练习筛选和抽题分层。
+
+> 题目来自第三方押题/真题回忆资料，考点数字以中国证券投资基金业协会最新正式文件为准。

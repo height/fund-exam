@@ -1,0 +1,13 @@
+{
+  "name": "基金从业刷题",
+  "short_name": "基金刷题",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#12172a",
+  "theme_color": "#12172a",
+  "icons": [
+    { "src": "./icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,10 @@
+node_modules
+dist
+.DS_Store
+
+# 备考 PDF 素材，太大不入库；见 docs/资料索引.md
+materials/
+
+# 历史版本、抽题中间产物
+tmp/
+__pycache__/

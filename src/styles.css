@@ -1,0 +1,247 @@
+/* ============ 设计令牌：答题卡 + 蓝黑墨水 ============ */
+:root{
+  color-scheme:light dark;
+  --paper:#e7e9e3;      /* 试卷底色，冷调新闻纸 */
+  --sheet:#fcfcfa;      /* 卡片 */
+  --sheet2:#f0f1eb;     /* 内嵌块 */
+  --rule:#d4d7cd;       /* 分隔线 */
+  --ink:#1b2233;        /* 正文墨色 */
+  --ink2:#697088;       /* 次要信息 */
+  --accent:#2e4a7d;     /* 蓝黑墨水 */
+  --on-accent:#f7f8f4;
+  --accent-soft:#dde3ef;
+  --ok:#1c6a68;   --ok-soft:#d8e8e6;
+  --bad:#a83a2e;  --bad-soft:#f2ded9;
+  --warn:#8a5a12; --warn-soft:#f0e5cf;
+  --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --f-num:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+  /* 圆角有层级：外层容器松，内层控件紧，别一个数用到底 */
+  --r-s:6px; --r-m:10px; --r-l:14px; --r-xl:22px;
+  --ease:cubic-bezier(.2,.8,.3,1);
+  /* 浅色下卡片只靠阴影分层，不再「描边＋阴影」双重打扮 */
+  --card-line:transparent;
+  --shadow:0 1px 2px rgba(46,74,125,.07),0 10px 30px -22px rgba(46,74,125,.45);
+  /* 纸张颗粒：内联 SVG 噪声，中性灰，浅色下压暗、深色下提亮，一张图两边都能用 */
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  /* z-index 分层，别再随手写数字：内容 0 / 吸顶条 5 / 底栏 10 / 浮层 20 / toast 30 */
+  --z-bar:5; --z-nav:10; --z-overlay:20; --z-toast:30;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#12172a; --sheet:#1a2138; --sheet2:#232b46; --rule:#313b5c;
+    --ink:#e4e7f0; --ink2:#98a1bc; --accent:#8faeeb; --on-accent:#111828; --accent-soft:#27314f;
+    --ok:#5ec9c0; --ok-soft:#123b39; --bad:#f08c7e; --bad-soft:#3f2521;
+    --warn:#e0a94c; --warn-soft:#3a2f16;
+    /* 深色下阴影带底色的蓝，纯黑会发脏；卡片改回描边分层，阴影在暗背景上看不见 */
+    --card-line:var(--rule);
+    --shadow:0 1px 2px rgba(5,8,20,.55),0 14px 34px -24px rgba(2,6,22,.95);
+  }
+}
+/* 阅读器的明暗开关必须盖过系统偏好，两个方向都要 */
+:root[data-theme="light"]{
+  --paper:#e7e9e3;--sheet:#fcfcfa;--sheet2:#f0f1eb;--rule:#d4d7cd;--ink:#1b2233;--ink2:#697088;
+  --accent:#2e4a7d;--on-accent:#f7f8f4;--accent-soft:#dde3ef;
+  --ok:#1c6a68;--ok-soft:#d8e8e6;--bad:#a83a2e;--bad-soft:#f2ded9;--warn:#8a5a12;--warn-soft:#f0e5cf;
+  --card-line:transparent;
+  --shadow:0 1px 2px rgba(46,74,125,.07),0 10px 30px -22px rgba(46,74,125,.45);
+}
+:root[data-theme="dark"]{
+  --paper:#12172a;--sheet:#1a2138;--sheet2:#232b46;--rule:#313b5c;--ink:#e4e7f0;--ink2:#98a1bc;
+  --accent:#8faeeb;--on-accent:#111828;--accent-soft:#27314f;
+  --ok:#5ec9c0;--ok-soft:#123b39;--bad:#f08c7e;--bad-soft:#3f2521;--warn:#e0a94c;--warn-soft:#3a2f16;
+  --card-line:var(--rule);
+  --shadow:0 1px 2px rgba(5,8,20,.55),0 14px 34px -24px rgba(2,6,22,.95);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.65 var(--f-body);
+  padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;
+  text-wrap:pretty}
+#app{max-width:660px;margin:0 auto;padding:20px 16px 24px;display:flex;flex-direction:column;gap:14px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:no-preference){
+  .fade{animation:fade .2s var(--ease)}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* 选项依次落位，而不是四个一起蹦出来 */
+  .fade .opt{animation:rise .3s var(--ease) backwards}
+  .fade .opt:nth-child(2){animation-delay:.045s}
+  .fade .opt:nth-child(3){animation-delay:.09s}
+  .fade .opt:nth-child(4){animation-delay:.135s}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
+
+/* ---- 排版 ---- */
+h1{font-size:26px;line-height:1.22;margin:0;font-weight:700;letter-spacing:-.03em;text-wrap:balance}
+h2{font-size:13px;margin:0;color:var(--ink2);letter-spacing:.02em;font-weight:600}
+/* 中文没有大小写，之前的 uppercase 只留下过宽的字距 */
+.eyebrow{font:500 12px/1.4 var(--f-body);letter-spacing:.02em;color:var(--ink2)}
+.muted{color:var(--ink2);font-size:13px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+/* ---- 容器 ---- */
+.card{background:var(--sheet) var(--grain);border:1px solid var(--card-line);border-radius:var(--r-xl);
+  padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.grow{flex:1}
+.stack{display:flex;flex-direction:column;gap:10px}
+
+/* ---- 控件 ---- */
+button{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(--rule);
+  border-radius:var(--r-l);padding:11px 14px;cursor:pointer;
+  transition:background .18s var(--ease),border-color .18s var(--ease),transform .1s var(--ease)}
+@media (hover:hover){button:hover:not(:disabled){border-color:var(--accent)}}
+button:active:not(:disabled){transform:scale(.985)}
+button:disabled{opacity:.42;cursor:default}
+.btn-pri{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
+@media (hover:hover){.btn-pri:hover:not(:disabled){filter:brightness(1.08)}}
+.btn-ghost{background:transparent}
+.btn-sm{padding:7px 11px;font-size:13px;border-radius:var(--r-s)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(--rule);
+  border-radius:var(--r-m);padding:11px;width:100%}
+
+/* 科目切换：像准考证上的两联 */
+.seg{display:flex;gap:0;border:1px solid var(--rule);border-radius:var(--r-l);overflow:hidden;background:var(--sheet)}
+.seg button{flex:1;border:0;border-radius:0;background:transparent;padding:11px 8px;font-size:14px;line-height:1.3}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button.on{background:var(--accent);color:var(--on-accent);font-weight:600}
+.seg small{display:block;font-size:11px;opacity:.72;font-weight:400}
+
+/* ---- 首页数据 ---- */
+/* 规格条：等宽三栏只用来陈列参数（抽题/分钟/及格分），不用来讲进度 */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:var(--r-l);overflow:hidden}
+.stat{background:var(--sheet);padding:14px 8px;text-align:center;display:flex;flex-direction:column;gap:3px}
+.stat b{font:700 26px/1 var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat b i{font:inherit;font-size:13px;font-weight:400;font-style:normal;color:var(--ink2)}
+.stat span{font-size:11px;color:var(--ink2);letter-spacing:.04em}
+
+/* 首页战绩：正确率是唯一主角，占满一行；已做和错题退到下面做配角。
+   卡片本身已经是个盒子了，这里只用分隔线划分，不再套第二层描边圆角 */
+.stats.lead{grid-template-columns:1fr 1fr;grid-template-areas:"a a" "b c";
+  gap:0;border:0;border-radius:0;background:transparent}
+.stats.lead .stat{background:transparent;text-align:left;padding:14px 0 2px}
+.stats.lead .stat:nth-child(1){grid-area:a;padding:2px 0 16px;gap:2px;border-bottom:1px solid var(--rule)}
+.stats.lead .stat:nth-child(2){grid-area:b}
+.stats.lead .stat:nth-child(3){grid-area:c;padding-left:18px;border-left:1px solid var(--rule)}
+.stats.lead .stat:nth-child(1) b{font-size:48px;letter-spacing:-.045em;color:var(--accent)}
+.stats.lead .stat:nth-child(1) b i{font-size:18px}
+.stats.lead .stat:nth-child(1) span{font-size:12px;letter-spacing:.06em}
+.stats.lead .stat:nth-child(n+2) b{font-size:21px}
+/* 还没做题时别拿一个 48px 的破折号唬人 */
+.stats.lead .stat b.none{font-size:21px;color:var(--ink2)}
+.bar{height:5px;background:var(--sheet2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.meter{display:grid;grid-template-columns:1fr 42px;gap:10px;align-items:center;font-size:13px}
+.meter .bar{grid-column:1/-1;margin-top:-4px}
+.meter b{font:600 13px/1 var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
+.meter .bar i{background:var(--ok)}
+.meter.weak .bar i{background:var(--bad)}
+.meter.mid .bar i{background:var(--warn)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:99px;
+  background:var(--sheet2);color:var(--ink2);border:1px solid var(--rule);white-space:nowrap}
+.chip.alert{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent);background:var(--bad-soft)}
+.score-chip{font:700 15px/1 var(--f-num);padding:5px 10px;border-radius:var(--r-s)}
+.score-chip.pass{background:var(--ok-soft);color:var(--ok)}
+.score-chip.fail{background:var(--bad-soft);color:var(--bad)}
+
+/* ---- 题目：答题卡式选项 ---- */
+.stem{font-size:17px;line-height:1.78;letter-spacing:.005em;text-wrap:pretty}
+.stem .roman{display:block;margin-top:7px;padding-left:1.7em;text-indent:-1.7em}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;padding:14px 15px;
+  border-radius:var(--r-l);background:var(--sheet2);border:1px solid var(--rule);line-height:1.6}
+@media (hover:hover){.opt:hover:not(:disabled){background:var(--accent-soft);transform:translateX(3px)}}
+.opt em{flex:none;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--ink2);
+  display:grid;place-items:center;font:600 13px/1 var(--f-num);font-style:normal;color:var(--ink2);
+  transition:background .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel em{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ok em{background:var(--ok);border-color:var(--ok);color:var(--sheet)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.opt.bad em{background:var(--bad);border-color:var(--bad);color:var(--sheet)}
+.opt:disabled{opacity:1}
+
+/* ---- 解析 ---- */
+/* 左边那道竖线跟着对错走，扫一眼就知道这题结果 */
+.explain{background:var(--sheet2);border:1px solid var(--rule);border-left:3px solid var(--accent);
+  border-radius:0 var(--r-l) var(--r-l) 0;padding:15px 16px;font-size:15px;line-height:1.85}
+.explain.right{border-left-color:var(--ok)}
+.explain.wrong{border-left-color:var(--bad)}
+.explain-head{display:flex;align-items:center;gap:8px;font-weight:700;padding-bottom:10px;
+  margin-bottom:10px;border-bottom:1px solid var(--rule)}
+.explain-head .verdict{font-size:13px;font-weight:600;padding:2px 8px;border-radius:99px}
+.verdict.right{background:var(--ok-soft);color:var(--ok)}
+.verdict.wrong{background:var(--bad-soft);color:var(--bad)}
+.explain p{margin:0}
+.explain-body{display:flex;flex-direction:column;gap:9px}
+.explain-body p.itm{padding-left:2em;text-indent:-2em}
+.plain{margin-top:12px;padding-top:12px;border-top:1px dashed var(--rule)}
+.plain>summary{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;
+  color:var(--accent);cursor:pointer;padding:2px 0}
+.plain>summary::before{content:"▸";transition:transform .15s}
+.plain[open]>summary::before{transform:rotate(90deg)}
+.plain-body{display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:14px;line-height:1.85}
+.plain-body p{margin:0;padding-left:1em;text-indent:-1em}
+.plain-body b{color:var(--accent);font-weight:600;margin-right:6px}
+
+/* ---- 常驻状态条 / 操作条 ---- */
+.topbar{position:sticky;top:0;z-index:var(--z-bar);margin:-18px -16px 0;padding:10px 16px;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:12px}
+.topbar .bar{flex:1}
+.actionbar{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));z-index:var(--z-bar);
+  padding:10px 16px;background:color-mix(in srgb,var(--paper) 90%,transparent);
+  backdrop-filter:blur(12px);border-top:1px solid var(--rule)}
+.actionbar>div{max-width:660px;margin:0 auto;display:flex;gap:10px}
+.actionbar button{flex:1}
+.actionbar-gap{height:56px;flex:none}
+.timer{font:700 19px/1 var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.timer.low{color:var(--bad)}
+
+/* ---- 答题卡浮层 ---- */
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:8px}
+.sheet button{padding:9px 0;font:500 13px/1 var(--f-num);border-radius:var(--r-s)}
+.sheet .done{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.sheet .cur{outline:2px solid var(--accent);outline-offset:1px}
+.sheet .r{background:var(--ok-soft);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.sheet .w{background:var(--bad-soft);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.overlay{position:fixed;inset:0;z-index:var(--z-overlay);background:rgba(10,14,26,.5);display:flex;align-items:flex-end}
+.overlay>.panel{background:var(--sheet) var(--grain);border-top-left-radius:var(--r-xl);border-top-right-radius:var(--r-xl);
+  width:100%;max-width:660px;margin:0 auto;padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+  max-height:76vh;overflow:auto;display:flex;flex-direction:column;gap:14px}
+@media (prefers-reduced-motion:no-preference){.overlay>.panel{animation:up .2s ease-out}
+  @keyframes up{from{transform:translateY(14px)}to{transform:none}}}
+
+/* ---- 底部导航 ---- */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:var(--z-nav);display:flex;background:var(--sheet);
+  border-top:1px solid var(--rule);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:transparent;border-radius:0;padding:8px 0 9px;font-size:11px;
+  color:var(--ink2);display:flex;flex-direction:column;gap:3px;align-items:center;letter-spacing:.02em;
+  position:relative}
+nav button:active:not(:disabled){transform:none}
+nav button.on{color:var(--accent);font-weight:600}
+/* 当前页在顶端画一小段实线，光靠变色在小图标上不够明确 */
+nav button.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:26px;height:2px;border-radius:0 0 2px 2px;background:var(--accent)}
+nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+nav .dot{position:absolute;transform:translate(14px,-3px);width:6px;height:6px;border-radius:50%;background:var(--bad)}
+
+/* ---- 其他 ---- */
+.list{display:flex;flex-direction:column}
+.list-item{padding:11px 0;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px}
+.list-item:last-child{border-bottom:0}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%) translateY(6px);z-index:var(--z-toast);
+  background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:99px;font-size:14px;
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;max-width:88vw}
+.toast.on{opacity:1;transform:translateX(-50%)}
+details summary{cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+/* 空状态不只是一句话：给个去处，顺手把留白填成有意图的版面 */
+.empty{padding:20px 4px 6px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;
+  align-items:flex-start;gap:12px}
+.empty::before{content:"";width:34px;height:2px;background:var(--rule);border-radius:2px}
+.empty b{display:block;color:var(--ink);font-size:15px;font-weight:600;margin-bottom:3px}
