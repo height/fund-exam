@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Explain, Options, Speaker, SubjectSeg } from '../components/ui'
+import { Explain, Icon, Options, Speaker, SubjectSeg } from '../components/ui'
 import { qToSpeech } from '../lib/ai'
-import { bySubject, chapterStats, shuffle, stats } from '../lib/bank'
+import { RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
 import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -9,7 +9,7 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
-export default function Practice({ initialScope, initialOrder }) {
+export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
   const { subject, records, toast } = useStore()
   const [session, setSession] = useState(null)
 
@@ -24,11 +24,15 @@ export default function Practice({ initialScope, initialOrder }) {
     else if (scope === 'wrong') qs = qs.filter(q => records[q.id]?.wrongFlag)
     else if (scope.startsWith('ch:')) qs = qs.filter(q => q.chapter === scope.slice(3))
     if (!qs.length) return toast('这个范围已经没题了，换一个')
-    if (order === 'rand') qs = shuffle(qs)
+    // 随机练习是「一小轮」，抽满题量就够；顺序练习才是从头啃到尾
+    if (order === 'rand') qs = shuffle(qs).slice(0, getRandomN())
     const key = `cursor:${subject}:${scope}:${order}`
     const saved = order === 'seq' ? await kvGet(key, 0) : 0
     setSession({ qs, i: Math.min(saved, qs.length - 1), picks: {}, key, order, done: 0, right: 0 })
   }
+
+  // 答题中收起底栏，退出走 Runner 里的确认
+  useEffect(() => { setQuiz(!!session); return () => setQuiz(false) }, [session, setQuiz])
 
   return session
     ? <Runner session={session} setSession={setSession} onQuit={() => setSession(null)} />
@@ -39,6 +43,7 @@ function Setup({ onStart }) {
   const { records, subject, autoNext, setAutoNext } = useStore()
   const [scope, setScope] = useState('all')
   const [order, setOrder] = useState('seq')
+  const [randN, setRandN] = useState(getRandomN)
 
   const qs = bySubject(subject)
   const st = stats(records, subject)
@@ -92,6 +97,18 @@ function Setup({ onStart }) {
             随机<small>打乱抽题</small>
           </button>
         </div>
+        {order === 'rand' && (
+          <label className="row between">
+            <span>这一轮抽多少题<span className="muted" style={{ display: 'block', fontSize: 12 }}>
+              下次进来还是这个数</span></span>
+            <span className="seg seg-n">
+              {RANDOM_SIZES.map(n => (
+                <button key={n} className={randN === n ? 'on' : ''}
+                  onClick={() => { setRandN(n); setRandomN(n) }}>{n}</button>
+              ))}
+            </span>
+          </label>
+        )}
         <label className="row between" style={{ cursor: 'pointer' }}>
           <span>
             答对后自动跳下一题
@@ -111,7 +128,7 @@ function Setup({ onStart }) {
 }
 
 function Runner({ session: s, setSession, onQuit }) {
-  const { records, autoNext, recordAnswer, toast } = useStore()
+  const { records, autoNext, recordAnswer, toast, ask } = useStore()
   const jumpTimer = useRef(0)
   useEffect(() => () => clearTimeout(jumpTimer.current), [])
 
@@ -151,12 +168,21 @@ function Runner({ session: s, setSession, onQuit }) {
     }
   }
 
+  async function quit() {
+    if (!await ask({
+      title: '退出练习？',
+      body: s.done ? `本轮做了 ${s.done} 题，记录都已保存，下次可以接着来。` : '还没答题，直接退出。',
+      ok: '退出', cancel: '继续练习',
+    })) return
+    onQuit()
+  }
+
   useQuestionNav({ onPick: pick, onPrev: prev, onNext: next })
 
   return (
     <>
       <div className="topbar">
-        <button className="btn-sm btn-ghost" onClick={onQuit}>退出</button>
+        <button className="btn-sm btn-ghost" onClick={quit} aria-label="退出练习"><Icon name="logout" /></button>
         <div className="bar"><i style={{ width: `${((s.i + 1) / s.qs.length) * 100}%` }} /></div>
         <div className="num muted">{s.i + 1}/{s.qs.length}</div>
       </div>
@@ -182,9 +208,9 @@ function Runner({ session: s, setSession, onQuit }) {
       <div className="actionbar-gap" />
       <div className="actionbar">
         <div>
-          <button disabled={s.i === 0} onClick={prev}>← 上一题</button>
+          <button disabled={s.i === 0} onClick={prev}><Icon name="left" /> 上一题</button>
           <button className="btn-pri" onClick={next}>
-            {s.i === s.qs.length - 1 ? '完成本轮' : '下一题 →'}
+            {s.i === s.qs.length - 1 ? '完成本轮' : '下一题'}<Icon name="right" />
           </button>
         </div>
       </div>

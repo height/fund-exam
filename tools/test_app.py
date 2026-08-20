@@ -35,8 +35,10 @@ def run():
         assert "应用更新" in colophon and "题库更新" in colophon, colophon
         n = int(colophon.split("共")[1].split("题")[0].strip())
         assert n > 800, f"题库只有 {n} 题"
-        # 首页只有一个主行动
-        assert pg.locator(".go").count() == 1
+        # 首页两个刷题入口并排：顺序 + 随机
+        assert pg.locator(".go").count() == 2
+        assert pg.locator(".go-seq").inner_text().startswith("开始刷题")
+        assert "随机" in pg.locator(".go-rand").inner_text()
         # 今日/累计：没做过题时都是 0
         assert pg.locator(".today").inner_text().replace("\n", " ").startswith("今日练习0题")
 
@@ -54,7 +56,19 @@ def run():
         assert pg.locator(".map-detail p").inner_text(), "要点详情是空的"
         pg.click('.map-detail button:has-text("去练")')
         pg.wait_for_selector(".stem")
-        pg.click('button:has-text("退出")')
+        # 答题中收起底栏，只留「退出」一个出口，且退出要确认
+        assert pg.locator("nav").count() == 0, "答题中不该还挂着底栏"
+        pg.click('button[aria-label="退出练习"]')
+        pg.wait_for_selector(".overlay.center")
+        pg.click('.overlay.center button:has-text("继续练习")')
+        pg.wait_for_selector(".overlay.center", state="detached")
+        assert pg.locator(".stem").count() == 1, "点了取消不该退出去"
+        pg.click('button[aria-label="退出练习"]')
+        pg.wait_for_selector(".overlay.center")
+        pg.click('.overlay.center button:has-text("退出")')
+        pg.wait_for_selector(".overlay.center", state="detached")
+        pg.wait_for_selector("text=练什么")
+        assert pg.locator("nav").count() == 1, "退出后底栏该回来"
         pg.click('nav button:has-text("首页")')
         pg.wait_for_selector(".hero-verdict")
 
@@ -158,12 +172,29 @@ def run():
         assert len(tts_hits) == 2, f"TTS 该被调用两次，实际 {len(tts_hits)}"
         assert "语音" not in (pg.locator(".toast").inner_text() or ""), "朗读报错了"
 
+        # 练习完先退出，底栏才回来
+        pg.click('button[aria-label="退出练习"]')
+        pg.wait_for_selector(".overlay.center")
+        pg.click('.overlay.center button:has-text("退出")')
+        pg.wait_for_selector(".overlay.center", state="detached")
+        pg.wait_for_selector("text=练什么")
+
         # 模拟考：开考 -> 直接交卷（全不答）-> 出成绩，错题全进错题本
         pg.click('nav button:has-text("模拟考")')
         pg.click('button:has-text("开始考试")')
         pg.wait_for_selector(".timer")
+        assert pg.locator("nav").count() == 0, "考试中不该还挂着底栏"
+        assert pg.locator('.topbar button[aria-label="退出考试"]').count() == 1, "考试中没有退出口"
+        pg.click('.topbar button[aria-label="退出考试"]')
+        pg.wait_for_selector(".overlay.center")
+        pg.click('.overlay.center button:has-text("离开")')
+        pg.wait_for_selector("nav")            # 只确认一次，不该再弹第二道
+        pg.click('nav button:has-text("模拟考")')
+        pg.wait_for_selector("text=有一场没考完")
+        pg.click('button:has-text("继续考试")')
+        pg.wait_for_selector(".timer")
         assert pg.locator(".sheet").count() == 0
-        pg.click('button:has-text("答题卡")')
+        pg.click('button[aria-label="答题卡"]')
         pg.wait_for_selector(".overlay .sheet button")
         assert pg.locator(".overlay .sheet button").count() == 100, "没抽满 100 题"
         # 交卷确认走应用内弹层，不该再触发系统弹窗
@@ -183,8 +214,11 @@ def run():
         # 错题重练：跳过选范围，直接进答题
         pg.click('button:has-text("错题重练")')
         pg.wait_for_selector(".stem")
-        assert pg.locator('button:has-text("退出")').count() == 1
-        pg.click('button:has-text("退出")')
+        assert pg.locator('button[aria-label="退出练习"]').count() == 1
+        pg.click('button[aria-label="退出练习"]')
+        pg.wait_for_selector(".overlay.center")
+        pg.click('.overlay.center button:has-text("退出")')
+        pg.wait_for_selector(".overlay.center", state="detached")
         pg.wait_for_selector("text=练什么")
         assert pg.locator('button:has-text("章节顺序")').count() == 1
 

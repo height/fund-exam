@@ -1,4 +1,4 @@
-import { Options, SubjectSeg } from '../components/ui'
+import { Icon, Options, SubjectSeg } from '../components/ui'
 import { bySubject } from '../lib/bank'
 import { ExplainBody, Plain, Stem } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -24,7 +24,7 @@ export default function Wrong({ go }) {
         <div className="row between">
           <span><b className="num" style={{ fontSize: 22 }}>{all.length}</b> 道待消灭</span>
           <button className="btn-pri btn-sm" disabled={!all.length}
-            onClick={() => go('practice', { scope: 'wrong' })}>错题重练</button>
+            onClick={() => go('practice', { scope: 'wrong' })}><Icon name="wrong" /> 错题重练</button>
         </div>
         {Object.keys(byCh).length > 0 && (
           <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
@@ -51,7 +51,7 @@ export default function Wrong({ go }) {
             </div>
           </details>
           <button className="btn-sm btn-ghost" style={{ alignSelf: 'flex-start' }}
-            onClick={() => patchRecord(q.id, { wrongFlag: false })}>标记已掌握</button>
+            onClick={() => patchRecord(q.id, { wrongFlag: false })}><Icon name="done" /> 标记已掌握</button>
         </div>
       )) : (
         <div className="card">

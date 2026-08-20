@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
-import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, stats } from '../lib/bank'
+import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
 import { idb, kvGet } from '../lib/db'
 import { useStore } from '../lib/store'
 
@@ -41,6 +41,7 @@ export default function Home({ go }) {
   const total = bySubject(subject).length
   const last = exams[0]
   const ef = effort(records)
+  const randN = getRandomN()
 
   return (
     <>
@@ -81,28 +82,33 @@ export default function Home({ go }) {
         <span>累计作答<b>{ef.answers}</b>次，覆盖<b>{ef.covered}</b>题</span>
       </div>
 
-      <button className="go" onClick={() => go('practice', { scope: 'all', order: 'seq' })}>
-        <span className="go-mark" aria-hidden="true"><Icon name="play" size={13} /></span>
-        <span className="go-body">
-          {cursor > 0 ? '继续练习' : '开始练习'}
-          <small>{cursor > 0 ? `按章节顺序，从第 ${cursor + 1} 题接着来` : '按章节顺序，选完立刻出解析'}</small>
-        </span>
-        <span className="go-arrow" aria-hidden="true">›</span>
-      </button>
+      {/* 两个刷题入口并排：左边接着上次，右边打乱来一小轮 */}
+      <div className="grid2 go-pair">
+        <button className="go go-seq" onClick={() => go('practice', { scope: 'all', order: 'seq' })}>
+          <Icon name="play" />
+          <b>{cursor > 0 ? '继续刷题' : '开始刷题'}</b>
+          <small>{cursor > 0 ? `章节顺序 · 第 ${cursor + 1} 题` : '章节顺序 · 从头开始'}</small>
+        </button>
+        <button className="go go-rand" onClick={() => go('practice', { scope: 'all', order: 'rand' })}>
+          <Icon name="dice" />
+          <b>随机 {randN} 题</b>
+          <small>打乱抽一小轮</small>
+        </button>
+      </div>
 
       <div className="grid2">
         <button className="tile" onClick={() => go('exam')}>
-          <b>模拟考试</b>
+          <b><Icon name="exam" /> 模拟考试</b>
           <small>{EXAM_MIN} 分钟 · {EXAM_N} 题</small>
         </button>
         <button className="tile" onClick={() => go('wrong')}>
-          <b>错题本</b>
+          <b><Icon name="wrong" /> 错题本</b>
           {st.wrong
             ? <small><span className="n">{st.wrong}</span> 道待消灭</small>
             : <small>暂时是空的</small>}
         </button>
         <button className="tile wide" onClick={() => go('map')}>
-          <b>知识图谱</b>
+          <b><Icon name="map" /> 知识图谱</b>
           <small>考点脉络一张图 · 章节 → 主题 → 必背要点，逐层点开啃</small>
         </button>
       </div>

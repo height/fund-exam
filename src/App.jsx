@@ -34,7 +34,13 @@ function parseHash() {
 export default function App() {
   const { ready, records, toastMsg, ask } = useStore()
   const [{ view, params }, setNav] = useState(parseHash)
-  const [leaveGuard, setLeaveGuard] = useState(false)
+  // 答题中（练习进行、考试进行）：收起底栏，只留「退出」一个出口，
+  // 免得手滑点到别的 tab 把一轮答题丢了
+  const [quiz, setQuiz] = useState(false)
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-quiz', quiz)
+    return () => document.documentElement.removeAttribute('data-quiz')
+  }, [quiz])
 
   useEffect(() => {
     const on = () => setNav(parseHash())
@@ -42,10 +48,11 @@ export default function App() {
     return () => window.removeEventListener('hashchange', on)
   }, [])
 
-  async function go(v, p = {}) {
-    if (leaveGuard && v !== view && !await ask({
-      title: '考试还在进行',
-      body: '离开会保留进度，回来能接着考。',
+  // force：视图自己已经确认过了（比如考试页的「退出」），别再弹第二道
+  async function go(v, p = {}, force = false) {
+    if (!force && quiz && v !== view && !await ask({
+      title: '答题还没结束',
+      body: '离开会保留进度，回来能接着来。',
       ok: '确定离开', cancel: '继续答题',
     })) return
     const qs = new URLSearchParams(p).toString()
@@ -67,14 +74,14 @@ export default function App() {
       <a className="skip" href="#app">跳到主要内容</a>
       <main id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
-        {view === 'practice' && <Practice initialScope={params.scope} initialOrder={params.order} />}
-        {view === 'exam' && <Exam go={go} setLeaveGuard={setLeaveGuard} />}
+        {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
+        {view === 'exam' && <Exam go={go} setQuiz={setQuiz} />}
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'map' && <KnowledgeMap go={go} />}
         {view === 'data' && <Data />}
       </main>
 
-      <nav>
+      {!quiz && <nav>
         {NAV.map(({ v, label, paths, circle }) => (
           <button key={v} className={view === v ? 'on' : ''} onClick={() => go(v)}>
             <svg viewBox="0 0 24 24">
@@ -85,7 +92,7 @@ export default function App() {
             {v === 'wrong' && wrongCount > 0 && <span className="dot" aria-label={`${wrongCount} 道错题待清`} />}
           </button>
         ))}
-      </nav>
+      </nav>}
 
       <Dialog />
       <SelectionTip go={go} />

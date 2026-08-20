@@ -86,3 +86,13 @@ export function pickExamSet(subj) {
   while (out.length < EXAM_N && pool.length) out.push(pool.pop())
   return shuffle(out).slice(0, Math.min(EXAM_N, qs.length))
 }
+
+/* 随机练习的题量。存 localStorage：它是纯 UI 偏好，跟做题记录（IndexedDB）分开，
+   清空练习进度不该把它带走。 */
+export const RANDOM_SIZES = [10, 20, 30]
+const RAND_KEY = 'practice-random-n'
+export function getRandomN() {
+  const n = Number(localStorage.getItem(RAND_KEY))
+  return RANDOM_SIZES.includes(n) ? n : 20
+}
+export const setRandomN = n => localStorage.setItem(RAND_KEY, String(n))

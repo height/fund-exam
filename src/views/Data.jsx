@@ -169,8 +169,8 @@ export default function Data() {
         <h2>进度备份</h2>
         <div className="muted">换手机、换浏览器或清缓存之前，先导出一份。</div>
         <div className="grid2">
-          <button className="btn-pri" onClick={exportAll}>导出进度</button>
-          <button onClick={() => fileRef.current.click()}>导入进度</button>
+          <button className="btn-pri" onClick={exportAll}><Icon name="download" /> 导出进度</button>
+          <button onClick={() => fileRef.current.click()}><Icon name="upload" /> 导入进度</button>
         </div>
         <input type="file" ref={fileRef} accept="application/json" hidden onChange={importFile} />
       </div>
@@ -185,7 +185,7 @@ export default function Data() {
       </div>
 
       <div className="card">
-        <button className="btn-danger btn-ghost" onClick={reset}>清空全部进度</button>
+        <button className="btn-danger btn-ghost" onClick={reset}><Icon name="trash" /> 清空全部进度</button>
         <div className="muted">删除做题记录、错题本和考试成绩，题库不受影响。</div>
       </div>
     </>

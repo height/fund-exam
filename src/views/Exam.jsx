@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Explain, Options, SubjectSeg } from '../components/ui'
+import { Explain, Icon, Options, SubjectSeg } from '../components/ui'
 import { EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, pickExamSet, qById } from '../lib/bank'
 import { idb, kvGet, kvSet } from '../lib/db'
 import { Stem, fmtTime } from '../lib/format'
@@ -9,7 +9,7 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
 /** 一场考试全程存在 kv.activeExam 里：关掉页面倒计时照走，回来能接着考 */
-export default function Exam({ go, setLeaveGuard }) {
+export default function Exam({ go, setQuiz }) {
   const { subject, records, setRecords, toast, ask } = useStore()
   const [stage, setStage] = useState('loading') // loading | resume | intro | running | result
   const [ex, setEx] = useState(null)
@@ -24,11 +24,11 @@ export default function Exam({ go, setLeaveGuard }) {
     })()
   }, [])
 
-  // 考试进行中离开要确认
+  // 考试进行中：收起底栏，离开要确认
   useEffect(() => {
-    setLeaveGuard(stage === 'running')
-    return () => setLeaveGuard(false)
-  }, [stage, setLeaveGuard])
+    setQuiz(stage === 'running')
+    return () => setQuiz(false)
+  }, [stage, setQuiz])
 
   async function begin() {
     const qs = pickExamSet(subject)
@@ -99,7 +99,7 @@ export default function Exam({ go, setLeaveGuard }) {
     </>
   )
 
-  if (stage === 'running') return <Running ex={ex} setEx={setEx} onSubmit={submit} toast={toast} ask={ask} />
+  if (stage === 'running') return <Running ex={ex} setEx={setEx} onSubmit={submit} toast={toast} ask={ask} go={go} />
   if (stage === 'result') return <Result rec={result} go={go} />
 
   const n = Math.min(EXAM_N, bySubject(subject).length)
@@ -128,7 +128,7 @@ export default function Exam({ go, setLeaveGuard }) {
   )
 }
 
-function Running({ ex, setEx, onSubmit, toast, ask }) {
+function Running({ ex, setEx, onSubmit, toast, ask, go }) {
   const [left, setLeft] = useState(() => ex.endTs - Date.now())
   const [sheet, setSheet] = useState(false)
   const submitted = useRef(false)
@@ -156,6 +156,15 @@ function Running({ ex, setEx, onSubmit, toast, ask }) {
   const prev = () => { if (ex.i > 0) patch({ i: ex.i - 1 }) }
   const next = () => { if (ex.i < qs.length - 1) patch({ i: ex.i + 1 }) }
 
+  async function leave() {
+    if (!await ask({
+      title: '离开考试？',
+      body: '这场不算交卷，倒计时按真实时间继续走，回来能接着考，到点自动交卷。',
+      ok: '离开', cancel: '继续考试',
+    })) return
+    go('home', {}, true)
+  }
+
   async function confirmSubmit() {
     const miss = qs.length - answered
     if (miss && !await ask({
@@ -171,10 +180,12 @@ function Running({ ex, setEx, onSubmit, toast, ask }) {
   return (
     <>
       <div className="topbar">
+        {/* 底栏在考试中收起了，这里得留一个出口——离开不交卷，倒计时照走 */}
+        <button className="btn-sm btn-ghost" onClick={leave} aria-label="退出考试"><Icon name="logout" /></button>
         <div className={`timer ${left < 10 * 60000 ? 'low' : ''}`}>{fmtTime(left)}</div>
         <div className="bar"><i style={{ width: `${(answered / qs.length) * 100}%` }} /></div>
-        <button className="btn-sm" onClick={() => setSheet(true)}>
-          答题卡 <span className="num">{answered}/{qs.length}</span>
+        <button className="btn-sm" onClick={() => setSheet(true)} aria-label="答题卡">
+          <Icon name="grid" /><span className="num">{answered}/{qs.length}</span>
         </button>
       </div>
 
@@ -187,9 +198,11 @@ function Running({ ex, setEx, onSubmit, toast, ask }) {
       <div className="actionbar-gap" />
       <div className="actionbar">
         <div>
-          <button disabled={ex.i === 0} onClick={prev}>←</button>
-          <button disabled={ex.i === qs.length - 1} onClick={next}>→</button>
-          <button className="btn-pri" style={{ flex: 2 }} onClick={confirmSubmit}>交卷</button>
+          <button disabled={ex.i === 0} onClick={prev} aria-label="上一题"><Icon name="left" /></button>
+          <button disabled={ex.i === qs.length - 1} onClick={next} aria-label="下一题"><Icon name="right" /></button>
+          <button className="btn-pri" style={{ flex: 2 }} onClick={confirmSubmit}>
+            <Icon name="send" /> 交卷
+          </button>
         </div>
       </div>
 
