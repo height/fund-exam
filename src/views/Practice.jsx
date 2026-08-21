@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, Speaker, SubjectSeg } from '../components/ui'
 import { qToSpeech } from '../lib/ai'
-import { RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
+import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
 import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -19,7 +19,10 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
   }, [initialScope, initialOrder])
 
   async function start(scope, order) {
-    let qs = bySubject(subject)
+    // 计算题不分科目：31 道里 29 道在科目二，按科目切会把另一科那 2 道藏起来
+    let qs = scope === 'calc'
+      ? BANK.filter(q => CALC_IDS.includes(q.id))
+      : bySubject(subject)
     if (scope === 'new') qs = qs.filter(q => !records[q.id]?.seen)
     else if (scope === 'wrong') qs = qs.filter(q => records[q.id]?.wrongFlag)
     else if (scope.startsWith('ch:')) qs = qs.filter(q => q.chapter === scope.slice(3))

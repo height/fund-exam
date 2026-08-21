@@ -490,3 +490,50 @@ details summary::-webkit-details-marker{display:none}
 .section>.empty{padding-top:6px}
 .section>.empty::before{display:none}
 .empty b{display:block;color:var(--ink);font-size:15px;font-weight:600;margin-bottom:3px}
+
+/* ============ 公式攻坚 ============ */
+/* 常挂计算器：贴右下，避开底栏；答题中底栏收起时跟着落下去 */
+.calc-fab{position:fixed;right:14px;bottom:calc(78px + env(safe-area-inset-bottom));
+  z-index:var(--z-nav);width:50px;height:50px;padding:0;border-radius:50%;border:0;
+  background:var(--accent);color:var(--on-accent);box-shadow:0 6px 20px rgba(0,0,0,.28)}
+.calc-fab .icon{width:23px;height:23px}
+:root[data-quiz] .calc-fab{bottom:calc(72px + env(safe-area-inset-bottom))}
+
+/* 公式图谱：整页缩略图铺一列，点开全屏 */
+.fx-list{display:flex;flex-direction:column;gap:12px}
+.fx-page{position:relative;padding:0;border-radius:var(--r-m);overflow:hidden;
+  border:1px solid var(--rule);background:#fff;line-height:0}
+.fx-page img{width:100%;height:auto;display:block}
+.fx-no{position:absolute;right:8px;bottom:8px;font-size:11px;padding:2px 7px;border-radius:99px;
+  background:rgba(0,0,0,.55);color:#fff;line-height:1.6}
+
+/* 全屏看图。全局双指缩放已禁，所以自带「适应宽度 / 放大」两档 + 双向滚动 */
+.fx-full{position:fixed;inset:0;z-index:var(--z-overlay);background:var(--paper);
+  display:flex;flex-direction:column}
+.fx-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--rule)}
+.fx-stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#fff}
+.fx-stage img{display:block;width:100%;height:auto}
+.fx-stage.big img{width:220%;max-width:none}
+.fx-nav{display:flex;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--rule)}
+.fx-nav button{flex:1}
+
+/* ---- 科学计算器 ---- */
+.calc-overlay .panel.calc{max-width:400px;padding:14px;gap:12px}
+.calc-head{display:flex;align-items:center;justify-content:space-between}
+/* 显示区两行：算式在上、实时结果在下。参考图那一大块空白既占地方又什么都不说 */
+.calc-screen{background:var(--sheet2);border:1px solid var(--rule);border-radius:var(--r-m);
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-height:76px;justify-content:center}
+.calc-expr{font:600 24px/1.25 var(--f-num);font-variant-numeric:tabular-nums;
+  word-break:break-all;text-align:right;color:var(--ink)}
+.calc-ans{font:500 14px/1.4 var(--f-num);text-align:right;color:var(--ink2);min-height:20px}
+.calc-ans.bad{color:var(--bad)}
+.calc-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.calc-pad button{padding:14px 0;font-size:19px;font-family:var(--f-num);border-radius:var(--r-m)}
+.calc-op{background:var(--sheet2)}
+.calc-fn{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+@media (max-height:680px){
+  .calc-pad button{padding:11px 0;font-size:17px}
+  .calc-screen{min-height:62px}
+}

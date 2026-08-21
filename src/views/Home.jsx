@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
-import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
+import { BANK, CALC_IDS, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
 import { idb, kvGet } from '../lib/db'
 import { useStore } from '../lib/store'
 
@@ -106,6 +106,10 @@ export default function Home({ go }) {
           {st.wrong
             ? <small><span className="n">{st.wrong}</span> 道待消灭</small>
             : <small>暂时是空的</small>}
+        </button>
+        <button className="tile" onClick={() => go('formula')}>
+          <b><Icon name="calc" /> 公式攻坚</b>
+          <small>{CALC_IDS.length} 道计算题 + 公式图谱</small>
         </button>
         <button className="tile wide" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>

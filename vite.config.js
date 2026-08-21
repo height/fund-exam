@@ -28,8 +28,14 @@ self.addEventListener('fetch',e=>{
       .catch(()=>caches.match('./index.html')));
     return;
   }
-  e.respondWith(caches.match(e.request,{ignoreSearch:true})
-    .then(r=>r||fetch(e.request).catch(()=>caches.match('./index.html'))));
+  // 命中缓存直接给；没命中就取回来顺手存一份——公式图谱按需加载而不预缓存
+  // （18 页 2MB，装 app 时全下太重），看过一次之后离线也能翻
+  e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=>hit||fetch(e.request)
+    .then(res=>{
+      if(res.ok&&res.type==='basic'){const c=res.clone();caches.open(V).then(x=>x.put(e.request,c))}
+      return res;
+    })
+    .catch(()=>caches.match('./index.html'))));
 });
 `)
     },

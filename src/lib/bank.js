@@ -1,9 +1,12 @@
 /* 题库与纯函数统计。questions.json / plain.json 由 tools/ 下的脚本生成，别手改 */
 import questions from '../data/questions.json'
 import plain from '../data/plain.json'
+import calcIds from '../data/calc.json'
 
 export const BANK = questions
 export const PLAIN = plain
+/* 计算题 id，由 tools/extract_calc.py 从题库筛出，只存 id 不复制题面 */
+export const CALC_IDS = calcIds
 
 export const SUBJECTS = ['科目一', '科目二']
 export const SUBJ_FULL = {

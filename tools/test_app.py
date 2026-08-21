@@ -48,6 +48,38 @@ def run():
         # 今日/累计：没做过题时都是 0
         assert pg.locator(".today").inner_text().replace("\n", " ").startswith("今日练习0题")
 
+        # 公式攻坚：计算题清单 + 计算器 + 公式图谱
+        pg.click('.tile:has-text("公式攻坚")')
+        pg.wait_for_selector(".calc-fab")
+        assert int(pg.locator(".hero-num").inner_text()) > 20, "计算题没筛出来"
+        # 计算器：复利 10000×(1+3%)² = 10609，验的是自己写的求值器不是 eval
+        pg.click(".calc-fab")
+        pg.wait_for_selector(".calc")
+        for k in ["1", "0", "0", "0", "0", "×", "(", "1", "+", "3", "%", ")", "x²"]:
+            pg.click(f'.calc-pad button:text-is("{k}")')
+        assert pg.locator(".calc-ans").inner_text().strip() == "= 10609", "边打边算的结果不对"
+        pg.click('.calc-pad button:text-is("=")')
+        assert pg.locator(".calc-expr").inner_text().strip() == "10609"
+        pg.keyboard.press("Escape")
+        pg.wait_for_selector(".calc", state="detached")
+        # 公式图谱：图片没内联进 bundle，是 public/ 下的独立文件
+        pg.click('.appbar button:has-text("公式图谱")')
+        pg.wait_for_selector(".fx-page img")
+        assert pg.locator(".fx-page").count() >= 15, "公式页数不对"
+        src = pg.eval_on_selector(".fx-page img", "e=>e.getAttribute('src')")
+        assert src.startswith("./formulas/"), f"公式图被内联了：{src[:40]}"
+        # 全局缩放已禁，全屏看图得自带放大档
+        pg.click(".fx-page >> nth=0")
+        pg.wait_for_selector(".fx-full img")
+        fit = pg.eval_on_selector(".fx-stage img", "e=>e.getBoundingClientRect().width")
+        pg.click('.fx-bar button:has-text("放大")')
+        big = pg.eval_on_selector(".fx-stage img", "e=>e.getBoundingClientRect().width")
+        assert big > fit * 1.5, f"放大档没生效 {fit} -> {big}"
+        pg.keyboard.press("Escape")
+        pg.wait_for_selector(".fx-full", state="detached")
+        pg.click('.appbar button[aria-label="返回首页"]')
+        pg.wait_for_selector(".hero-verdict")
+
         # 知识图谱：首页进入，展开一章 -> 点要点出详情 -> 「练这章」跳进练习
         pg.click('button:has-text("知识图谱")')
         pg.wait_for_selector('svg[role="tree"]')
