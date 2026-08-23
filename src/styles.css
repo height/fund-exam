@@ -452,9 +452,9 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .dialog-title{font-size:17px;font-weight:600;line-height:1.4;text-wrap:balance}
 
 /* 答题中收起底栏：底栏没了，操作条落到最底，正文和 toast 的留白跟着收 */
-:root[data-quiz] body{padding-bottom:env(safe-area-inset-bottom)}
+:root[data-quiz] body,:root[data-bare] body{padding-bottom:env(safe-area-inset-bottom)}
 :root[data-quiz] .actionbar{bottom:0;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
-:root[data-quiz] .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+:root[data-quiz] .toast,:root[data-bare] .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
 :root[data-quiz] .bubble{bottom:calc(80px + env(safe-area-inset-bottom))}
 
 /* ---- 底部导航 ---- */
@@ -537,3 +537,77 @@ details summary::-webkit-details-marker{display:none}
   .calc-pad button{padding:11px 0;font-size:17px}
   .calc-screen{min-height:62px}
 }
+
+/* ============ 发展时间线 ============ */
+/* 年份轴：横向常驻条，点年份跳事件。手机竖屏一屏放不下 40 个年份，
+   所以横滚 + 跟随当前位置居中，而不是硬塞成两行 */
+/* 顶栏 + 年份轴一起钉住：这页收了底栏，返回按钮是唯一出口，不能随内容滚走 */
+.tl-sticky{position:sticky;top:0;z-index:var(--z-bar);margin:-20px -16px 0;padding:12px 0 8px;
+  display:flex;flex-direction:column;gap:9px;
+  background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule)}
+.tl-sticky .appbar{padding:0 16px}
+.tl-years{display:flex;gap:5px;overflow-x:auto;padding:0 16px;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.tl-years::-webkit-scrollbar{display:none}
+.tl-yg{display:flex;align-items:center;gap:5px;flex:none}
+.tl-yg+.tl-yg{margin-left:5px;padding-left:9px;border-left:1px solid var(--rule)}
+.tl-yg>i{font-style:normal;font-size:10px;color:var(--ink2);letter-spacing:.04em;flex:none}
+.tl-years button{flex:none;padding:5px 10px;border-radius:99px;background:var(--sheet);
+  font:500 12px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.tl-years button.k{color:var(--ink);font-weight:700}
+.tl-years button.on{background:var(--accent);border-color:transparent;color:var(--on-accent)}
+
+.tl-filters{flex-wrap:wrap;gap:6px}
+.tl-filters .chip{background:var(--sheet)}
+.tl-filters .chip.on{background:var(--accent);border-color:transparent;color:var(--on-accent)}
+.tl-search{flex:1;min-width:110px;font:inherit;font-size:16px;color:var(--ink);
+  background:var(--sheet);border:1px solid var(--rule);border-radius:99px;padding:5px 12px}
+.tl-hint{margin:0;font-size:12px}
+
+/* 阶段标题 */
+.tl-era{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:8px 0 0;
+  padding:8px 12px;border-radius:var(--r-m);background:var(--accent-soft);color:var(--accent-ink)}
+.tl-era b{font-size:13.5px;font-weight:700}
+.tl-era span{font:400 11.5px/1.4 var(--f-num);font-variant-numeric:tabular-nums;opacity:.85}
+.tl-era .note{font-family:var(--f-body);font-size:11px;opacity:.8;margin-left:auto}
+
+/* 竖轴 + 卡片。日期不放左栏放卡内：手机竖屏 358px 宽，
+   一条左栏就吃掉 1/6，正文换行会碎成一条面 */
+.tl{list-style:none;position:relative;margin:6px 0 0;padding:0}
+.tl::before{content:"";position:absolute;left:4px;top:12px;bottom:12px;width:1px;background:var(--rule)}
+.tl>li{position:relative;padding:5px 0 5px 20px;scroll-margin-top:104px}
+.tl>li::before{content:"";position:absolute;left:1px;top:18px;width:7px;height:7px;border-radius:50%;
+  background:var(--rule);box-shadow:0 0 0 3px var(--paper)}
+.tl>li.lv1::before{background:var(--accent-ink)}
+.tl>li.lv2::before{background:var(--bad);width:9px;height:9px;left:0;top:17px}
+.tl-card{background:var(--sheet) var(--grain);border:1px solid var(--card-line);
+  border-radius:var(--r-l);box-shadow:var(--shadow);padding:11px 13px;
+  display:flex;flex-direction:column;gap:5px}
+.tl>li.lv2 .tl-card{border-left:3px solid var(--bad)}
+.tl>li.flash .tl-card{outline:2px solid var(--accent);outline-offset:2px}
+
+.tl-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tl-date{font:700 12.5px/1.4 var(--f-num);font-variant-numeric:tabular-nums;color:var(--accent-ink)}
+/* 盖住年份自测：先自己想，点开才给答案 */
+button.tl-date.hidden{padding:2px 10px;border-radius:99px;background:var(--sheet2);
+  color:var(--ink2);font-family:var(--f-body);font-size:11px;font-weight:400;letter-spacing:.02em}
+.tl-lv{font-size:10.5px;line-height:1.6;padding:1px 7px;border-radius:99px;font-weight:600}
+.tl-lv.lv2{background:var(--bad-soft);color:var(--bad)}
+.tl-lv.lv1{background:var(--accent-soft);color:var(--accent-ink)}
+.tl-lv.new{background:var(--ok-soft);color:var(--ok)}
+.tl-t{font-size:14.5px;font-weight:600;line-height:1.55;text-wrap:pretty}
+.tl-x{font-size:13.5px;line-height:1.8;color:var(--ink2)}
+.tl-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
+
+/* 易混对比表：默认折起来，表格自己横滚，别把页面撑宽 */
+.tl-trap{background:var(--sheet) var(--grain);border:1px solid var(--card-line);
+  border-radius:var(--r-l);box-shadow:var(--shadow);padding:12px 14px}
+/* 不换行：副标题该省略就省略，别把折叠箭头挤到第二行去 */
+.tl-trap>summary{display:flex;align-items:baseline;gap:8px}
+.tl-trap>summary .muted{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-trap>summary::after{content:"▸";color:var(--ink2);transition:transform .15s}
+.tl-trap[open]>summary::after{transform:rotate(90deg)}
+.tl-trap>summary b{font-size:14px;font-weight:600}
+.tl-trap>summary .muted{font-size:12px}
+.tl-trap>.md{margin-top:10px}

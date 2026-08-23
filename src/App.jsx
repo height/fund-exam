@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import Calculator from './components/Calculator'
 import SelectionTip from './components/SelectionTip'
-import { Dialog } from './components/ui'
+import { Dialog, Icon } from './components/ui'
 import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
 import Data from './views/Data'
@@ -9,6 +10,7 @@ import Home from './views/Home'
 import Formula from './views/Formula'
 import KnowledgeMap from './views/KnowledgeMap'
 import Practice from './views/Practice'
+import Timeline from './views/Timeline'
 import Wrong from './views/Wrong'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
@@ -21,7 +23,7 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
-const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'formula']
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'formula', 'timeline']
 
 // 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
 function parseHash() {
@@ -33,15 +35,22 @@ function parseHash() {
 }
 
 export default function App() {
-  const { ready, records, toastMsg, ask } = useStore()
+  const { ready, records, subject, toastMsg, ask } = useStore()
+  const [calcOpen, setCalcOpen] = useState(false)
   const [{ view, params }, setNav] = useState(parseHash)
   // 答题中（练习进行、考试进行）：收起底栏，只留「退出」一个出口，
   // 免得手滑点到别的 tab 把一轮答题丢了
   const [quiz, setQuiz] = useState(false)
+  // 时间线自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
+  const bare = view === 'timeline'
   useEffect(() => {
     document.documentElement.toggleAttribute('data-quiz', quiz)
     return () => document.documentElement.removeAttribute('data-quiz')
   }, [quiz])
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-bare', bare)
+    return () => document.documentElement.removeAttribute('data-bare')
+  }, [bare])
 
   useEffect(() => {
     const on = () => setNav(parseHash())
@@ -70,6 +79,12 @@ export default function App() {
 
   const wrongCount = SUBJECTS.reduce((a, s) => a + stats(records, s).wrong, 0)
 
+  // 计算器挂在 App 而不是各视图里：从公式攻坚点「开练」会跳到 practice，
+  // 挂在 Formula 里的话，正要算题的那一刻它反而没了。
+  // 出现条件＝这页可能要算：公式攻坚本身、它带出来的计算题专练、以及科目二的做题页
+  const needsCalc = view === 'formula'
+    || (['practice', 'exam'].includes(view) && (subject === '科目二' || params.scope === 'calc'))
+
   return (
     <>
       <a className="skip" href="#app">跳到主要内容</a>
@@ -80,10 +95,11 @@ export default function App() {
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'map' && <KnowledgeMap go={go} />}
         {view === 'formula' && <Formula go={go} />}
+        {view === 'timeline' && <Timeline go={go} />}
         {view === 'data' && <Data />}
       </main>
 
-      {!quiz && <nav>
+      {!quiz && !bare && <nav>
         {NAV.map(({ v, label, paths, circle }) => (
           <button key={v} className={view === v ? 'on' : ''} onClick={() => go(v)}>
             <svg viewBox="0 0 24 24">
@@ -95,6 +111,13 @@ export default function App() {
           </button>
         ))}
       </nav>}
+
+      {needsCalc && (
+        <button className="calc-fab" onClick={() => setCalcOpen(true)} aria-label="打开科学计算器">
+          <Icon name="calc" />
+        </button>
+      )}
+      {calcOpen && <Calculator onClose={() => setCalcOpen(false)} />}
 
       <Dialog />
       <SelectionTip go={go} />

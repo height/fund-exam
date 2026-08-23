@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
 import { BANK, CALC_IDS, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
+import { TL_N } from '../data/timeline'
 import { idb, kvGet } from '../lib/db'
 import { useStore } from '../lib/store'
 
@@ -110,6 +111,10 @@ export default function Home({ go }) {
         <button className="tile" onClick={() => go('formula')}>
           <b><Icon name="calc" /> 公式攻坚</b>
           <small>{CALC_IDS.length} 道计算题 + 公式图谱</small>
+        </button>
+        <button className="tile" onClick={() => go('timeline')}>
+          <b><Icon name="timeline" /> 发展时间线</b>
+          <small>{TL_N.total} 个可考时点 · 默认只看考试重点</small>
         </button>
         <button className="tile wide" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>

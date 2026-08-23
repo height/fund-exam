@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import Calculator from '../components/Calculator'
 import { Icon } from '../components/ui'
 import { CALC_IDS, qById } from '../lib/bank'
 import formulas from '../data/formulas.json'
 
 /*
- * 公式攻坚：计算题练习 + 公式图谱两个入口，右下角常挂计算器。
+ * 公式攻坚：计算题练习 + 公式图谱两个入口。
+ * 科学计算器不在这儿挂——它跟着「可能要算」的页面走，统一在 App.jsx 里判断，
+ * 否则点「开练」跳到 practice 之后，正要算题的那一刻计算器反而没了。
  *
  * 公式图谱是图片不是文字：源 PDF 是扫描件，一个字也抽不出来。
  * 图片放 public/formulas/ 按需加载，没有内联进 bundle——18 页 1.4MB，
@@ -13,7 +14,6 @@ import formulas from '../data/formulas.json'
  */
 export default function Formula({ go }) {
   const [tab, setTab] = useState('drill')
-  const [calcOpen, setCalcOpen] = useState(false)
   const [zoom, setZoom] = useState(null) // 正在全屏看的页码
 
   const qs = CALC_IDS.map(qById).filter(Boolean)
@@ -76,12 +76,6 @@ export default function Formula({ go }) {
       )}
 
       {zoom !== null && <PageZoom pages={formulas.pages} at={zoom} onClose={() => setZoom(null)} />}
-
-      {/* 常挂的计算器：算题时随手唤起，不用退出去找 */}
-      <button className="calc-fab" onClick={() => setCalcOpen(true)} aria-label="打开科学计算器">
-        <Icon name="calc" />
-      </button>
-      {calcOpen && <Calculator onClose={() => setCalcOpen(false)} />}
     </>
   )
 }
