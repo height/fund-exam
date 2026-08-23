@@ -4,6 +4,7 @@ import SelectionTip from './components/SelectionTip'
 import { Dialog, Icon } from './components/ui'
 import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
+import Chapters from './views/Chapters'
 import Data from './views/Data'
 import Exam from './views/Exam'
 import Home from './views/Home'
@@ -23,7 +24,7 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
-const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'formula', 'timeline']
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'formula', 'timeline', 'chapters']
 
 // 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
 function parseHash() {
@@ -91,11 +92,12 @@ export default function App() {
       <main id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
         {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
-        {view === 'exam' && <Exam go={go} setQuiz={setQuiz} />}
+        {view === 'exam' && <Exam go={go} setQuiz={setQuiz} chapter={params.ch} />}
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'map' && <KnowledgeMap go={go} />}
         {view === 'formula' && <Formula go={go} />}
         {view === 'timeline' && <Timeline go={go} />}
+        {view === 'chapters' && <Chapters go={go} />}
         {view === 'data' && <Data />}
       </main>
 

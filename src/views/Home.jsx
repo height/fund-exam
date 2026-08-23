@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
 import { BANK, CALC_IDS, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
 import { TL_N } from '../data/timeline'
-import { idb, kvGet } from '../lib/db'
+import { idb } from '../lib/db'
 import { useStore } from '../lib/store'
 
 // 样本太少时正确率是噪声：做 2 题对 2 题不等于 100%。攒够这个数再把它当主指标
@@ -27,12 +27,10 @@ function Gauge({ value, mini }) {
 export default function Home({ go }) {
   const { records, subject } = useStore()
   const [exams, setExams] = useState([])
-  const [cursor, setCursor] = useState(0)
 
   useEffect(() => {
     idb.all('exams').then(all =>
       setExams(all.filter(e => e.subject === subject).sort((a, b) => b.id - a.id).slice(0, 3)))
-    kvGet(`cursor:${subject}:all:seq`, 0).then(setCursor)
   }, [subject])
 
   const st = stats(records, subject)
@@ -43,6 +41,8 @@ export default function Home({ go }) {
   const last = exams[0]
   const ef = effort(records)
   const randN = getRandomN()
+  // 章节列表按教材序，这里只取章数给副标题用
+  const chs2 = chapterStats(records, subject, true)
 
   return (
     <>
@@ -85,10 +85,10 @@ export default function Home({ go }) {
 
       {/* 两个刷题入口并排：左边接着上次，右边打乱来一小轮 */}
       <div className="grid2 go-pair">
-        <button className="go go-seq" onClick={() => go('practice', { scope: 'all', order: 'seq' })}>
-          <Icon name="play" />
-          <b>{cursor > 0 ? '继续刷题' : '开始刷题'}</b>
-          <small>{cursor > 0 ? `章节顺序 · 第 ${cursor + 1} 题` : '章节顺序 · 从头开始'}</small>
+        <button className="go go-seq" onClick={() => go('chapters')}>
+          <Icon name="list" />
+          <b>章节练习</b>
+          <small>{chs2.length} 章 · 按教材目录练或考</small>
         </button>
         <button className="go go-rand" onClick={() => go('practice', { scope: 'all', order: 'rand' })}>
           <Icon name="dice" />

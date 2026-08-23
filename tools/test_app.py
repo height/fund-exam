@@ -6,6 +6,7 @@
 """
 import base64
 import json
+import re
 import struct
 import subprocess
 import sys
@@ -41,12 +42,34 @@ def run():
         assert pg.evaluate("()=>{const e=new Event('gesturestart',{cancelable:true});"
                            "document.dispatchEvent(e);return e.defaultPrevented}"), "iOS 双指缩放没拦住"
 
-        # 首页两个刷题入口并排：顺序 + 随机
+        # 首页两个刷题入口并排：章节练习 + 随机
         assert pg.locator(".go").count() == 2
-        assert pg.locator(".go-seq").inner_text().startswith("开始刷题")
+        assert pg.locator(".go-seq").inner_text().startswith("章节练习")
         assert "随机" in pg.locator(".go-rand").inner_text()
         # 今日/累计：没做过题时都是 0
         assert pg.locator(".today").inner_text().replace("\n", " ").startswith("今日练习0题")
+
+        # 章节练习：官方教材 8 章全有题，点进去抽的确实是本章的题
+        pg.click(".go-seq")
+        pg.wait_for_selector(".ch-row")
+        assert pg.locator(".ch-row").count() == 8, "科目一应是官方目录的 8 章"
+        assert pg.locator(".ch-row:disabled").count() == 0, "有章一题都没有，归类漏了"
+        first = pg.locator(".ch-row").first.inner_text()
+        pg.locator(".ch-row").first.click()
+        pg.wait_for_selector(".stem")
+        # 章节页写的题数要跟练习里抽到的总题数对得上
+        n_listed = int(re.search(r"(\d+) 题", first).group(1))
+        assert pg.locator(".topbar").first.inner_text().strip().endswith(f"/{n_listed}"), \
+            f"章节题数对不上：列表说 {n_listed}"
+        pg.go_back()
+        # 考试模式：同一章抽最多 30 题限时考
+        pg.wait_for_selector(".ch-row")
+        pg.click('[role="tab"]:has-text("考试")')
+        pg.locator(".ch-row").first.click()
+        pg.wait_for_selector(".stats")
+        assert "章节考试" in pg.locator("h1").first.inner_text()
+        pg.goto(APP)
+        pg.wait_for_selector(".tile")
 
         # 公式攻坚：计算题清单 + 计算器 + 公式图谱
         pg.click('.tile:has-text("公式攻坚")')

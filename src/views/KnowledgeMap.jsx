@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Icon, SubjectSeg } from '../components/ui'
-import { KNOWLEDGE } from '../data/knowledge'
+import { CH_OF, KNOWLEDGE } from '../data/knowledge'
 import { PASS, SUBJ_SHORT, chapterStats } from '../lib/bank'
 import { useStore } from '../lib/store'
 
@@ -24,7 +24,7 @@ function layout(chapters, open, accOf, rootLabel) {
   let row = 0
   function walk(n, depth, id, chapter) {
     const kids = n.c && open.has(id) ? n.c.map((k, i) => walk(k, depth + 1, `${id}.${i}`, chapter)) : []
-    const acc = depth === 1 ? accOf(n.t) : null
+    const acc = depth === 1 ? accOf(CH_OF[n.t]) : null
     const node = {
       n, depth, id, chapter, acc,
       hasKids: !!n.c, open: open.has(id),
@@ -171,9 +171,12 @@ export default function KnowledgeMap({ go }) {
             <button className="btn-sm btn-ghost" onClick={() => setSel(null)} aria-label="关闭"><Icon name="x" /></button>
           </div>
           {sel.n.d && <p>{sel.n.d}</p>}
-          <button className="btn-sm" onClick={() => go('practice', { scope: `ch:${sel.chapter}`, order: 'seq' })}>
-            去练「{sel.chapter}」的题 ›
-          </button>
+          {CH_OF[sel.chapter] && (
+            <button className="btn-sm"
+              onClick={() => go('practice', { scope: `ch:${CH_OF[sel.chapter]}`, order: 'seq' })}>
+              去练「{CH_OF[sel.chapter]}」›
+            </button>
+          )}
         </div>
       )}
     </>

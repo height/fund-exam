@@ -27,30 +27,14 @@ SOURCES = [
     ("科目一", "01_科目一_基金法律法规/04_模拟与押题/2026年5月模考金题（二）_王佳荣.pdf", "模考金题"),
 ]
 
-# 知识点关键词 -> 章节标签，按顺序命中即止
-TAGS = {
-    "科目一": [
-        ("职业道德", "诚实守信|廉洁从业|职业道德|客户至上|保守秘密|专业审慎|忠实|利益冲突"),
-        ("私募基金", "私募|合格投资者|创业投资|股权投资基金"),
-        ("基金销售与投资者保护", "销售|宣传推介|适当性|风险承受|投资者教育|反洗钱|募集"),
-        ("信息披露", "信息披露|招募说明书|年度报告|季度报告|净值公告|临时报告"),
-        ("基金监管与自律", "证监会|基金业协会|自律|处罚|监管措施|稽核|诚信档案"),
-        ("基金管理人与托管人", "管理人|托管人|注册资本|独立董事|合规负责人|内部控制|从业人员"),
-        ("基金运作与合同", "基金合同|持有人大会|份额登记|清算|终止|估值|费用|申购|赎回"),
-        ("法律法规体系", "证券投资基金法|部门规章|法律|行政法规|规范性文件"),
-    ],
-    "科目二": [
-        ("投资组合与风险管理", "组合|夏普|贝塔|β|α|标准差|风险管理|VaR|久期|资产配置|有效前沿|CAPM"),
-        ("衍生工具", "期货|期权|远期|互换|衍生"),
-        ("债券投资", "债券|久期|凸性|利率|可转债|收益率曲线"),
-        ("股票投资", "股票|市盈率|估值|股利|财务报表|资产负债表|现金流量"),
-        ("基金业绩评价", "业绩|评价|归因|基准|跟踪误差|信息比率"),
-        ("基金类型与产品", "ETF|LOF|QDII|货币市场基金|指数基金|FOF|REITs|另类"),
-        ("基金会计与费用", "会计|估值|净值|费用|管理费|托管费|利润分配|税收"),
-        ("投资交易与运作", "交易|清算|交收|投资决策|集中交易|风控"),
-        ("金融市场基础", "金融市场|宏观|货币|GDP|通胀|利率市场"),
-    ],
-}
+# 章节归类不再用关键词猜。id -> 官方章名的映射表由归类流程产出、进 git，
+# 这里只做查表；新题查不到就标「未归类」并在末尾列出来，逼人去补，
+# 而不是悄悄塞进「综合」——那等于没归类，还看不出来。
+CH_MAP = json.loads((REPO / "tools/chapters.json").read_text(encoding="utf-8")) \
+    if (REPO / "tools/chapters.json").exists() else {}
+TAXONOMY = json.loads((REPO / "tools/taxonomy.json").read_text(encoding="utf-8"))
+CH_ORDER = {sub: {c["name"]: c["no"] for c in TAXONOMY[sub]} for sub in ("科目一", "科目二")}
+UNTAGGED = "未归类"
 
 
 # 来源可信度：真题 > 模考金题 > 临考押题。重复时留可信度高、解析长的那份
@@ -95,11 +79,8 @@ def better(a, b):
     return max(a, b, key=lambda q: (q["id"] in PLAIN_IDS, src_rank(q["source"]), len(q["explain"])))
 
 
-def tag_of(subject, text):
-    for name, pat in TAGS.get(subject, []):
-        if re.search(pat, text):
-            return name
-    return "综合"
+def tag_of(qid):
+    return CH_MAP.get(qid, UNTAGGED)
 
 
 OPT_RE = re.compile(r"^([ABCD])[.．、]\s*(.+)$")
@@ -215,8 +196,8 @@ def main():
                 if not item:
                     continue
                 fp = dedup_key(item)
-                item.update(id=hashlib.md5(fp.encode()).hexdigest()[:12], subject=subject,
-                            source=label, chapter=tag_of(subject, item["q"] + item["explain"][:120]))
+                qid = hashlib.md5(fp.encode()).hexdigest()[:12]
+                item.update(id=qid, subject=subject, source=label, chapter=tag_of(qid))
                 if fp in seen:                       # 完全同题，留更可信/解析更全的那份
                     old = seen[fp]
                     bank[old] = better(bank[old], item)
@@ -265,7 +246,7 @@ def main():
             dropped["近似重复"] += 1
     bank = [q for i, q in enumerate(bank) if i not in kill]
 
-    bank.sort(key=lambda x: (x["subject"], x["chapter"]))
+    bank.sort(key=lambda x: (x["subject"], CH_ORDER[x["subject"]].get(x["chapter"], 999), x["q"]))
     OUT.write_text(json.dumps(bank, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     print(f"\n去重丢弃：" + "，".join(f"{k} {v} 题" for k, v in dropped.items()))
@@ -278,6 +259,12 @@ def main():
             ch[q["chapter"]] = ch.get(q["chapter"], 0) + 1
         for k, v in sorted(ch.items(), key=lambda x: -x[1]):
             print(f"      {k}: {v}")
+
+    missing = [q for q in bank if q["chapter"] == UNTAGGED]
+    if missing:
+        print(f"\n⚠ {len(missing)} 题没有章节归类，跑归类流程补进 tools/chapters.json：")
+        for q in missing[:10]:
+            print(f"    {q['id']}  {q['q'][:40]}")
 
     # 自检：结构完整性
     assert bank, "题库为空"

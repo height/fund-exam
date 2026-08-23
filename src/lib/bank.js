@@ -1,4 +1,5 @@
 /* 题库与纯函数统计。questions.json / plain.json 由 tools/ 下的脚本生成，别手改 */
+import { CHAPTERS } from '../data/chapters'
 import questions from '../data/questions.json'
 import plain from '../data/plain.json'
 import calcIds from '../data/calc.json'
@@ -19,6 +20,19 @@ export const SUBJ_SHORT = { 科目一: '法律法规', 科目二: '投资基础'
 export const EXAM_N = 100
 export const EXAM_MIN = 120
 export const PASS = 60
+
+/* 官方教材章序。题库的 chapter 只会取 CHAPTERS 里的值，由 tools/apply_chapters.py 保证 */
+export { CHAPTERS }
+/* 章序号，用来按教材顺序排；万一出现表外章名，排到最后而不是崩掉 */
+export const chapterNo = (s, c) => {
+  const i = CHAPTERS[s]?.indexOf(c) ?? -1
+  return i < 0 ? 999 : i
+}
+
+/* 单章考试比整套小一号：一章往往凑不满 100 题，硬凑会把同一批题反复抽出来。
+   时长按整套的每题 1.2 分钟折算，节奏跟真考一致 */
+export const CHAPTER_EXAM_N = 30
+export const minutesFor = n => Math.max(5, Math.round((n * EXAM_MIN) / EXAM_N))
 
 export const bySubject = s => BANK.filter(q => q.subject === s)
 export const qById = id => BANK.find(q => q.id === id)
@@ -60,8 +74,9 @@ export function effort(records) {
   }
 }
 
-/** 各知识点掌握度，最弱的排前面 */
-export function chapterStats(records, s) {
+/** 各章掌握度。默认最弱的排前面（首页/练习页要的是「先补哪儿」）；
+    book=true 按教材章序，章节列表页要的是「书是怎么排的」，且必须列出零题章 */
+export function chapterStats(records, s, book = false) {
   const m = {}
   bySubject(s).forEach(q => {
     const c = (m[q.chapter] ??= { chapter: q.chapter, total: 0, done: 0, seen: 0, hit: 0 })
@@ -69,13 +84,21 @@ export function chapterStats(records, s) {
     const r = records[q.id]
     if (r?.seen) { c.done++; c.seen += r.seen; c.hit += r.right }
   })
+  // 按教材顺序看时，一题都没有的章也要露出来——否则会以为题库覆盖全了
+  if (book) for (const name of CHAPTERS[s] || []) m[name] ??= { chapter: name, total: 0, done: 0, seen: 0, hit: 0 }
   return Object.values(m)
     .map(c => ({ ...c, acc: c.seen ? Math.round((c.hit / c.seen) * 100) : null }))
-    .sort((a, b) => (a.acc ?? 999) - (b.acc ?? 999))
+    .sort(book
+      ? (a, b) => chapterNo(s, a.chapter) - chapterNo(s, b.chapter)
+      : (a, b) => (a.acc ?? 999) - (b.acc ?? 999))
 }
 
-/** 按章节题量比例分层抽样，保证知识点覆盖 */
-export function pickExamSet(subj) {
+/** 按章节题量比例分层抽样，保证知识点覆盖。传 chapter 就只考那一章 */
+export function pickExamSet(subj, chapter) {
+  if (chapter) {
+    const list = bySubject(subj).filter(q => q.chapter === chapter)
+    return shuffle(list).slice(0, Math.min(CHAPTER_EXAM_N, list.length))
+  }
   const qs = bySubject(subj)
   const byCh = {}
   qs.forEach(q => (byCh[q.chapter] ??= []).push(q))

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, SubjectSeg } from '../components/ui'
-import { EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, pickExamSet, qById } from '../lib/bank'
+import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFor, pickExamSet, qById } from '../lib/bank'
 import { idb, kvGet, kvSet } from '../lib/db'
 import { Stem, fmtTime } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -9,7 +9,7 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
 /** 一场考试全程存在 kv.activeExam 里：关掉页面倒计时照走，回来能接着考 */
-export default function Exam({ go, setQuiz }) {
+export default function Exam({ go, setQuiz, chapter }) {
   const { subject, records, setRecords, toast, ask } = useStore()
   const [stage, setStage] = useState('loading') // loading | resume | intro | running | result
   const [ex, setEx] = useState(null)
@@ -31,11 +31,14 @@ export default function Exam({ go, setQuiz }) {
   }, [stage, setQuiz])
 
   async function begin() {
-    const qs = pickExamSet(subject)
+    const qs = pickExamSet(subject, chapter)
     const now = Date.now()
+    // mins 存进这场考试：单章卷比整套短，交卷算用时得按本场时长封顶，
+    // 不能再拿 EXAM_MIN 当上限，否则单章考的用时会被记成最多 120 分钟
+    const mins = chapter ? minutesFor(qs.length) : EXAM_MIN
     const fresh = {
-      subject, ids: qs.map(q => q.id), answers: {},
-      startTs: now, endTs: now + EXAM_MIN * 60000, i: 0,
+      subject, chapter, mins, ids: qs.map(q => q.id), answers: {},
+      startTs: now, endTs: now + mins * 60000, i: 0,
     }
     await kvSet('activeExam', fresh)
     setEx(fresh)
@@ -63,9 +66,9 @@ export default function Exam({ go, setQuiz }) {
     }
     setRecords(next)
     const rec = {
-      id: Date.now(), subject: e.subject, ts: Date.now(),
+      id: Date.now(), subject: e.subject, chapter: e.chapter, ts: Date.now(),
       score: Math.round((right / qs.length) * 100), right, total: qs.length,
-      usedMs: Math.min(Date.now() - e.startTs, EXAM_MIN * 60000),
+      usedMs: Math.min(Date.now() - e.startTs, (e.mins || EXAM_MIN) * 60000),
       ids: e.ids, answers: e.answers,
     }
     await idb.put('exams', rec)
@@ -102,24 +105,37 @@ export default function Exam({ go, setQuiz }) {
   if (stage === 'running') return <Running ex={ex} setEx={setEx} onSubmit={submit} toast={toast} ask={ask} go={go} />
   if (stage === 'result') return <Result rec={result} go={go} />
 
-  const n = Math.min(EXAM_N, bySubject(subject).length)
+  const pool = chapter
+    ? bySubject(subject).filter(q => q.chapter === chapter).length
+    : bySubject(subject).length
+  const n = Math.min(chapter ? CHAPTER_EXAM_N : EXAM_N, pool)
+  const mins = chapter ? minutesFor(n) : EXAM_MIN
   return (
     <>
       <div>
-        <h1>模拟考试</h1>
+        <h1>{chapter ? '章节考试' : '模拟考试'}</h1>
         <div className="muted">
-          按真考规格：{EXAM_MIN} 分钟 {EXAM_N} 道单选，{PASS} 分及格，考中不看答案
+          {chapter
+            ? <>只考「{chapter}」这一章，{mins} 分钟 {n} 道单选，{PASS} 分及格，考中不看答案</>
+            : <>按真考规格：{EXAM_MIN} 分钟 {EXAM_N} 道单选，{PASS} 分及格，考中不看答案</>}
         </div>
       </div>
-      <SubjectSeg />
+      {!chapter && <SubjectSeg />}
       <div className="card">
         <div className="stats">
           <div className="stat"><b>{n}</b><span>抽题</span></div>
-          <div className="stat"><b>{EXAM_MIN}</b><span>分钟</span></div>
+          <div className="stat"><b>{mins}</b><span>分钟</span></div>
           <div className="stat"><b>{PASS}</b><span>及格分</span></div>
         </div>
-        <div className="muted">{SUBJ_FULL[subject]}　按章节分层抽题，覆盖各知识点</div>
-        <button className="btn-pri" style={{ padding: 15 }} onClick={begin}>开始考试</button>
+        <div className="muted">
+          {chapter
+            ? <>{SUBJ_FULL[subject]}　本章题库共 {pool} 题，每次随机抽</>
+            : <>{SUBJ_FULL[subject]}　按章节分层抽题，覆盖各知识点</>}
+        </div>
+        <button className="btn-pri" style={{ padding: 15 }} disabled={!n} onClick={begin}>开始考试</button>
+        {chapter && (
+          <button className="btn-sm btn-ghost" onClick={() => go('chapters')}>← 换一章</button>
+        )}
       </div>
       <div className="card">
         <div className="muted">中途关掉页面没关系：倒计时按真实时间走，回来能接着考，时间到自动交卷。</div>
