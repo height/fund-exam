@@ -314,6 +314,20 @@ function AiExplain({ q, picked }) {
 const DEMO_CACHE = new Map() // q.id -> html，会话级
 
 /**
+ * 注入进 srcDoc 末尾的量高脚本：把文档实际高度回传给父页，父页据此把 iframe
+ * 撑到内容全高，滚动就落回外面那个普通 div。
+ * 不这么做的话只能靠 iframe 自己滚，而 iOS Safari 不支持——图解一长就卡死不动。
+ * sandbox 只有 allow-scripts，iframe 是不透明源，postMessage 用 '*' 发，
+ * 父页靠 event.source 认人。演示里的「下一步」会改高度，所以要持续观察。
+ */
+const SIZER = `<script>(function(){
+  var send=function(){parent.postMessage({__demoH:document.documentElement.scrollHeight},'*')}
+  addEventListener('load',send);addEventListener('resize',send);setTimeout(send,60)
+  if(window.ResizeObserver)new ResizeObserver(send).observe(document.documentElement)
+  addEventListener('click',function(){setTimeout(send,80)},true)
+})()<\/script>`
+
+/**
  * 全屏包装：右上角切换按钮，Esc 退出。全屏层 portal 到 body 下——
  * 祖先的 transform/滚动容器会把 position:fixed 圈住（iOS 上尤其），必须逃出去。
  * iOS 没有元素级原生全屏，走 CSS 覆盖层。
@@ -342,7 +356,20 @@ function Demo({ q }) {
   const [html, setHtml] = useState(DEMO_CACHE.get(q.id) || '')
   const [prog, setProg] = useState(0)
   const [err, setErr] = useState('')
+  const [h, setH] = useState(0)
   const ctlRef = useRef(null)
+  const frameRef = useRef(null)
+
+  // 只认自己那个 iframe 发来的高度，别的页面/扩展发的消息一律不理
+  useEffect(() => {
+    const onMsg = e => {
+      if (e.source !== frameRef.current?.contentWindow) return
+      const v = Number(e.data?.__demoH)
+      if (v > 0) setH(Math.ceil(v))
+    }
+    window.addEventListener('message', onMsg)
+    return () => window.removeEventListener('message', onMsg)
+  }, [])
 
   async function run() {
     ctlRef.current?.abort()
@@ -376,7 +403,11 @@ function Demo({ q }) {
   return (
     <FullWrap className="demo-box" fullClass="demo-full">
       {/* ponytail: 切全屏会换 DOM 父级，iframe 重载、演示步骤回到第一步；要保状态得上 postMessage */}
-      <iframe className="demo-frame" sandbox="allow-scripts" srcDoc={html} title="图解演示" />
+      <div className="demo-scroll">
+        <iframe ref={frameRef} className="demo-frame" sandbox="allow-scripts"
+          srcDoc={html + SIZER} title="图解演示"
+          style={h ? { height: h } : undefined} />
+      </div>
     </FullWrap>
   )
 }

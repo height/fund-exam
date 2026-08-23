@@ -377,14 +377,21 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
   @keyframes spin{to{transform:rotate(360deg)}}
 }
 
-/* 图解演示：AI 生成的 HTML 关在沙箱 iframe 里，可切全屏覆盖层 */
-.demo-frame{width:100%;height:380px;border:1px solid var(--rule);border-radius:var(--r-m);background:#fff}
+/* 图解演示：AI 生成的 HTML 关在沙箱 iframe 里，可切全屏覆盖层。
+   滚动交给外面的 .demo-scroll 这个普通 div，iframe 自己撑到内容全高——
+   iOS Safari 不支持 iframe 内部滚动（会把 iframe 拉成内容高、滚不动），
+   所以不能让 iframe 当滚动容器。高度由 srcDoc 里注入的小脚本回传。 */
+.demo-frame{display:block;width:100%;height:380px;border:0;background:#fff}
 .demo-wait{font-size:13px;display:flex;align-items:center;gap:6px}
-.demo-box{position:relative}
+.demo-box{position:relative;border:1px solid var(--rule);border-radius:var(--r-m);
+  overflow:hidden;background:#fff}
+.demo-scroll{max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .fs-btn{position:absolute;top:8px;right:8px;z-index:1;background:var(--sheet);opacity:.92;
   padding:6px 8px;line-height:1}
-.demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff;display:flex}
-.demo-full .demo-frame{flex:1;height:auto;border:0;border-radius:0}
+.demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff}
+.demo-full .demo-scroll{max-height:none;height:100dvh}
+/* 内容比屏幕短时也铺满，别在白底上露出一截页面底色 */
+.demo-full .demo-frame{min-height:100dvh}
 .demo-full .fs-btn,.ai-full .fs-btn{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px}
 
 /* AI 文字解析的全屏态：铺满、可滚、字放大一档 */
