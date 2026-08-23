@@ -69,7 +69,13 @@
 html{touch-action:manipulation}
 body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.65 var(--f-body);
   padding-bottom:calc(64px + env(safe-area-inset-bottom) + var(--calc-h));-webkit-font-smoothing:antialiased;
-  text-wrap:pretty}
+  text-wrap:pretty;
+  /* 试探：iOS 长按弹的系统菜单挡住了我们自己的「解释」气泡。这个属性按规范管的是
+     链接/图片的长按 callout，对「选中文字后的编辑菜单」多半无效——留着看真机结果，
+     没用就删掉。注意它是继承属性，写在 body 上全站生效。 */
+  -webkit-touch-callout:none}
+/* 公式图谱是扫描页，长按存图还有用，单独放行 */
+.fx-page img,.fx-stage img{-webkit-touch-callout:default}
 #app{max-width:660px;margin:0 auto;padding:20px 16px 24px;display:flex;flex-direction:column;gap:14px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 /* 跳过导航直达题目，键盘用户第一个 Tab 就能拿到 */
@@ -339,7 +345,8 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .ai-key .muted{font-size:12px}
 .ai-box{background:var(--sheet);border-radius:var(--r-m);padding:10px 12px;
   display:flex;flex-direction:column;gap:6px}
-.ai-text{font-size:14px;line-height:1.8}
+/* anywhere：长算式是无空格连续串，不许它撑破容器把中间结果顶没了 */
+.ai-text{font-size:14px;line-height:1.8;overflow-wrap:anywhere}
 
 /* ---- Markdown 排版 ----
    .md 显式设色，不吃继承：之前没设色，塞进哪个容器就跟着那个容器变灰，
