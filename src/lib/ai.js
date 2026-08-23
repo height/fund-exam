@@ -216,8 +216,20 @@ export function setTtsSpeed(v) {
   if (audioEl) audioEl.playbackRate = v      // 正在播的立刻跟上，不用等下一句
 }
 
-/** 合成并播放。再次调用会顶掉上一段；返回 Audio 以便监听 ended */
-export async function speak(text, signal) {
+/* 合成结果按念稿缓存：同一段话停了再播、翻回上一题再播，都不该重新花钱合成。
+   存 objectURL 而不是 data: URI——重播时不用再把几 MB 的 base64 重新解析一遍。
+   WAV 很占地方（一段 30 秒的稿子约 1.4MB），所以只留最近几段，超了就连
+   objectURL 一起释放；会话级，刷新即清。 */
+const VOICE_CACHE = new Map()
+const VOICE_KEEP = 8
+
+async function synth(text, signal) {
+  const hit = VOICE_CACHE.get(text)
+  if (hit) {                       // 命中就挪到队尾，淘汰的永远是最久没用的那段
+    VOICE_CACHE.delete(text)
+    VOICE_CACHE.set(text, hit)
+    return hit
+  }
   const { ttsKey } = loadStore()
   if (!ttsKey) throw new Error('先在「设置」页填好语音 Key')
   const res = await fetch('https://api.xiaomimimo.com/v1/chat/completions', {
@@ -236,10 +248,24 @@ export async function speak(text, signal) {
   if (!res.ok) throw new Error(res.status === 401 ? '语音 Key 无效' : `语音接口返回 ${res.status}`)
   const b64 = (await res.json()).choices?.[0]?.message?.audio?.data
   if (!b64) throw new Error('语音接口没返回音频')
+  const url = URL.createObjectURL(
+    new Blob([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], { type: 'audio/wav' }))
+  VOICE_CACHE.set(text, url)
+  while (VOICE_CACHE.size > VOICE_KEEP) {
+    const oldest = VOICE_CACHE.keys().next().value
+    URL.revokeObjectURL(VOICE_CACHE.get(oldest))
+    VOICE_CACHE.delete(oldest)
+  }
+  return url
+}
+
+/** 合成并播放。再次调用会顶掉上一段；返回 Audio 以便监听 ended */
+export async function speak(text, signal) {
+  const url = await synth(text, signal)
   // 合成期间用户已经翻题/关面板，别再出声
   if (signal?.aborted) throw new DOMException('已中止', 'AbortError')
   stopSpeak()
-  audioEl = new Audio(`data:audio/wav;base64,${b64}`)
+  audioEl = new Audio(url)
   audioEl.preservesPitch = audioEl.webkitPreservesPitch = true
   audioEl.playbackRate = getTtsSpeed()
   await audioEl.play()

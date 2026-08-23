@@ -255,6 +255,14 @@ def run():
         pg.wait_for_timeout(400)
         assert len(tts_hits) == 2, f"TTS 该被调用两次，实际 {len(tts_hits)}"
         assert "语音" not in (pg.locator(".toast").inner_text() or ""), "朗读报错了"
+        # 同一段话重播直接用缓存，不该再花钱合成。
+        # 认 .spk 而不是 aria-label：假 WAV 只有 0.02 秒，播完按钮就从
+        # 「停止朗读」变回「朗读题目」了，按标签点会看状态脸色
+        pg.locator(".spk").first.click()
+        pg.wait_for_timeout(400)
+        pg.locator(".spk").first.click()
+        pg.wait_for_timeout(400)
+        assert len(tts_hits) == 2, f"重播又请求了接口，实际调用 {len(tts_hits)} 次"
 
         # 练习完先退出，底栏才回来
         pg.click('button[aria-label="退出练习"]')
