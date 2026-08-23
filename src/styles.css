@@ -69,13 +69,12 @@
 html{touch-action:manipulation}
 body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.65 var(--f-body);
   padding-bottom:calc(64px + env(safe-area-inset-bottom) + var(--calc-h));-webkit-font-smoothing:antialiased;
-  text-wrap:pretty;
-  /* 试探：iOS 长按弹的系统菜单挡住了我们自己的「解释」气泡。这个属性按规范管的是
-     链接/图片的长按 callout，对「选中文字后的编辑菜单」多半无效——留着看真机结果，
-     没用就删掉。注意它是继承属性，写在 body 上全站生效。 */
-  -webkit-touch-callout:none}
-/* 公式图谱是扫描页，长按存图还有用，单独放行 */
-.fx-page img,.fx-stage img{-webkit-touch-callout:default}
+  text-wrap:pretty}
+/* 控件上的字不该能选中：长按「上一题」把按钮标签选了、还弹出系统拷贝菜单，纯属误伤。
+   选项是唯一例外——划词解释就指望在选项文字上用，它本身是个 button。
+   （试过 -webkit-touch-callout:none 想压掉 iOS 的系统菜单，无效，已撤。
+   那个属性管的是链接/图片的长按 callout，管不到「选中文字后的编辑菜单」。） */
+button:not(.opt){-webkit-user-select:none;user-select:none}
 #app{max-width:660px;margin:0 auto;padding:20px 16px 24px;display:flex;flex-direction:column;gap:14px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 /* 跳过导航直达题目，键盘用户第一个 Tab 就能拿到 */
