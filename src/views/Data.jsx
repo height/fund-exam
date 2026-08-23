@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/ui'
-import { PRESETS, loadStore, pingAI, provDefault, saveStore } from '../lib/ai'
+import { PRESETS, TTS_SPEEDS, getTtsSpeed, loadStore, pingAI, provDefault, saveStore, setTtsSpeed } from '../lib/ai'
 import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
@@ -28,6 +28,7 @@ export default function Data() {
   const [ai, setAi] = useState(loadStore)
   const [testing, setTesting] = useState(false)
   const [ttsKey, setTtsKey] = useState(() => loadStore().ttsKey || '')
+  const [speed, setSpeed] = useState(getTtsSpeed)
   const fileRef = useRef(null)
 
   // 两家各存一份，tab 就是默认模型开关：一点立即生效并记住
@@ -163,6 +164,19 @@ export default function Data() {
         <div className="muted">MiMo TTS 的 Key，用来朗读题目和 AI 解析。输入即存，只存本机浏览器。</div>
         <KeyField label="语音 API Key" value={ttsKey}
           onChange={v => { setTtsKey(v); saveStore({ ...loadStore(), ttsKey: v.trim() }) }} />
+        <label className="row between">
+          <span>朗读语速
+            <span className="muted" style={{ display: 'block', fontSize: 12 }}>
+              提速不变调；正在播的会立刻跟上
+            </span>
+          </span>
+          <span className="seg seg-n">
+            {TTS_SPEEDS.map(v => (
+              <button key={v} className={speed === v ? 'on' : ''}
+                onClick={() => { setSpeed(v); setTtsSpeed(v) }}>{v === 1 ? '1×' : `${v}×`}</button>
+            ))}
+          </span>
+        </label>
       </div>
 
       <div className="card">

@@ -24,7 +24,7 @@ export default function Wrong({ go }) {
         <div className="row between">
           <span><b className="num" style={{ fontSize: 22 }}>{all.length}</b> 道待消灭</span>
           <button className="btn-pri btn-sm" disabled={!all.length}
-            onClick={() => go('practice', { scope: 'wrong' })}><Icon name="wrong" /> 错题重练</button>
+            onClick={() => go('practice', { scope: 'wrong', order: 'seq' })}><Icon name="wrong" /> 错题重练</button>
         </div>
         {Object.keys(byCh).length > 0 && (
           <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>

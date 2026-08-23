@@ -335,10 +335,20 @@ def run():
         pg.click('.seg button:has-text("智谱 GLM")')
         pg.reload()
         pg.wait_for_selector('h1:has-text("设置")')
-        on = pg.locator('.card:has-text("AI 解析") .seg button.on').inner_text()
+        on = pg.locator('.card:has(h2:text-is("AI 解析")) .seg button.on').inner_text()
         assert "智谱 GLM" in on and "默认" in on, f"默认标记不见了：{on}"
         pg.click('.seg button:has-text("DeepSeek")')
         assert pg.locator(".ai-field input").nth(2).input_value() == "sk-test", "DeepSeek 的 Key 没记住"
+
+        # 朗读语速：改了要存住，刷新后还在
+        tts = pg.locator('.card:has(h2:text-is("语音朗读")) .seg-n')
+        assert tts.locator("button.on").inner_text() == "1×", "语速默认档不对"
+        tts.locator('button:text-is("1.5×")').click()
+        pg.reload()
+        pg.wait_for_selector('h1:has-text("设置")')
+        tts = pg.locator('.card:has(h2:text-is("语音朗读")) .seg-n')
+        assert tts.locator("button.on").inner_text() == "1.5×", "语速没存住"
+        assert pg.evaluate("()=>JSON.parse(localStorage.getItem('ai-config')).ttsSpeed") == 1.5
 
         # 清空进度：危险操作要二次确认，点外面等于取消
         pg.click('button:has-text("清空全部进度")')

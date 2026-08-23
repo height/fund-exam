@@ -9,11 +9,17 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
+/* 断点续练只对固定题集有意义。new / wrong 是动态筛选，做对一题这题就从集合里消失了，
+   存下来的下标明天指向的是另一道题。这两类范围不记进度，每次从头过一遍。 */
+const keepsCursor = scope => !['new', 'wrong'].includes(scope)
+
 export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
   const { subject, records, toast } = useStore()
   const [session, setSession] = useState(null)
 
-  // 首页「继续练习」和错题本「错题重练」都跳过选范围，直接开练
+  /* 六个入口共用下面这一个 start()，区别只在要不要先让人选范围：
+     带 scope 进来的（首页章节练习/随机、错题重练、公式攻坚开练、知识图谱练这章）
+     直接开练；不带的（底栏「练习」tab）渲染 Setup 让人自己挑，选项是全集。 */
   useEffect(() => {
     if (initialScope) start(initialScope, initialOrder || 'rand')
   }, [initialScope, initialOrder])
@@ -29,8 +35,8 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
     if (!qs.length) return toast('这个范围已经没题了，换一个')
     // 随机练习是「一小轮」，抽满题量就够；顺序练习才是从头啃到尾
     if (order === 'rand') qs = shuffle(qs).slice(0, getRandomN())
-    const key = `cursor:${subject}:${scope}:${order}`
-    const saved = order === 'seq' ? await kvGet(key, 0) : 0
+    const key = keepsCursor(scope) ? `cursor:${subject}:${scope}:${order}` : null
+    const saved = key && order === 'seq' ? await kvGet(key, 0) : 0
     setSession({ qs, i: Math.min(saved, qs.length - 1), picks: {}, key, order, done: 0, right: 0 })
   }
 
@@ -50,7 +56,9 @@ function Setup({ onStart }) {
 
   const qs = bySubject(subject)
   const st = stats(records, subject)
-  const chs = chapterStats(records, subject)
+  // 章节列表全站统一按教材章序，跟首页进去的章节页对齐；
+  // 「弱项优先」是推荐视角，留给首页那块「知识点掌握度」，不混进选择器
+  const chs = chapterStats(records, subject, true).filter(c => c.total)
   const scopes = [
     { v: 'all', t: '全部题目', n: qs.length },
     { v: 'new', t: '只做没做过的', n: qs.length - st.done },
@@ -78,10 +86,10 @@ function Setup({ onStart }) {
         <details>
           <summary className="muted">按知识点练 ▾</summary>
           <div className="stack" style={{ marginTop: 10 }}>
-            {chs.map(c => (
+            {chs.map((c, i) => (
               <button className={`row between ${scope === `ch:${c.chapter}` ? 'btn-pri' : ''}`}
                 key={c.chapter} onClick={() => setScope(`ch:${c.chapter}`)}>
-                <span>{c.chapter}</span>
+                <span><span className="muted num">{i + 1}</span> {c.chapter}</span>
                 <span className="muted num">{c.acc === null ? '未做' : `${c.acc}%`} · {c.total}</span>
               </button>
             ))}
@@ -145,12 +153,12 @@ function Runner({ session: s, setSession, onQuit }) {
 
   async function next() {
     if (s.i === s.qs.length - 1) {
-      await kvSet(s.key, 0)
+      if (s.key) await kvSet(s.key, 0)
       toast(s.done ? `本轮做了 ${s.done} 题，对 ${s.right} 题` : '本轮结束')
       return onQuit()
     }
     const i = s.i + 1
-    if (s.order === 'seq') await kvSet(s.key, i)
+    if (s.key && s.order === 'seq') await kvSet(s.key, i)
     goTo(i)
   }
 
@@ -165,7 +173,7 @@ function Runner({ session: s, setSession, onQuit }) {
     if (ok && autoNext && at < s.qs.length - 1) {
       jumpTimer.current = setTimeout(() => setSession(p => {
         if (p.i !== at) return p
-        if (p.order === 'seq') kvSet(p.key, at + 1)
+        if (p.key && p.order === 'seq') kvSet(p.key, at + 1)
         return { ...p, i: at + 1 }
       }), reduceMotion ? 300 : 750)
     }
