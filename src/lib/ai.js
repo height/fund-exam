@@ -9,6 +9,8 @@ export const PRESETS = {
   deepseek: { label: 'DeepSeek', url: 'https://api.deepseek.com/chat/completions', model: 'deepseek-v4-pro' },
   // Coding 套餐走专用端点；普通按量 API Key 把地址改回 /api/paas/v4/chat/completions 即可
   glm: { label: '智谱 GLM', url: 'https://open.bigmodel.cn/api/coding/paas/v4/chat/completions', model: 'glm-5.3' },
+  // ZenMux 是聚合网关，OpenAI 兼容，模型名带厂商前缀。换别家模型只改「模型名称」那一栏即可
+  zenmux: { label: 'ZenMux', url: 'https://zenmux.ai/api/v1/chat/completions', model: 'deepseek/deepseek-v4-pro' },
 }
 
 /**

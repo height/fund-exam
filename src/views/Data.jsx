@@ -138,15 +138,17 @@ export default function Data() {
 
       <div className="card">
         <h2>AI 解析</h2>
-        <div className="muted">答错题时可以让 AI 换个讲法。两家可以都配好，选中的 tab 就是默认模型；配置和 Key 只存本机浏览器，与做题记录分开，只发给下面这个接口。</div>
-        <div className="seg">
-          {Object.entries(PRESETS).map(([k, p]) => (
-            <button key={k} className={ai.active === k ? 'on' : ''}
-              onClick={() => switchAi(k)}>
-              {p.label}{ai.active === k && <small>✓ 默认</small>}
-            </button>
-          ))}
-        </div>
+        <div className="muted">答错题时可以让 AI 换个讲法。几家可以都配好，各存各的 Key，下拉选中的就是默认模型；配置和 Key 只存本机浏览器，与做题记录分开，只发给下面这个接口。</div>
+        {/* 用下拉不用 tab：厂商还会加，三个以上横排就挤成一行看不清的小字 */}
+        <label className="ai-field">默认模型
+          <select value={ai.active} onChange={e => switchAi(e.target.value)}>
+            {Object.entries(PRESETS).map(([k, p]) => (
+              <option key={k} value={k}>
+                {p.label}{ai.providers?.[k]?.key ? ' · 已配' : ' · 未配 Key'}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="ai-field">接口地址
           <input value={cur.url} onChange={e => editAi({ url: e.target.value })} />
         </label>

@@ -323,11 +323,16 @@ def run():
                      ".map(e=>parseFloat(getComputedStyle(e).fontSize)).filter(s=>s<16)")
         assert not small, f"输入框字号 {small} 小于 16px，iOS 聚焦时会自动放大页面"
 
-        # AI 配置：切预设自动带出地址和模型名
-        pg.click('.seg button:has-text("智谱 GLM")')
+        # AI 配置：下拉切预设，自动带出地址和模型名
+        ai_sel = pg.locator('.card:has(h2:text-is("AI 解析")) select')
+        assert ai_sel.locator("option").count() >= 3, "预设少了"
+        ai_sel.select_option("glm")
         assert pg.locator(".ai-field input").nth(1).input_value() == "glm-5.3"
         assert "bigmodel.cn" in pg.locator(".ai-field input").nth(0).input_value()
-        pg.click('.seg button:has-text("DeepSeek")')
+        ai_sel.select_option("zenmux")
+        assert pg.locator(".ai-field input").nth(1).input_value() == "deepseek/deepseek-v4-pro"
+        assert "zenmux.ai" in pg.locator(".ai-field input").nth(0).input_value()
+        ai_sel.select_option("deepseek")
         assert pg.locator(".ai-field input").nth(1).input_value() == "deepseek-v4-pro"
 
         # 保存前先试调用：通了才落盘（沿用上面注册的假接口），401 则保存失败
@@ -338,15 +343,18 @@ def run():
         pg.click('button:has-text("保存并测试")')
         pg.wait_for_selector('.toast:has-text("保存失败：Key 无效")')
 
-        # tab 即默认模型：切到 GLM 后刷新，还停在 GLM；DeepSeek 那份配置也没丢
+        # 下拉选中即默认模型：切到 GLM 后刷新，还停在 GLM；DeepSeek 那份配置也没丢
         # 顺带验证 hash 路由：刷新后还在设置页，不用重新点导航
-        pg.click('.seg button:has-text("智谱 GLM")')
+        pg.locator('.card:has(h2:text-is("AI 解析")) select').select_option("glm")
         pg.reload()
         pg.wait_for_selector('h1:has-text("设置")')
-        on = pg.locator('.card:has(h2:text-is("AI 解析")) .seg button.on').inner_text()
-        assert "智谱 GLM" in on and "默认" in on, f"默认标记不见了：{on}"
-        pg.click('.seg button:has-text("DeepSeek")')
+        assert pg.locator('.card:has(h2:text-is("AI 解析")) select').input_value() == "glm", "刷新后默认模型没记住"
+        pg.locator('.card:has(h2:text-is("AI 解析")) select').select_option("deepseek")
         assert pg.locator(".ai-field input").nth(2).input_value() == "sk-test", "DeepSeek 的 Key 没记住"
+        # 配没配 Key 在下拉里要看得出来
+        opts = pg.locator('.card:has(h2:text-is("AI 解析")) select').locator("option").all_inner_texts()
+        assert any("DeepSeek" in o and "已配" in o for o in opts), f"已配标记不见了：{opts}"
+        assert any("ZenMux" in o and "未配" in o for o in opts), f"未配标记不见了：{opts}"
 
         # 朗读语速：改了要存住，刷新后还在
         tts = pg.locator('.card:has(h2:text-is("语音朗读")) .seg-n')
