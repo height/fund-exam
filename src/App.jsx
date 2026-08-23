@@ -112,12 +112,14 @@ export default function App() {
         ))}
       </nav>}
 
-      {needsCalc && (
+      {/* 抽屉展开时收起唤起钮，它本来就落在抽屉底下；收起用抽屉自己的 ×。
+          Calculator 常驻挂载、只切 open，这样临时收起不会丢算式 */}
+      {needsCalc && !calcOpen && (
         <button className="calc-fab" onClick={() => setCalcOpen(true)} aria-label="打开科学计算器">
           <Icon name="calc" />
         </button>
       )}
-      {calcOpen && <Calculator onClose={() => setCalcOpen(false)} />}
+      {needsCalc && <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />}
 
       <Dialog />
       <SelectionTip go={go} />

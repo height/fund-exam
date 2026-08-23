@@ -54,14 +54,14 @@ def run():
         assert int(pg.locator(".hero-num").inner_text()) > 20, "计算题没筛出来"
         # 计算器：复利 10000×(1+3%)² = 10609，验的是自己写的求值器不是 eval
         pg.click(".calc-fab")
-        pg.wait_for_selector(".calc")
+        pg.wait_for_selector(".calc-drawer")
         for k in ["1", "0", "0", "0", "0", "×", "(", "1", "+", "3", "%", ")", "x²"]:
             pg.click(f'.calc-pad button:text-is("{k}")')
         assert pg.locator(".calc-ans").inner_text().strip() == "= 10609", "边打边算的结果不对"
         pg.click('.calc-pad button:text-is("=")')
         assert pg.locator(".calc-expr").inner_text().strip() == "10609"
         pg.keyboard.press("Escape")
-        pg.wait_for_selector(".calc", state="detached")
+        pg.wait_for_selector(".calc-drawer", state="detached")
         # 公式图谱：图片没内联进 bundle，是 public/ 下的独立文件
         pg.click('.appbar button:has-text("公式图谱")')
         pg.wait_for_selector(".fx-page img")

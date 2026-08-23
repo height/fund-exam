@@ -1,12 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon } from './ui'
 import { evaluate, format, preview } from '../lib/calc'
 
 /*
- * 科学计算器。相对参考图做了三处简化：
- * 1. 去掉左上角那个无标签开关——没人知道它管什么
- * 2. 显示区从一大块空白改成两行：算式在上、实时结果在下，边打边出，不用按 = 才知道对不对
- * 3. 配色走设计令牌，不用孤立的红灰；= 用主色，C/⌫ 退成次要
+ * 科学计算器，底部抽屉，非模态。
+ *
+ * 不是弹层：算到一半想看清题干上面那个数字，收起再展开不能把算式弄丢，
+ * 所以组件常驻挂载、只靠 open 决定渲不渲染——state 跟着组件活着。
+ * 也没有遮罩：抽屉展开时页面照样滚、题目照样点，抽屉高度会写进 --calc-h
+ * 给正文垫出底部留白，题目还能继续往上滑，不会被压在抽屉底下看不见。
+ *
+ * 键盘只在焦点落在抽屉里时接管。做题页的 Enter（下一题）和 A/B/C/D 是全局监听，
+ * 抽屉一展开就无条件抢走的话，等于把做题的快捷键废了。
+ *
+ * 相对参考图的三处简化：去掉左上角那个无标签开关；显示区两行（算式在上、
+ * 实时结果在下，边打边出）；配色走设计令牌，= 用主色，C/⌫ 退成次要。
  */
 const KEYS = [
   ['(', ')', '√', 'x²'],
@@ -19,17 +27,33 @@ const KEYS = [
 // 按键面 -> 进算式的字符。减号面上用 −（U+2212）好看，内部统一成 -
 const INSERT = { 'x²': '²', '−': '-' }
 
-export default function Calculator({ onClose }) {
+export default function Calculator({ open, onClose }) {
   const [expr, setExpr] = useState('')
   const [ans, setAns] = useState(null)
   const [err, setErr] = useState('')
-  const boxRef = useRef(null)
+  const box = useRef(null)
 
-  // 打开就接管键盘：数字和运算符直接敲，Esc 关闭
+  // 抽屉多高，正文就垫多少底。矮屏有一套更紧凑的键盘样式，高度写死会对不上，
+  // 所以量出来，并且用 ResizeObserver 跟着变
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    if (!open || !box.current) { root.style.removeProperty('--calc-h'); return }
+    const set = () => root.style.setProperty('--calc-h', `${box.current.offsetHeight}px`)
+    set()
+    const ro = new ResizeObserver(set)
+    ro.observe(box.current)
+    return () => { ro.disconnect(); root.style.removeProperty('--calc-h') }
+  }, [open])
+
+  // preventScroll：抽屉在视口底部，聚焦时别把页面拽下去
+  useEffect(() => { if (open) box.current?.focus({ preventScroll: true }) }, [open])
+
   useEffect(() => {
-    boxRef.current?.focus()
+    if (!open) return
     const onKey = e => {
       if (e.metaKey || e.ctrlKey) return
+      // 焦点不在抽屉里就不接管，把键让回给做题页
+      if (!box.current?.contains(document.activeElement)) return
       const k = e.key
       if (k === 'Escape') { e.preventDefault(); return onClose() }
       if (k === 'Enter' || k === '=') { e.preventDefault(); return tap('=') }
@@ -61,32 +85,32 @@ export default function Calculator({ onClose }) {
     setExpr(e => e + (INSERT[key] ?? key))
   }
 
+  // 收起时只是不渲染，组件仍挂着——算式、Ans 都还在，展开就接着算
+  if (!open) return null
+
   const live = preview(expr)
 
   return (
-    <div className="overlay center calc-overlay" role="dialog" aria-modal="true" aria-label="科学计算器"
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="panel calc" ref={boxRef} tabIndex={-1}>
-        <div className="calc-head">
-          <span className="muted">科学计算器</span>
-          <button className="btn-sm btn-ghost" onClick={onClose} aria-label="关闭"><Icon name="x" /></button>
+    <div className="calc-drawer" ref={box} tabIndex={-1} role="region" aria-label="科学计算器">
+      {/* 收起钮压进显示区右上角：抽屉本来就在跟题目抢高度，
+          单开一行放「科学计算器」这五个字不值那 35px */}
+      <div className="calc-screen">
+        <button className="calc-hide" onClick={onClose} aria-label="收起计算器">
+          <Icon name="x" />
+        </button>
+        <div className="calc-expr">{expr || <span className="muted">0</span>}</div>
+        <div className={`calc-ans ${err ? 'bad' : ''}`}>
+          {err || (live !== null && live !== expr ? `= ${live}` : ' ')}
         </div>
+      </div>
 
-        <div className="calc-screen">
-          <div className="calc-expr">{expr || <span className="muted">0</span>}</div>
-          <div className={`calc-ans ${err ? 'bad' : ''}`}>
-            {err || (live !== null && live !== expr ? `= ${live}` : ' ')}
-          </div>
-        </div>
-
-        <div className="calc-pad">
-          {KEYS.flat().map(k => (
-            <button key={k} onClick={() => tap(k)}
-              className={k === '=' ? 'btn-pri' : /[+\-−×÷()√%.]|x²/.test(k) ? 'calc-op' : /[C⌫]/.test(k) ? 'calc-fn' : ''}>
-              {k}
-            </button>
-          ))}
-        </div>
+      <div className="calc-pad">
+        {KEYS.flat().map(k => (
+          <button key={k} onClick={() => tap(k)}
+            className={k === '=' ? 'btn-pri' : /[+\-−×÷()√%.]|x²/.test(k) ? 'calc-op' : /[C⌫]/.test(k) ? 'calc-fn' : ''}>
+            {k}
+          </button>
+        ))}
       </div>
     </div>
   )
