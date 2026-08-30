@@ -303,9 +303,9 @@ def run():
         n = int(pg.locator(".card .num").first.inner_text())
         assert n > 0, "交卷后错题本还是空的"
 
-        # 错题重练：跳过选范围，直接进答题
+        # 错题重练：跳过选范围，直接进答题（错题列表本身也有 .stem，等按钮才算真进了练习页）
         pg.click('button:has-text("错题重练")')
-        pg.wait_for_selector(".stem")
+        pg.wait_for_selector('button[aria-label="退出练习"]')
         assert pg.locator('button[aria-label="退出练习"]').count() == 1
         pg.click('button[aria-label="退出练习"]')
         pg.wait_for_selector(".overlay.center")
