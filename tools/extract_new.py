@@ -153,14 +153,16 @@ def main():
     # 题干 4-gram 索引，用于模糊去重（换措辞的同一道题）
     bank_grams = []
     for q in bank:
-        bank_grams.append((grams(norm(q["q"])), q["id"]))
+        bank_grams.append((grams(norm(q["q"])), q["id"], q["subject"]))
 
-    def fuzzy_dup(item):
+    def fuzzy_dup(item, subject):
         g = grams(norm(item["q"]))
         if not g:
             return None
         best, bg = 0.0, None
-        for bgset, qid in bank_grams:
+        for bgset, qid, bank_subject in bank_grams:
+            if bank_subject != subject:
+                continue
             inter = len(g & bgset)
             if not inter:
                 continue
@@ -192,7 +194,7 @@ def main():
         if fp in seen_session:
             st["dup_self"] += 1
             return
-        dup = fuzzy_dup(item)
+        dup = fuzzy_dup(item, subject)
         if dup:
             st["dup_fuzzy"] += 1
             return
@@ -201,7 +203,7 @@ def main():
         out.append(item)
         # 同一轮可能同时导入多份资料。已接收的候选也要立刻加入模糊索引，
         # 否则它们只会和旧题库比较，彼此之间的改写题会一起漏进入库。
-        bank_grams.append((grams(norm(item["q"])), qid))
+        bank_grams.append((grams(norm(item["q"])), qid, subject))
         st["kept"] += 1
 
     for fname, subject, source in FILES:

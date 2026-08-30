@@ -227,20 +227,26 @@ def main():
         if i in kill or j in kill:
             continue
         qi, qj = docs[i][0], docs[j][0]
+        # 两个考试科目有少量共同知识点；跨科目不能互相去重，否则其中一科会缺题。
+        if qi["subject"] != qj["subject"]:
+            continue
         gi, gj = docs[i][1], docs[j][1]
         sim = len(gi & gj) / len(gi | gj)
         # 选项集合和正确答案都一样时，题干换个说法也是同一道题；但选项集合太通用
         # （Ⅰ、Ⅱ / Ⅰ、Ⅱ、Ⅲ 这种）会撞车，所以仍要求题干足够像
         same_opts = (sorted(norm(o) for o in qi["options"]) == sorted(norm(o) for o in qj["options"])
                      and norm(qi["options"][qi["answer"]]) == norm(qj["options"][qj["answer"]]))
+        same_correct = (norm(qi["options"][qi["answer"]])
+                        == norm(qj["options"][qj["answer"]]))
         # 题干一字不差、四个选项里有三个相同 = 同一道题被改了个别选项措辞。
         # 但只凭题干相同不够：有些题题干一样、四个选项整套不同，那是两道不同的题。
         oi = [norm(o) for o in qi["options"]]
         oj = [norm(o) for o in qj["options"]]
         same_stem_mostly = (norm(qi["q"]) == norm(qj["q"])
                             and len(set(oi) & set(oj)) >= 3
-                            and norm(qi["options"][qi["answer"]]) in set(oj + [""]) | {norm(qj["options"][qj["answer"]])})
-        if sim >= 0.85 or (sim >= 0.70 and same_opts) or same_stem_mostly:
+                            and norm(qi["options"][qi["answer"]])
+                            == norm(qj["options"][qj["answer"]]))
+        if (sim >= 0.85 and same_correct) or (sim >= 0.70 and same_opts) or same_stem_mostly:
             keep = better(qi, qj)
             kill.add(j if keep is qi else i)
             dropped["近似重复"] += 1

@@ -14,6 +14,7 @@
   最后由 apply_chapters.py 统一校验落盘。
 """
 import json
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -28,7 +29,14 @@ chmap = json.loads((REPO / "tools/chapters.json").read_text(encoding="utf-8"))
 tax = json.loads((REPO / "tools/taxonomy.json").read_text(encoding="utf-8"))
 valid = {s: {c["name"] for c in tax[s]} for s in ("科目一", "科目二")}
 
-kept, dropped_noagree, dropped_nocls = [], 0, 0
+# candidates.json 通常已去重，但它可能比当前题库旧；合并前再做一次内容指纹校验，
+# 防止流程重跑或并发整理时把同题重新追加进来。
+sys.path.insert(0, str(REPO / "tools"))
+from extract import dedup_key  # noqa: E402
+seen_keys = {(q["subject"], dedup_key(q)) for q in bank}
+seen_ids = {q["id"] for q in bank}
+
+kept, dropped_noagree, dropped_nocls, dropped_dup = [], 0, 0, 0
 for q in cand:
     c = cls.get(q["id"])
     if not c or c["chapter"] not in valid[q["subject"]]:
@@ -48,6 +56,12 @@ for q in cand:
         q["explain"] = q["explain"].replace("（把握不大）", "")
     if c.get("confidence") == "low":
         q["review"] = True
+    key = (q["subject"], dedup_key(q))
+    if q["id"] in seen_ids or key in seen_keys:
+        dropped_dup += 1
+        continue
+    seen_ids.add(q["id"])
+    seen_keys.add(key)
     kept.append(q)
     chmap[q["id"]] = q["chapter"]
 
@@ -57,4 +71,8 @@ bank.extend(kept)
 (REPO / "tools/chapters.json").write_text(
     json.dumps(chmap, ensure_ascii=False, indent=0), encoding="utf-8")
 print(f"入库 {len(kept)}（双盲不一致丢弃 {dropped_noagree}，无有效归类丢弃 {dropped_nocls}）")
+if dropped_dup:
+    print(f"合并前复检重复丢弃 {dropped_dup}")
 print(f"题库总量 {len(bank)}")
+assert len({q["id"] for q in bank}) == len(bank), "合并后存在重复 id"
+assert len({(q["subject"], dedup_key(q)) for q in bank}) == len(bank), "合并后存在完全重复题"
