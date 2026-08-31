@@ -7,7 +7,6 @@
 import base64
 import json
 import re
-import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -143,6 +142,7 @@ def run():
         assert pg.locator(".opt.ok").count() == 1, "没有标出正确答案"
         assert pg.locator(".opt[disabled]").count() == 4, "揭晓后选项还能点"
         assert pg.locator(".explain-tabs").count() == 1, "答对答错都该有 AI 解析 tab"
+        assert pg.locator('button[aria-label="朗读答案解析"]').count() == 1, "答案解析没有朗读按钮"
 
         # 翻页：下一题换题干
         stem = pg.locator(".stem").inner_text()
@@ -227,6 +227,8 @@ def run():
         pg.wait_for_selector(".sel-tip")
         pg.click(".sel-tip")
         pg.wait_for_selector(".bubble .ai-text b")  # 假接口的 markdown 渲染出来了
+        assert pg.locator('.bubble button[aria-label="朗读解释"]').count() == 1, \
+            "长按解释浮层没有朗读按钮"
         pg.evaluate(select, ".bubble-body p")
         pg.wait_for_selector(".sel-tip")
         pg.click(".sel-tip")
@@ -235,29 +237,62 @@ def run():
         pg.wait_for_function("document.querySelectorAll('.bubble').length === 1")
         pg.locator('.bubble button[aria-label="关闭"]').click()
 
-        # 朗读：假 TTS 接口回一段静音 WAV，题目和 AI 解析的喇叭都能出声
-        wav = (b"RIFF" + struct.pack("<I", 36 + 320) + b"WAVEfmt "
-               + struct.pack("<IHHIIHH", 16, 1, 1, 8000, 16000, 2, 16)
-               + b"data" + struct.pack("<I", 320) + b"\x00" * 320)
-        tts_body = json.dumps({"choices": [{"message": {"audio": {
-            "data": base64.b64encode(wav).decode()}}}]})
-        tts_hits = []
-        pg.route("**/api.xiaomimimo.com/**", lambda r: (tts_hits.append(1), r.fulfill(
-            status=200, content_type="application/json", body=tts_body))[-1])
+        # 朗读：模拟 MiMo 的 SSE PCM16 分片，不能退回「等完整 WAV 再播」的老链路
+        pcm = b"\x00" * (24000 * 2)  # 24kHz mono，1 秒静音；首包单独够起播
+        cut = 24000 * 2 * 55 // 100
+        chunks = [base64.b64encode(pcm[:cut]).decode(), base64.b64encode(pcm[cut:]).decode()]
+        # route.fulfill 会一次性交完整 body，测不出真假流式。这里让浏览器里的
+        # ReadableStream 延迟交第二包和 [DONE]，并记录真实请求体供下面断言。
+        pg.evaluate("""chunks => {
+            const realFetch = window.fetch.bind(window)
+            window.__ttsReqs = []
+            window.__ttsFinished = false
+            window.fetch = (input, init = {}) => {
+              if (!String(input).includes('api.xiaomimimo.com')) return realFetch(input, init)
+              window.__ttsReqs.push(JSON.parse(init.body))
+              window.__ttsFinished = false
+              const enc = new TextEncoder()
+              const event = data => enc.encode('data: ' + JSON.stringify({
+                choices: [{ delta: { audio: { data } } }]
+              }) + '\\n\\n')
+              let timers = []
+              const body = new ReadableStream({
+                start(controller) {
+                  controller.enqueue(event(chunks[0]))
+                  timers.push(setTimeout(() => controller.enqueue(event(chunks[1])), 1200))
+                  timers.push(setTimeout(() => {
+                    controller.enqueue(enc.encode('data: [DONE]\\n\\n'))
+                    window.__ttsFinished = true
+                    controller.close()
+                  }, 1350))
+                },
+                cancel() { timers.forEach(clearTimeout) },
+              })
+              return Promise.resolve(new Response(body, {
+                status: 200, headers: { 'Content-Type': 'text/event-stream' }
+              }))
+            }
+        }""", chunks)
         pg.evaluate("""() => {
             const s = JSON.parse(localStorage.getItem('ai-config'))
             s.ttsKey = 'tts-test'
             localStorage.setItem('ai-config', JSON.stringify(s))
         }""")
         pg.click('button[aria-label="朗读题目"]')
-        pg.wait_for_timeout(400)
+        pg.wait_for_selector('button[aria-label="停止朗读"]', timeout=1000)
+        assert not pg.evaluate("window.__ttsFinished"), "等到完整响应结束才播放，不是真流式"
+        pg.wait_for_selector('button[aria-label="朗读题目"]', timeout=3000)
         pg.click('button[aria-label="朗读解析"]')
-        pg.wait_for_timeout(400)
+        pg.wait_for_selector('button[aria-label="停止朗读"]', timeout=1000)
+        assert not pg.evaluate("window.__ttsFinished"), "解析朗读没有在首包到达后起播"
+        pg.wait_for_selector('button[aria-label="朗读解析"]', timeout=3000)
+        tts_hits = pg.evaluate("window.__ttsReqs")
         assert len(tts_hits) == 2, f"TTS 该被调用两次，实际 {len(tts_hits)}"
+        assert all(x["stream"] is True and x["audio"]["format"] == "pcm16" for x in tts_hits), \
+            "TTS 没有请求原生 PCM 流"
         assert "语音" not in (pg.locator(".toast").inner_text() or ""), "朗读报错了"
         # 同一段话重播直接用缓存，不该再花钱合成。
-        # 认 .spk 而不是 aria-label：假 WAV 只有 0.02 秒，播完按钮就从
-        # 「停止朗读」变回「朗读题目」了，按标签点会看状态脸色
+        # 第一次点从缓存起播，第二次点把它停掉；两次都不该再请求接口。
         pg.locator(".spk").first.click()
         pg.wait_for_timeout(400)
         pg.locator(".spk").first.click()

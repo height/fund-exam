@@ -1,3 +1,7 @@
+import { PCMPlayer } from '@speechmatics/web-pcm-player'
+import { SoundTouchNode } from '@soundtouchjs/audio-worklet'
+import soundTouchProcessorUrl from '@soundtouchjs/audio-worklet/processor?url'
+
 /**
  * AI 解析，走 OpenAI 兼容的 chat/completions 接口，浏览器 fetch 直连，不引 SDK。
  * 配置（接口地址、模型名、Key）存 localStorage——与做题记录（IndexedDB）隔离，
@@ -203,7 +207,21 @@ export async function askDemo(q, signal, onProgress) {
 /* ---- 语音朗读（MiMo TTS）。Key 同样存 ai-config，与做题记录隔离 ---- */
 
 let audioEl = null
-export function stopSpeak() { audioEl?.pause(); audioEl = null }
+let streamSession = null
+export function stopSpeak() {
+  if (audioEl) {
+    const ended = audioEl.onended
+    audioEl.onended = audioEl.onerror = null
+    audioEl.pause()
+    audioEl = null
+    ended?.()
+  }
+  if (streamSession) {
+    const s = streamSession
+    streamSession = null
+    s.stop()
+  }
+}
 
 /* 朗读语速。走播放器的 playbackRate 而不是求接口支持 speed 参数：
    任何音源都生效、改了立刻作用于正在播的这一段，也不用重新合成。
@@ -216,6 +234,7 @@ export const getTtsSpeed = () => {
 export function setTtsSpeed(v) {
   saveStore({ ...loadStore(), ttsSpeed: v })
   if (audioEl) audioEl.playbackRate = v      // 正在播的立刻跟上，不用等下一句
+  streamSession?.setRate(v)
 }
 
 /* 合成结果按念稿缓存：同一段话停了再播、翻回上一题再播，都不该重新花钱合成。
@@ -225,18 +244,252 @@ export function setTtsSpeed(v) {
 const VOICE_CACHE = new Map()
 const VOICE_KEEP = 8
 
-async function synth(text, signal) {
+function cacheVoice(text, url) {
+  VOICE_CACHE.set(text, url)
+  while (VOICE_CACHE.size > VOICE_KEEP) {
+    const oldest = VOICE_CACHE.keys().next().value
+    URL.revokeObjectURL(VOICE_CACHE.get(oldest))
+    VOICE_CACHE.delete(oldest)
+  }
+}
+
+function cachedVoice(text) {
   const hit = VOICE_CACHE.get(text)
   if (hit) {                       // 命中就挪到队尾，淘汰的永远是最久没用的那段
     VOICE_CACHE.delete(text)
     VOICE_CACHE.set(text, hit)
     return hit
   }
+  return null
+}
+
+/* 统一 Audio 与流式播放器的结束/报错接口。监听器偶尔会在事件发生后才挂上
+   （第一包和 [DONE] 紧挨着时很常见），所以事件要暂存，不能悄悄丢掉。 */
+function speechHandle(onStop) {
+  let endFn = null, errFn = null, ended = false, error = null
+  return {
+    stop: onStop,
+    get onended() { return endFn },
+    set onended(fn) { endFn = fn; if (ended && fn) queueMicrotask(fn) },
+    get onerror() { return errFn },
+    set onerror(fn) { errFn = fn; if (error && fn) queueMicrotask(() => fn(error)) },
+    _end() { if (!ended && !error) { ended = true; endFn?.() } },
+    _error(e) { if (!ended && !error) { error = e; errFn?.(e) } },
+  }
+}
+
+async function playCached(url, signal) {
+  if (signal?.aborted) throw new DOMException('已中止', 'AbortError')
+  const a = (audioEl = new Audio(url))
+  const h = speechHandle(() => {
+    if (audioEl === a) audioEl = null
+    a.pause()
+  })
+  a.preservesPitch = a.webkitPreservesPitch = true
+  a.playbackRate = getTtsSpeed()
+  a.onended = () => { if (audioEl === a) audioEl = null; h._end() }
+  a.onerror = () => { if (audioEl === a) audioEl = null; h._error(new Error('语音播放失败')) }
+  try { await a.play() }
+  catch (e) { if (audioEl === a) audioEl = null; throw e }
+  return h
+}
+
+const TTS_SAMPLE_RATE = 24000
+const START_BUFFER_SAMPLES = TTS_SAMPLE_RATE * 0.4 // 攒 400ms 再响，抵抗第一轮网络抖动
+const SCHEDULE_AHEAD = 0.65                       // AudioContext 最多预排 650ms，方便即时变速
+const FIRST_AUDIO_TIMEOUT = 15000
+const STALL_TIMEOUT = 12000
+const PROCESSOR_TAIL = 0.45                      // SoundTouch 把尾音吐干净需要一点时间
+
+function pcmToWav(chunks) {
+  const samples = chunks.reduce((n, c) => n + c.length, 0)
+  const buf = new ArrayBuffer(44 + samples * 2)
+  const v = new DataView(buf)
+  const ascii = (at, s) => [...s].forEach((c, i) => v.setUint8(at + i, c.charCodeAt(0)))
+  ascii(0, 'RIFF'); v.setUint32(4, 36 + samples * 2, true); ascii(8, 'WAVE')
+  ascii(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true)
+  v.setUint16(22, 1, true); v.setUint32(24, TTS_SAMPLE_RATE, true)
+  v.setUint32(28, TTS_SAMPLE_RATE * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true)
+  ascii(36, 'data'); v.setUint32(40, samples * 2, true)
+  let p = 44
+  for (const chunk of chunks) {
+    for (let i = 0; i < chunk.length; i++, p += 2) v.setInt16(p, chunk[i], true)
+  }
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }))
+}
+
+function decodePcm16(b64, carry) {
+  const raw = atob(b64)
+  let bytes = new Uint8Array(raw.length + (carry === null ? 0 : 1))
+  let at = 0
+  if (carry !== null) bytes[at++] = carry
+  for (let i = 0; i < raw.length; i++) bytes[at++] = raw.charCodeAt(i)
+  const nextCarry = bytes.length % 2 ? bytes[bytes.length - 1] : null
+  if (nextCarry !== null) bytes = bytes.subarray(0, bytes.length - 1)
+  // PCM16LE；DataView 明确写小端，避免把平台字节序当成协议的一部分。
+  const pcm = new Int16Array(bytes.length / 2)
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  for (let i = 0; i < pcm.length; i++) pcm[i] = view.getInt16(i * 2, true)
+  return [pcm, nextCarry]
+}
+
+function resamplePcm(pcm, fromRate, toRate) {
+  if (fromRate === toRate) return pcm
+  const out = new Int16Array(Math.max(1, Math.round(pcm.length * toRate / fromRate)))
+  const scale = fromRate / toRate
+  for (let i = 0; i < out.length; i++) {
+    const x = i * scale, a = Math.floor(x), b = Math.min(a + 1, pcm.length - 1)
+    out[i] = Math.round(pcm[a] + (pcm[b] - pcm[a]) * (x - a))
+  }
+  return out
+}
+
+/**
+ * MiMo 的 SSE 每个 delta 带一段 base64 PCM16。PCMPlayer 负责无缝排队，
+ * SoundTouch AudioWorklet 负责变速时保住音调；本层只管网络、缓冲和生命周期。
+ */
+function makeStreamSession(text, outerSignal, onState) {
+  const ctl = new AbortController()
+  const handle = speechHandle(() => stop())
+  let session = null
+  let ctx = null, player = null, touch = null, tickId = null, firstTimer = null
+  let rate = getTtsSpeed(), scheduledUntil = 0, pendingSamples = 0
+  let pending = [], collected = [], sources = new Set(), carry = null
+  let gotAudio = false, playing = false, streamDone = false, stopped = false, lastAudioAt = 0
+  let state = 'busy', startResolve, startReject, startSettled = false
+  const started = new Promise((resolve, reject) => { startResolve = resolve; startReject = reject })
+
+  const setState = next => {
+    if (state !== next) { state = next; onState?.(next) }
+  }
+  const abortError = () => new DOMException('已中止', 'AbortError')
+  const detachOuter = () => outerSignal?.removeEventListener('abort', outerAbort)
+
+  function cleanup() {
+    if (stopped) return
+    stopped = true
+    clearTimeout(firstTimer); clearInterval(tickId)
+    ctl.abort()
+    player?.interrupt()
+    for (const source of sources) { try { source.stop() } catch { /* 已自然结束 */ } }
+    sources.clear()
+    try { touch?.disconnect() } catch { /* 未连上 */ }
+    ctx?.close().catch(() => {})
+    detachOuter()
+    if (streamSession === session) streamSession = null
+  }
+
+  function stop(notify = true) {
+    if (stopped) return
+    cleanup()
+    if (!startSettled) { startSettled = true; startReject(abortError()) }
+    else if (notify) handle._end()
+  }
+
+  function fail(e) {
+    if (stopped) return
+    const afterStart = startSettled
+    cleanup()
+    if (afterStart) handle._error(e)
+    else { startSettled = true; startReject(e) }
+  }
+
+  function end() {
+    if (stopped) return
+    cleanup()
+    handle._end()
+  }
+
+  function outerAbort() { stop(false) }
+  if (outerSignal?.aborted) stop()
+  else outerSignal?.addEventListener('abort', outerAbort, { once: true })
+
+  function createPlayerContext() {
+    // PCMPlayer 把 gain 连到 context.destination。这里把 destination 换成
+    // SoundTouch，并截住 BufferSource，才能在流式播放中动态改语速且不变调。
+    return new Proxy(ctx, {
+      get(target, prop) {
+        if (prop === 'destination') return touch
+        if (prop === 'createBufferSource') return () => {
+          const source = target.createBufferSource()
+          source.playbackRate.value = rate
+          sources.add(source)
+          return source
+        }
+        const value = Reflect.get(target, prop, target)
+        return typeof value === 'function' ? value.bind(target) : value
+      },
+    })
+  }
+
+  function feed(pcm) {
+    const now = ctx.currentTime
+    const startAt = Math.max(scheduledUntil, now)
+    const audio = resamplePcm(pcm, TTS_SAMPLE_RATE, ctx.sampleRate)
+    player.playbackTime = startAt
+    player.playAudio(audio)
+    scheduledUntil = startAt + pcm.length / TTS_SAMPLE_RATE / rate
+    // PCMPlayer 不知道我们给 source 加了 playbackRate，需要校正下一段的排期。
+    player.playbackTime = scheduledUntil
+  }
+
+  function beginPlayback() {
+    if (playing || stopped) return
+    playing = true
+    setState('playing')
+    if (!startSettled) { startSettled = true; startResolve(handle) }
+  }
+
+  function tick() {
+    if (stopped || !ctx) return
+    const now = ctx.currentTime
+
+    if (!playing && (pendingSamples >= START_BUFFER_SAMPLES || (streamDone && pendingSamples))) {
+      beginPlayback()
+    }
+    if (playing) {
+      while (pending.length && scheduledUntil - now < SCHEDULE_AHEAD) {
+        const pcm = pending.shift()
+        pendingSamples -= pcm.length
+        feed(pcm)
+      }
+      const ahead = scheduledUntil - now
+      if (!streamDone && !pending.length && ahead < 0.08) setState('buffering')
+      else setState('playing')
+      if (streamDone && !pending.length && now >= scheduledUntil + PROCESSOR_TAIL) end()
+      if (!streamDone && !pending.length && ahead < 0.08 &&
+          gotAudio && Date.now() - lastAudioAt > STALL_TIMEOUT) {
+        fail(new Error('语音流中断，请重试'))
+      }
+    } else if (gotAudio && Date.now() - lastAudioAt > STALL_TIMEOUT) {
+      fail(new Error('语音生成停住了，请重试'))
+    }
+  }
+
+  function addAudio(data) {
+    const [pcm, nextCarry] = decodePcm16(data, carry)
+    carry = nextCarry
+    if (!pcm.length) return
+    if (!gotAudio) { gotAudio = true; clearTimeout(firstTimer) }
+    lastAudioAt = Date.now()
+    pending.push(pcm); pendingSamples += pcm.length; collected.push(pcm)
+    tick()
+  }
+
+  function finishStream() {
+    if (stopped) return
+    streamDone = true
+    if (!gotAudio) return fail(new Error('语音接口没返回音频'))
+    cacheVoice(text, pcmToWav(collected))
+    tick()
+  }
+
+  async function pump() {
   const { ttsKey } = loadStore()
   if (!ttsKey) throw new Error('先在「设置」页填好语音 Key')
   const res = await fetch('https://api.xiaomimimo.com/v1/chat/completions', {
     method: 'POST',
-    signal,
+    signal: ctl.signal,
     headers: { 'Content-Type': 'application/json', 'api-key': ttsKey },
     body: JSON.stringify({
       model: 'mimo-v2.5-tts',
@@ -244,34 +497,89 @@ async function synth(text, signal) {
         { role: 'user', content: '用清晰平稳、不快不慢的朗读语气，像老师念题一样，读下面这段话。' },
         { role: 'assistant', content: String(text).slice(0, 2000) },
       ],
-      audio: { format: 'wav', voice: 'mimo_default' },
+      audio: { format: 'pcm16', voice: 'mimo_default' },
+      stream: true,
     }),
   })
   if (!res.ok) throw new Error(res.status === 401 ? '语音 Key 无效' : `语音接口返回 ${res.status}`)
-  const b64 = (await res.json()).choices?.[0]?.message?.audio?.data
-  if (!b64) throw new Error('语音接口没返回音频')
-  const url = URL.createObjectURL(
-    new Blob([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], { type: 'audio/wav' }))
-  VOICE_CACHE.set(text, url)
-  while (VOICE_CACHE.size > VOICE_KEEP) {
-    const oldest = VOICE_CACHE.keys().next().value
-    URL.revokeObjectURL(VOICE_CACHE.get(oldest))
-    VOICE_CACHE.delete(oldest)
+    if (!res.body) throw new Error('浏览器不支持流式语音响应')
+
+    const reader = res.body.getReader(), dec = new TextDecoder()
+    let buf = '', done = false
+    const line = raw => {
+      const s = raw.replace(/^data: ?/, '').trim()
+      if (!s || s.startsWith(':')) return
+      if (s === '[DONE]') { done = true; return }
+      const audio = JSON.parse(s).choices?.[0]?.delta?.audio
+      if (audio?.data) addAudio(audio.data)
+    }
+    while (!done) {
+      const part = await reader.read()
+      if (part.done) break
+      buf += dec.decode(part.value, { stream: true })
+      const lines = buf.split(/\r?\n/)
+      buf = lines.pop()
+      for (const l of lines) { line(l); if (done) break }
+    }
+    buf += dec.decode()
+    if (!done && buf.trim()) line(buf)
+    if (done) reader.cancel().catch(() => {})
+    finishStream()
   }
-  return url
+
+  async function start() {
+    if (stopped) return started
+    try {
+      try { ctx = new AudioContext({ sampleRate: TTS_SAMPLE_RATE, latencyHint: 'interactive' }) }
+      catch { ctx = new AudioContext({ latencyHint: 'interactive' }) }
+      await ctx.resume()
+      await SoundTouchNode.register(ctx, soundTouchProcessorUrl)
+      if (stopped) return started
+      touch = new SoundTouchNode({ context: ctx, outputChannelCount: 1 })
+      touch.playbackRate.value = rate
+      touch.connect(ctx.destination)
+      player = new PCMPlayer(createPlayerContext())
+      scheduledUntil = ctx.currentTime
+      tickId = setInterval(tick, 50)
+      firstTimer = setTimeout(() => fail(new Error('语音生成超时，请重试')), FIRST_AUDIO_TIMEOUT)
+      pump().catch(e => { if (!stopped) fail(e.name === 'AbortError' ? abortError() : e) })
+    } catch (e) {
+      fail(e)
+    }
+    return started
+  }
+
+  function setRate(v) {
+    if (!TTS_SPEEDS.includes(v)) return
+    const old = rate
+    rate = v
+    if (!ctx || !touch) return
+    const now = ctx.currentTime
+    // 只预排很短一截，所以修正剩余排期即可；后续分片全部按新速度进入。
+    scheduledUntil = now + Math.max(0, scheduledUntil - now) * old / rate
+    player.playbackTime = scheduledUntil
+    touch.playbackRate.setValueAtTime(rate, now)
+    for (const source of sources) {
+      try { source.playbackRate.setValueAtTime(rate, now) } catch { /* 已结束 */ }
+    }
+  }
+
+  session = { start, stop, setRate }
+  return session
 }
 
-/** 合成并播放。再次调用会顶掉上一段；返回 Audio 以便监听 ended */
-export async function speak(text, signal) {
-  const url = await synth(text, signal)
-  // 合成期间用户已经翻题/关面板，别再出声
-  if (signal?.aborted) throw new DOMException('已中止', 'AbortError')
+/** 合成并播放。再次调用会顶掉上一段；第一段开始播放后即返回控制句柄 */
+export async function speak(text, signal, onState) {
   stopSpeak()
-  audioEl = new Audio(url)
-  audioEl.preservesPitch = audioEl.webkitPreservesPitch = true
-  audioEl.playbackRate = getTtsSpeed()
-  await audioEl.play()
-  return audioEl
+  const hit = cachedVoice(text)
+  if (hit) return playCached(hit, signal)
+  const session = makeStreamSession(text, signal, onState)
+  streamSession = session
+  try { return await session.start() }
+  catch (e) {
+    if (streamSession === session) streamSession = null
+    throw e
+  }
 }
 
 // TTS 不认罗马数字，Ⅰ Ⅱ Ⅲ Ⅳ 全被念成「一」，组合题先翻成「第几项」

@@ -1,4 +1,5 @@
-import { Icon, Options, SubjectSeg } from '../components/ui'
+import { Icon, Options, Speaker, SubjectSeg } from '../components/ui'
+import { mdToSpeech } from '../lib/ai'
 import { bySubject } from '../lib/bank'
 import { ExplainBody, Plain, Stem } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -46,6 +47,11 @@ export default function Wrong({ go }) {
             <summary className="chip">看答案解析 ▾</summary>
             <div style={{ marginTop: 10 }}><Options q={q} reveal /></div>
             <div className="explain" style={{ marginTop: 10 }}>
+              <div className="row" style={{ justifyContent: 'flex-end', marginBottom: 8 }}>
+                <Speaker getText={() => mdToSpeech(
+                  `正确答案 ${'ABCD'[q.answer]}。${q.explain || '本题暂无解析'}`
+                )} label="朗读答案解析" />
+              </div>
               <ExplainBody text={q.explain} />
               <Plain id={q.id} />
             </div>

@@ -153,21 +153,22 @@ export function Options({ q, picked, reveal, selected, onPick }) {
 
 /** 喇叭：合成并朗读一段文字，再点一次停。卸载即停，换题不会留声 */
 export function Speaker({ getText, label = '朗读' }) {
-  const [st, setSt] = useState('idle') // idle | busy | playing
+  const [st, setSt] = useState('idle') // idle | busy | buffering | playing
   const { toast } = useStore()
   // 卸载时既停当前音，也掐掉还在合成路上的请求——不然翻题后音频到货照播
   const ctlRef = useRef(null)
   useEffect(() => () => { ctlRef.current?.abort(); stopSpeak() }, [])
 
   async function click() {
-    if (st === 'playing') { stopSpeak(); return setSt('idle') }
+    if (st === 'playing' || st === 'buffering') { stopSpeak(); return setSt('idle') }
     if (st === 'busy') return
     const ctl = (ctlRef.current = new AbortController())
     setSt('busy')
     try {
-      const a = await speak(getText(), ctl.signal)
+      const a = await speak(getText(), ctl.signal, next => setSt(next))
       setSt('playing')
       a.onended = () => setSt('idle')
+      a.onerror = e => { toast(e.message || '语音播放失败'); setSt('idle') }
     } catch (e) {
       if (e.name !== 'AbortError') toast(e.message)
       setSt('idle')
@@ -176,8 +177,10 @@ export function Speaker({ getText, label = '朗读' }) {
 
   return (
     <button type="button" className="btn-sm btn-ghost spk" onClick={click}
-      aria-label={st === 'playing' ? '停止朗读' : label} title={label}>
-      {st === 'busy' ? <Icon name="loader" /> : st === 'playing' ? <Icon name="stop" /> : <Icon name="volume" />}
+      aria-label={st === 'playing' || st === 'buffering' ? '停止朗读' : label}
+      title={st === 'buffering' ? '缓冲中，点击停止' : label}>
+      {st === 'busy' || st === 'buffering' ? <Icon name="loader" />
+        : st === 'playing' ? <Icon name="stop" /> : <Icon name="volume" />}
     </button>
   )
 }
@@ -199,6 +202,11 @@ export function Explain({ q, picked }) {
           : <span className={`verdict ${ok ? 'right' : 'wrong'}`}>
               {ok ? '答对' : `你选了 ${'ABCD'[picked]}`}
             </span>}
+        {tab === 'book' && (
+          <Speaker key={q.id}
+            getText={() => mdToSpeech(`正确答案 ${'ABCD'[q.answer]}。${q.explain || '本题暂无解析'}`)}
+            label="朗读答案解析" />
+        )}
         <span className="explain-tabs">
           <button className={tab === 'book' ? 'on' : ''} onClick={() => setTab('book')}>解析</button>
           <button className={tab === 'ai' ? 'on' : ''}
