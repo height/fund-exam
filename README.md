@@ -77,6 +77,12 @@
 语音功能使用 MiMo TTS，需要在设置页配置相应的 API Key。
 最近生成的音频会在当前会话中缓存，重复播放时无需再次合成。
 
+| 题目与教材解析 | AI 解析 |
+|---|---|
+| <img src="docs/screenshots/13-voice-practice.png" alt="练习页中的题目朗读和教材解析朗读入口" /> | <img src="docs/screenshots/15-voice-ai.png" alt="AI 解析中的朗读入口" /> |
+| **错题本解析** | **划词解释** |
+| <img src="docs/screenshots/16-voice-wrong.png" alt="错题本解析中的朗读入口" /> | <img src="docs/screenshots/17-voice-selection.png" alt="划词解释中的朗读入口" /> |
+
 ## 计算题与公式图谱
 
 科目二练习页提供可收起的科学计算器。计算器与题目页面同时可用，
