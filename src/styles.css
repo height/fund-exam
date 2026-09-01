@@ -63,6 +63,8 @@
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
 /* 双击放大在答题时最烦：连点两个选项就被当成双击。manipulation 只掐双击缩放，
    保留滚动和双指缩放，是这一条里唯一不伤无障碍的做法。
    双指缩放另由 meta 的 user-scalable=no + main.jsx 里拦 gesturestart 处理 */
@@ -408,9 +410,15 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
   padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
 .ai-full .ai-text{font-size:16px;line-height:1.9;max-width:660px;margin:0 auto;width:100%}
 
-/* 喇叭按钮：收紧内边距别撑行高 */
-/* 纯图标按钮：正方形，跟同排的文字按钮共用一套内边距 */
-.spk{align-self:stretch;aspect-ratio:1;padding:7px}
+/* 朗读按钮保持纯图标；所有场景固定同一尺寸，不被所在行高拉伸。 */
+.spk{align-self:center;width:36px;height:36px;flex:0 0 36px;padding:0;border-radius:var(--r-s)}
+.spk>.icon{width:16px;height:16px}
+.spk[data-state="busy"],.spk[data-state="buffering"]{
+  color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent)}
+.spk[data-state="playing"]{
+  color:var(--on-accent);background:var(--accent);border-color:var(--accent)}
+.spk[data-state="error"]{
+  color:var(--bad);background:var(--bad-soft);border-color:var(--bad)}
 /* 朗读 + 重新解析这一排等高，两个按钮不再一高一矮 */
 .ai-actions{align-items:stretch}
 

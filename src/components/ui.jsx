@@ -151,37 +151,79 @@ export function Options({ q, picked, reveal, selected, onPick }) {
   )
 }
 
-/** 喇叭：合成并朗读一段文字，再点一次停。卸载即停，换题不会留声 */
+const SPEAKER_VIEW = {
+  idle:      { icon: 'volume',  text: '朗读' },
+  busy:      { icon: 'loader',  text: '生成中' },
+  buffering: { icon: 'loader',  text: '缓冲中' },
+  playing:   { icon: 'stop',    text: '朗读中' },
+  error:     { icon: 'refresh', text: '重试' },
+}
+
+/** 喇叭：把生成、缓冲、播放和失败都说清楚；活跃状态再点即取消 */
 export function Speaker({ getText, label = '朗读' }) {
-  const [st, setSt] = useState('idle') // idle | busy | buffering | playing
+  const [st, setSt] = useState('idle') // idle | busy | buffering | playing | error
   const { toast } = useStore()
   // 卸载时既停当前音，也掐掉还在合成路上的请求——不然翻题后音频到货照播
   const ctlRef = useRef(null)
-  useEffect(() => () => { ctlRef.current?.abort(); stopSpeak() }, [])
+  useEffect(() => () => {
+    const ctl = ctlRef.current
+    ctlRef.current = null
+    ctl?.abort()
+    stopSpeak()
+  }, [])
 
   async function click() {
-    if (st === 'playing' || st === 'buffering') { stopSpeak(); return setSt('idle') }
-    if (st === 'busy') return
+    if (st === 'busy' || st === 'playing' || st === 'buffering') {
+      const ctl = ctlRef.current
+      ctlRef.current = null
+      ctl?.abort()
+      stopSpeak()
+      return setSt('idle')
+    }
     const ctl = (ctlRef.current = new AbortController())
     setSt('busy')
     try {
-      const a = await speak(getText(), ctl.signal, next => setSt(next))
+      const a = await speak(getText(), ctl.signal, next => {
+        if (ctlRef.current === ctl) setSt(next)
+      })
+      if (ctlRef.current !== ctl) return
       setSt('playing')
-      a.onended = () => setSt('idle')
-      a.onerror = e => { toast(e.message || '语音播放失败'); setSt('idle') }
+      a.onended = () => {
+        if (ctlRef.current !== ctl) return
+        ctlRef.current = null
+        setSt('idle')
+      }
+      a.onerror = e => {
+        if (ctlRef.current !== ctl) return
+        ctlRef.current = null
+        toast(e.message || '语音播放失败')
+        setSt('error')
+      }
     } catch (e) {
-      if (e.name !== 'AbortError') toast(e.message)
-      setSt('idle')
+      if (ctlRef.current !== ctl) return
+      ctlRef.current = null
+      if (e.name === 'AbortError') setSt('idle')
+      else { toast(e.message || '语音生成失败'); setSt('error') }
     }
   }
 
+  const view = SPEAKER_VIEW[st]
+  const active = st === 'busy' || st === 'buffering' || st === 'playing'
+  const actionLabel = active
+    ? `${view.text}，点击${st === 'busy' ? '取消' : '停止'}`
+    : st === 'error' ? '朗读失败，点击重试' : label
+
   return (
-    <button type="button" className="btn-sm btn-ghost spk" onClick={click}
-      aria-label={st === 'playing' || st === 'buffering' ? '停止朗读' : label}
-      title={st === 'buffering' ? '缓冲中，点击停止' : label}>
-      {st === 'busy' || st === 'buffering' ? <Icon name="loader" />
-        : st === 'playing' ? <Icon name="stop" /> : <Icon name="volume" />}
-    </button>
+    <>
+      <button type="button" className="btn-sm btn-ghost spk" data-state={st} onClick={click}
+        aria-label={actionLabel} aria-busy={st === 'busy' || st === 'buffering'}
+        aria-pressed={active} title={actionLabel}>
+        <Icon name={view.icon} />
+      </button>
+      <span className="sr-only" role="status" aria-live="polite">
+        {st === 'idle' ? '' : st === 'error' ? '朗读失败，可以重试' : view.text}
+      </span>
+    </>
   )
 }
 
