@@ -1,5 +1,6 @@
 import { Icon, Options, Speaker, SubjectSeg } from '../components/ui'
 import { mdToSpeech } from '../lib/ai'
+import { track } from '../lib/analytics'
 import { bySubject } from '../lib/bank'
 import { ExplainBody, Plain, Stem } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -57,7 +58,10 @@ export default function Wrong({ go }) {
             </div>
           </details>
           <button className="btn-sm btn-ghost" style={{ alignSelf: 'flex-start' }}
-            onClick={() => patchRecord(q.id, { wrongFlag: false })}><Icon name="done" /> 标记已掌握</button>
+            onClick={() => {
+              patchRecord(q.id, { wrongFlag: false })
+              track('wrong_question_mastered', { subject })
+            }}><Icon name="done" /> 标记已掌握</button>
         </div>
       )) : (
         <div className="card">

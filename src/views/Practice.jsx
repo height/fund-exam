@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, Speaker, SubjectSeg } from '../components/ui'
 import { qToSpeech } from '../lib/ai'
+import { track } from '../lib/analytics'
 import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
 import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
@@ -37,7 +38,14 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
     if (order === 'rand') qs = shuffle(qs).slice(0, getRandomN())
     const key = keepsCursor(scope) ? `cursor:${subject}:${scope}:${order}` : null
     const saved = key && order === 'seq' ? await kvGet(key, 0) : 0
-    setSession({ qs, i: Math.min(saved, qs.length - 1), picks: {}, key, order, done: 0, right: 0 })
+    const scopeType = scope.startsWith('ch:') ? 'chapter' : scope
+    track('practice_started', {
+      subject,
+      scope: scopeType,
+      order,
+      question_count: qs.length,
+    })
+    setSession({ qs, i: Math.min(saved, qs.length - 1), picks: {}, key, order, scope: scopeType, done: 0, right: 0 })
   }
 
   // 答题中收起底栏，退出走 Runner 里的确认
@@ -154,6 +162,12 @@ function Runner({ session: s, setSession, onQuit }) {
   async function next() {
     if (s.i === s.qs.length - 1) {
       if (s.key) await kvSet(s.key, 0)
+      track('practice_completed', {
+        subject: q.subject,
+        scope: s.scope,
+        answered_count: s.done,
+        question_count: s.qs.length,
+      })
       toast(s.done ? `本轮做了 ${s.done} 题，对 ${s.right} 题` : '本轮结束')
       return onQuit()
     }
@@ -166,6 +180,7 @@ function Runner({ session: s, setSession, onQuit }) {
     if (shown) return
     const at = s.i
     const ok = await recordAnswer(q, idx)
+    track('practice_answered', { subject: q.subject, scope: s.scope })
     setSession(p => ({
       ...p, picks: { ...p.picks, [at]: idx }, done: p.done + 1, right: p.right + (ok ? 1 : 0),
     }))
@@ -185,6 +200,12 @@ function Runner({ session: s, setSession, onQuit }) {
       body: s.done ? `本轮做了 ${s.done} 题，记录都已保存，下次可以接着来。` : '还没答题，直接退出。',
       ok: '退出', cancel: '继续练习',
     })) return
+    track('practice_exited', {
+      subject: q.subject,
+      scope: s.scope,
+      answered_count: s.done,
+      question_count: s.qs.length,
+    })
     onQuit()
   }
 

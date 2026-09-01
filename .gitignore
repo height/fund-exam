@@ -1,6 +1,10 @@
 node_modules
 dist
 .DS_Store
+.env
+.env.local
+.env.*.local
+.claude
 
 # 备考 PDF 素材，太大不入库；见 docs/资料索引.md
 materials/

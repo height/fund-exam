@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFor, pickExamSet, qById } from '../lib/bank'
+import { track } from '../lib/analytics'
 import { idb, kvGet, kvSet } from '../lib/db'
 import { Stem, fmtTime } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -41,6 +42,11 @@ export default function Exam({ go, setQuiz, chapter }) {
       startTs: now, endTs: now + mins * 60000, i: 0,
     }
     await kvSet('activeExam', fresh)
+    track('exam_started', {
+      subject,
+      exam_type: chapter ? 'chapter' : 'full',
+      question_count: qs.length,
+    })
     setEx(fresh)
     setStage('running')
   }
@@ -73,6 +79,12 @@ export default function Exam({ go, setQuiz, chapter }) {
     }
     await idb.put('exams', rec)
     await kvSet('activeExam', null)
+    track('exam_submitted', {
+      subject: e.subject,
+      exam_type: e.chapter ? 'chapter' : 'full',
+      question_count: qs.length,
+      answered_count: Object.keys(e.answers).length,
+    })
     setResult(rec)
     setStage('result')
   }

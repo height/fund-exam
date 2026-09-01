@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Calculator from './components/Calculator'
 import SelectionTip from './components/SelectionTip'
 import { Dialog, Icon } from './components/ui'
+import { track, trackPageview } from './lib/analytics'
 import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
 import Chapters from './views/Chapters'
@@ -74,7 +75,10 @@ export default function App() {
   }
 
   // 切页重置滚动，顺带用 key 强制重挂载，避免上一页的局部状态串台
-  useEffect(() => { window.scrollTo(0, 0) }, [view])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    trackPageview(view)
+  }, [view])
 
   if (!ready) return null
 
@@ -117,7 +121,10 @@ export default function App() {
       {/* 抽屉展开时收起唤起钮，它本来就落在抽屉底下；收起用抽屉自己的 ×。
           Calculator 常驻挂载、只切 open，这样临时收起不会丢算式 */}
       {needsCalc && !calcOpen && (
-        <button className="calc-fab" onClick={() => setCalcOpen(true)} aria-label="打开科学计算器">
+        <button className="calc-fab" onClick={() => {
+          track('feature_used', { feature: 'calculator' })
+          setCalcOpen(true)
+        }} aria-label="打开科学计算器">
           <Icon name="calc" />
         </button>
       )}

@@ -29,6 +29,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          VITE_POSTHOG_KEY: ${{ vars.POSTHOG_PROJECT_KEY }}
+          VITE_POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
       # enablement 让 action 自己把 Pages 打开，省得去 Settings 点
       - uses: actions/configure-pages@v5
         with:

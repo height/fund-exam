@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { askAI, askDemo, getCfg, getKey, mdToSpeech, setKey, speak, stopSpeak } from '../lib/ai'
+import { track } from '../lib/analytics'
 import { SUBJECTS, SUBJ_SHORT, stats } from '../lib/bank'
 import { ExplainBody, Md, Plain } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -180,6 +181,7 @@ export function Speaker({ getText, label = '朗读' }) {
       stopSpeak()
       return setSt('idle')
     }
+    track('feature_used', { feature: 'speech' })
     const ctl = (ctlRef.current = new AbortController())
     setSt('busy')
     try {
@@ -252,9 +254,15 @@ export function Explain({ q, picked }) {
         <span className="explain-tabs">
           <button className={tab === 'book' ? 'on' : ''} onClick={() => setTab('book')}>解析</button>
           <button className={tab === 'ai' ? 'on' : ''}
-            onClick={() => { setAiOn(true); setTab('ai') }}><Icon name="sparkle" /> AI 解析</button>
+            onClick={() => {
+              if (!aiOn) track('feature_used', { feature: 'ai_explain' })
+              setAiOn(true); setTab('ai')
+            }}><Icon name="sparkle" /> AI 解析</button>
           <button className={tab === 'demo' ? 'on' : ''}
-            onClick={() => { setDemoOn(true); setTab('demo') }}><Icon name="chart" /> 图解</button>
+            onClick={() => {
+              if (!demoOn) track('feature_used', { feature: 'ai_diagram' })
+              setDemoOn(true); setTab('demo')
+            }}><Icon name="chart" /> 图解</button>
         </span>
       </div>
       <div style={tab === 'book' ? null : { display: 'none' }}>
