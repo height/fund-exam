@@ -422,11 +422,46 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 /* 朗读 + 重新解析这一排等高，两个按钮不再一高一矮 */
 .ai-actions{align-items:stretch}
 
-/* 划词解释：浮动按钮 + 可叠加的解释气泡 */
+/* 划词解释：桌面保留系统 Selection；触屏长按取词后用 Range 自绘，
+   避开 iOS/Android 复制菜单。不设 touch-action，所以长按成立前仍是浏览器原生滚动。 */
+/* 触屏端整个应用都不交给系统选词；JS 只在阅读区创建自定义选区。
+   这样长按统计数字、标题、导航文案时什么也不发生。 */
+:root[data-custom-selection] #app,
+:root[data-custom-selection] .bubble-body{
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+::selection{background:color-mix(in srgb,var(--accent) 18%,transparent);color:inherit}
+.sel-marks{position:fixed;inset:0;z-index:calc(var(--z-overlay) - 1);pointer-events:none}
+.sel-marks i{position:fixed;display:block;background:rgba(47,61,115,.2);
+  background:color-mix(in srgb,var(--accent) 22%,transparent);border-radius:2px;
+  box-shadow:inset 0 -1px color-mix(in srgb,var(--accent) 18%,transparent)}
+.sel-handle{position:fixed;z-index:calc(var(--z-toast) - 1);width:30px;
+  height:calc(var(--sel-line-height,24px) + 20px);padding:0;
+  border:0;background:transparent;border-radius:0;transform:translate(-50%,-10px);touch-action:none;
+  cursor:ew-resize;box-shadow:none}
+.sel-handle::before{content:"";position:absolute;left:14px;top:10px;width:2px;
+  height:var(--sel-line-height,24px);
+  border-radius:2px;background:var(--accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--sheet) 65%,transparent)}
+.sel-handle::after{content:"";position:absolute;left:11px;
+  top:calc(var(--sel-line-height,24px) + 5px);width:8px;height:10px;
+  border-radius:2px 2px 5px 5px;background:var(--accent)}
+.sel-handle-start::after{border-radius:5px 5px 2px 2px;top:5px}
+.sel-handle:active:not(:disabled){transform:translate(-50%,-10px)}
 .sel-tip{position:fixed;transform:translateX(-50%);z-index:var(--z-toast);
-  background:var(--accent);color:var(--on-accent);border:0;border-radius:99px;
-  padding:7px 13px;font-size:13px;font-weight:600;white-space:nowrap;
-  box-shadow:0 4px 16px rgba(0,0,0,.25)}
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  width:max-content;max-width:min(164px,calc(100vw - 16px));height:32px;
+  background:color-mix(in srgb,var(--sheet) 94%,var(--accent));
+  color:var(--accent-ink);border:1px solid color-mix(in srgb,var(--accent) 24%,var(--rule));
+  border-radius:8px;padding:0 8px;font-size:12px;font-weight:600;white-space:nowrap;
+  box-shadow:0 5px 18px -8px color-mix(in srgb,var(--accent) 45%,transparent),0 1px 3px rgba(0,0,0,.1);
+  touch-action:none;transition:background .15s var(--ease),transform .1s var(--ease)}
+.sel-tip>.icon{width:14px;height:14px}
+.sel-tip-copy{display:inline-flex;min-width:0;align-items:center}
+.sel-tip-term{display:block;min-width:0;max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sel-tip[data-side="right"]{transform:none}
+.sel-tip[data-side="left"]{transform:translateX(-100%)}
+.sel-tip:active:not(:disabled){transform:translateX(-50%) scale(.985)}
+.sel-tip[data-side="right"]:active:not(:disabled){transform:scale(.985)}
+.sel-tip[data-side="left"]:active:not(:disabled){transform:translateX(-100%) scale(.985)}
 .bubble{position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));
   max-width:636px;margin:0 auto;max-height:46vh;overflow-y:auto;
   box-shadow:0 10px 34px rgba(0,0,0,.3)}

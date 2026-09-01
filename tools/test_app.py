@@ -279,11 +279,11 @@ def run():
             localStorage.setItem('ai-config', JSON.stringify(s))
         }""")
         pg.click('button[aria-label="朗读题目"]')
-        pg.wait_for_selector('button[aria-label="停止朗读"]', timeout=1000)
+        pg.wait_for_selector('button.spk[data-state="playing"]', timeout=1000)
         assert not pg.evaluate("window.__ttsFinished"), "等到完整响应结束才播放，不是真流式"
         pg.wait_for_selector('button[aria-label="朗读题目"]', timeout=3000)
         pg.click('button[aria-label="朗读解析"]')
-        pg.wait_for_selector('button[aria-label="停止朗读"]', timeout=1000)
+        pg.wait_for_selector('button.spk[data-state="playing"]', timeout=1000)
         assert not pg.evaluate("window.__ttsFinished"), "解析朗读没有在首包到达后起播"
         pg.wait_for_selector('button[aria-label="朗读解析"]', timeout=3000)
         tts_hits = pg.evaluate("window.__ttsReqs")
@@ -418,6 +418,199 @@ def run():
         pg.click('nav button:has-text("错题本")')
         pg.wait_for_selector("text=道待消灭")
         assert int(pg.locator(".card .num").first.inner_text()) == n, "刷新后错题本对不上"
+
+        # 触屏取词：用 CDP 发真实 touchStart/Move/End，不用直接调内部函数的假测试。
+        # 新 context 开启 coarse pointer，同时证明桌面那套原生划选没有被修改。
+        touch_ctx = b.new_context(viewport={"width": 390, "height": 844},
+                                  is_mobile=True, has_touch=True)
+        mob = touch_ctx.new_page()
+        mob.on("pageerror", lambda e: errs.append(f"触屏页报错：{e}"))
+        mob.goto(f"{APP}#/practice")
+        mob.wait_for_selector('button:has-text("开始练习")')
+        mob.click('button:has-text("开始练习")')
+        mob.wait_for_selector(".stem")
+        cdp = touch_ctx.new_cdp_session(mob)
+
+        def char_point(selector, index):
+            """取指定字符的可视中心，使手势测试不依赖某道题的固定文案。"""
+            return mob.eval_on_selector(selector, """(root, wanted) => {
+              const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+              let node, seen = 0
+              while ((node = w.nextNode())) {
+                if (wanted < seen + node.data.length) {
+                  const at = Math.max(0, wanted - seen)
+                  const r = document.createRange()
+                  r.setStart(node, at); r.setEnd(node, Math.min(at + 1, node.data.length))
+                  const b = r.getBoundingClientRect()
+                  return {x: b.left + Math.max(1, b.width / 2), y: b.top + b.height / 2}
+                }
+                seen += node.data.length
+              }
+              throw new Error('指定字符超出文本')
+            }""", index)
+
+        def expected_word(selector, index):
+            return mob.eval_on_selector(selector, """(root, index) => {
+              const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+              let node, text = ''
+              while ((node = w.nextNode())) text += node.data
+              const segments = [...new Intl.Segmenter('zh-CN',{granularity:'word'}).segment(text)]
+              const hit = segments.find(s => index >= s.index && index < s.index + s.segment.length)
+              return hit?.isWordLike ? hit.segment : null
+            }""", index)
+
+        def touch(kind, point=None, ident=1):
+            points = [] if point is None else [{
+                "x": round(point["x"]), "y": round(point["y"]),
+                "id": ident, "radiusX": 2, "radiusY": 2, "force": 1,
+            }]
+            cdp.send("Input.dispatchTouchEvent", {"type": kind, "touchPoints": points})
+
+        assert mob.locator("html").get_attribute("data-custom-selection") is not None, \
+            "触屏环境没启用自定义取词"
+        assert mob.eval_on_selector(".stem", "e=>getComputedStyle(e).userSelect") == "none", \
+            "触屏题干仍会触发系统选区"
+        assert mob.eval_on_selector(".stem", """e=>{
+          const x=new MouseEvent('contextmenu',{bubbles:true,cancelable:true})
+          e.dispatchEvent(x); return x.defaultPrevented
+        }"""), "触屏长按的 contextmenu 没被拦住"
+
+        # 1) 快速滑动应立刻取消长按计时，不能误出取词 UI。
+        p0 = char_point(".stem", 2)
+        touch("touchStart", p0)
+        touch("touchMove", {"x": p0["x"], "y": p0["y"] - 70})
+        touch("touchEnd")
+        mob.wait_for_timeout(500)
+        assert mob.locator(".sel-tip").count() == 0, "滑动页面时误触了长按取词"
+        mob.evaluate("scrollTo(0, 0)")
+        mob.wait_for_timeout(50)
+
+        # 2) 按住成立后用 CSS Highlight/遮罩自绘，系统 Selection 必须仍为空。
+        p0 = char_point(".stem", 2)
+        p1 = char_point(".stem", 14)
+        expected_initial = expected_word(".stem", 2)
+        touch("touchStart", p0)
+        mob.wait_for_selector(".sel-tip", timeout=1000)
+        initial_term = mob.locator(".sel-tip").get_attribute("data-term")
+        assert initial_term == expected_initial, \
+            f"长按没有精确命中触点词：期望 {expected_initial}，实际 {initial_term}"
+        assert mob.evaluate("getSelection().isCollapsed"), "自定义取词意外写入了系统 Selection"
+        assert mob.locator(".sel-handle").count() == 2, "自定义选区没有双端拖拽手柄"
+        assert mob.locator(".sel-marks i").count() >= 1, "自定义选区没有画出高亮"
+        handle_alignment = mob.evaluate("""() => {
+          const marks=[...document.querySelectorAll('.sel-marks i')]
+          const first=marks[0].getBoundingClientRect(), last=marks.at(-1).getBoundingClientRect()
+          const center=(selector) => {
+            const el=document.querySelector(selector), box=el.getBoundingClientRect()
+            const knob=getComputedStyle(el,'::after')
+            return box.top+parseFloat(knob.top)+parseFloat(knob.height)/2
+          }
+          return {top:first.top,bottom:last.bottom,start:center('.sel-handle-start'),
+            end:center('.sel-handle-end')}
+        }""")
+        assert abs(handle_alignment["start"] - handle_alignment["top"]) <= 1, \
+            f"起点手柄偏离了选区顶部：{handle_alignment}"
+        assert abs(handle_alignment["end"] - handle_alignment["bottom"]) <= 1, \
+            f"终点手柄偏离了选区底部：{handle_alignment}"
+        painted = mob.eval_on_selector(".sel-marks i", """el => {
+          const r=el.getBoundingClientRect(), bg=getComputedStyle(el).backgroundColor
+          return r.width>0 && r.height>0 && bg!=='transparent' && !bg.endsWith(', 0)')
+        }""")
+        assert painted, "自定义选中态不可见"
+
+        # 手指不抬起直接向后拖：以词边界吸附扩选。
+        touch("touchMove", p1)
+        mob.wait_for_timeout(80)
+        touch("touchEnd")
+        extended_term = mob.locator(".sel-tip").get_attribute("data-term")
+        assert len(extended_term) > len(initial_term), \
+            f"长按后直接拖动没扩选：{initial_term} -> {extended_term}"
+        assert len(extended_term) <= 60, "拖选超过了 60 字上限"
+
+        # 3) 抬手后仍能分别拖终点扩展、拖起点收窄。
+        end_box = mob.locator(".sel-handle-end").bounding_box()
+        stem_len = mob.eval_on_selector(".stem", "e=>e.textContent.length")
+        p2 = char_point(".stem", min(40, stem_len - 2))
+        touch("touchStart", {"x": end_box["x"] + end_box["width"] / 2,
+                              "y": end_box["y"] + end_box["height"] / 2}, ident=2)
+        touch("touchMove", p2, ident=2)
+        mob.wait_for_timeout(80)
+        touch("touchEnd", ident=2)
+        handle_extended = mob.locator(".sel-tip").get_attribute("data-term")
+        assert len(handle_extended) > len(extended_term), \
+            f"终点手柄没有扩大选区：{extended_term} -> {handle_extended}"
+        assert mob.locator(".sel-tip-copy").text_content() == f'解释 “{handle_extended}”', \
+            "解释按钮展示的词与实际选区不一致"
+        assert mob.eval_on_selector(".sel-tip-term", "e=>e.scrollWidth>e.clientWidth"), \
+            "长词没有在按钮内省略"
+        assert mob.eval_on_selector(".sel-tip", "e=>e.getBoundingClientRect().width<=164.5"), \
+            "长词把解释按钮撑出了最大宽度"
+
+        start_box = mob.locator(".sel-handle-start").bounding_box()
+        p_start = char_point(".stem", 7)
+        touch("touchStart", {"x": start_box["x"] + start_box["width"] / 2,
+                              "y": start_box["y"] + start_box["height"] / 2}, ident=3)
+        touch("touchMove", p_start, ident=3)
+        mob.wait_for_timeout(80)
+        touch("touchEnd", ident=3)
+        narrowed = mob.locator(".sel-tip").get_attribute("data-term")
+        assert len(narrowed) < len(handle_extended), "起点手柄没有收窄选区"
+
+        # 拖到视口底边要逐帧自动滚动，长题不用反复抬手。
+        mob.evaluate("document.body.style.minHeight='1400px';scrollTo(0,0)")
+        mob.wait_for_timeout(50)
+        end_box = mob.locator(".sel-handle-end").bounding_box()
+        before_scroll = mob.evaluate("scrollY")
+        touch("touchStart", {"x": end_box["x"] + end_box["width"] / 2,
+                              "y": end_box["y"] + end_box["height"] / 2}, ident=5)
+        touch("touchMove", {"x": 250, "y": 838}, ident=5)
+        mob.wait_for_timeout(350)
+        touch("touchEnd", ident=5)
+        assert mob.evaluate("scrollY") > before_scroll, "选区手柄拖到底边时没有自动滚动"
+        narrowed = mob.locator(".sel-tip").get_attribute("data-term")
+        assert len(narrowed) <= 60, "边缘滚动扩选超过了 60 字上限"
+        mob.evaluate("document.body.style.minHeight='';scrollTo(0,0)")
+        mob.wait_for_timeout(50)
+
+        # 4) 解释按钮沿用现有气泡，打开后手柄、高亮、工具条全部收掉。
+        mob.locator(".sel-tip").tap()
+        mob.wait_for_selector(".bubble")
+        assert mob.locator(".bubble-term").inner_text() == narrowed
+        assert mob.locator(".sel-tip,.sel-handle").count() == 0, \
+            "打开解释后自定义选区没清理"
+        mob.click('.bubble button[aria-label="关闭"]')
+        mob.wait_for_selector(".bubble", state="detached")
+
+        # 5) 选项文字也能取词，但长按抬手绝不能顺手把选项答了。
+        opt_point = char_point(".opt>span", 2)
+        touch("touchStart", opt_point, ident=4)
+        mob.wait_for_selector(".sel-tip", timeout=1000)
+        touch("touchEnd", ident=4)
+        assert mob.locator(".explain").count() == 0, "长按选项文字误触了答题 click"
+        assert mob.locator(".opt.sel,.opt.ok,.opt.bad").count() == 0, "长按后选项状态被改变"
+
+        # 6) 路由切换清理持有 DOM Range 的 UI，不把旧页节点留在内存里。
+        mob.evaluate("location.hash='#/home'")
+        mob.wait_for_selector(".hero-verdict")
+        assert mob.locator(".sel-tip,.sel-handle,.sel-marks").count() == 0, \
+            "切页后还留着上一页的选区"
+        assert mob.eval_on_selector("#app", "e=>getComputedStyle(e).userSelect") == "none", \
+            "触屏首页仍会调起系统选词"
+        # 即使某个 WebView 忽略 CSS，selectionchange 兜底也要立即清掉原生选区。
+        mob.evaluate("""() => {
+          const el=document.querySelector('.hero-verdict'), r=document.createRange()
+          r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r)
+        }""")
+        mob.wait_for_timeout(350)
+        assert mob.evaluate("getSelection().isCollapsed"), "触屏端没有兜底清理系统 Selection"
+        # 截图里实际长按的就是这块：首页普通文字也必须走自定义取词。
+        home_point = char_point(".today>span", 2)
+        touch("touchStart", home_point, ident=6)
+        mob.wait_for_selector(".sel-tip", timeout=1000)
+        assert mob.locator(".sel-tip").get_attribute("data-term"), "首页普通文字长按没反应"
+        assert mob.evaluate("getSelection().isCollapsed"), "首页取词退回了系统 Selection"
+        touch("touchEnd", ident=6)
+        touch_ctx.close()
 
         assert not errs, f"控制台报错：{errs}"
         b.close()
