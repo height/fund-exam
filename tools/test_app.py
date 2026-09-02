@@ -60,6 +60,15 @@ def run():
         n_listed = int(re.search(r"(\d+) 题", first).group(1))
         assert pg.locator(".topbar").first.inner_text().strip().endswith(f"/{n_listed}"), \
             f"章节题数对不上：列表说 {n_listed}"
+        # 答题进度栏固定在视口顶部，正文滚动时不能跟着离场
+        assert pg.eval_on_selector(".topbar", "e=>getComputedStyle(e).position") == "fixed", \
+            "答题进度栏不是 fixed"
+        top_y = pg.locator(".topbar").bounding_box()["y"]
+        pg.evaluate("document.body.style.minHeight='1600px';scrollTo(0,500)")
+        pg.wait_for_timeout(80)
+        assert abs(pg.locator(".topbar").bounding_box()["y"] - top_y) < 1, \
+            "滚动内容时答题进度栏跟着滑走了"
+        pg.evaluate("document.body.style.minHeight='';scrollTo(0,0)")
         pg.go_back()
         # 考试模式：同一章抽最多 30 题限时考
         pg.wait_for_selector(".ch-row")

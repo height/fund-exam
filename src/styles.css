@@ -475,7 +475,8 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .plain-body b{color:var(--accent-ink);font-weight:600;margin-right:6px}
 
 /* ---- 常驻状态条 / 操作条 ---- */
-.topbar{position:sticky;top:0;z-index:var(--z-bar);margin:-18px -16px 0;padding:10px 16px;
+.topbar{position:fixed;top:0;left:0;right:0;width:100%;max-width:660px;z-index:var(--z-bar);
+  margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
   background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:12px}
 .topbar .bar{flex:1}
@@ -514,6 +515,8 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 /* 答题中收起底栏：底栏没了，操作条落到最底，正文和 toast 的留白跟着收 */
 :root[data-quiz] body,:root[data-bare] body{
   padding-bottom:calc(env(safe-area-inset-bottom) + var(--calc-h))}
+:root[data-quiz] #app.fade{animation:none}
+:root[data-quiz] #app{padding-top:calc(68px + env(safe-area-inset-top))}
 :root[data-quiz] .actionbar{bottom:var(--calc-h);
   padding-bottom:calc(10px + env(safe-area-inset-bottom))}
 :root[data-quiz] .toast,:root[data-bare] .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
