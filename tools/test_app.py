@@ -331,11 +331,13 @@ def run():
         pg.click('button[aria-label="朗读题目"]')
         pg.wait_for_selector('button.spk[data-state="playing"]', timeout=1000)
         assert not pg.evaluate("window.__ttsFinished"), "等到完整响应结束才播放，不是真流式"
-        pg.wait_for_selector('button[aria-label="朗读题目"]', timeout=3000)
+        # AudioWorklet 在繁忙的无头 Chrome 里收尾会有额外调度延迟；
+        # 这里验证最终回到 idle，不把机器性能当成 3 秒产品承诺。
+        pg.wait_for_selector('button[aria-label="朗读题目"]', timeout=6000)
         pg.click('button[aria-label="朗读解析"]')
         pg.wait_for_selector('button.spk[data-state="playing"]', timeout=1000)
         assert not pg.evaluate("window.__ttsFinished"), "解析朗读没有在首包到达后起播"
-        pg.wait_for_selector('button[aria-label="朗读解析"]', timeout=3000)
+        pg.wait_for_selector('button[aria-label="朗读解析"]', timeout=6000)
         tts_hits = pg.evaluate("window.__ttsReqs")
         assert len(tts_hits) == 2, f"TTS 该被调用两次，实际 {len(tts_hits)}"
         assert all(x["stream"] is True and x["audio"]["format"] == "pcm16" for x in tts_hits), \
