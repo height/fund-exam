@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/ui'
 import { PRESETS, TTS_SPEEDS, getTtsSpeed, loadStore, pingAI, provDefault, saveStore, setTtsSpeed } from '../lib/ai'
-import { analyticsConfigured, getAnalyticsEnabled, setAnalyticsEnabled, track } from '../lib/analytics'
+import { track } from '../lib/analytics'
 import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
@@ -30,7 +30,6 @@ export default function Data() {
   const [testing, setTesting] = useState(false)
   const [ttsKey, setTtsKey] = useState(() => loadStore().ttsKey || '')
   const [speed, setSpeed] = useState(getTtsSpeed)
-  const [anonymousAnalytics, setAnonymousAnalytics] = useState(() => analyticsConfigured && getAnalyticsEnabled())
   const fileRef = useRef(null)
 
   // 两家各存一份，tab 就是默认模型开关：一点立即生效并记住
@@ -184,27 +183,6 @@ export default function Data() {
             ))}
           </span>
         </label>
-      </div>
-
-      <div className="card">
-        <h2>隐私</h2>
-        <label className="row between" style={{ cursor: 'pointer' }}>
-          <span>匿名使用统计
-            <span className="muted" style={{ display: 'block', fontSize: 12 }}>
-              仅统计页面和功能使用，不上传题目、答案、成绩或 API Key
-            </span>
-          </span>
-          <input type="checkbox" checked={anonymousAnalytics}
-            disabled={!analyticsConfigured}
-            onChange={e => {
-              const enabled = e.target.checked
-              setAnonymousAnalytics(enabled)
-              setAnalyticsEnabled(enabled)
-              toast(enabled ? '已开启匿名统计' : '已关闭匿名统计')
-            }}
-            style={{ width: 20, height: 20, accentColor: 'var(--accent)' }} />
-        </label>
-        {!analyticsConfigured && <div className="muted">当前构建未配置统计服务，不会发送任何数据。</div>}
       </div>
 
       <div className="card">

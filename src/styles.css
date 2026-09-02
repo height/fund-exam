@@ -396,6 +396,8 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .demo-scroll{max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .fs-btn{position:absolute;top:8px;right:8px;z-index:1;background:var(--sheet);opacity:.92;
   padding:6px 8px;line-height:1}
+.full-back{position:fixed;top:calc(10px + env(safe-area-inset-top));left:12px;z-index:2;
+  width:36px;height:36px;padding:0;background:var(--sheet);opacity:.92}
 .demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff}
 .demo-full .demo-scroll{max-height:none;height:100dvh}
 /* 内容比屏幕短时也铺满，别在白底上露出一截页面底色 */

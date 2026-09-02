@@ -187,10 +187,16 @@ def run():
         pg.click('.explain-tabs button:has-text("图解")')
         pg.wait_for_selector('iframe.demo-frame')
         assert pg.locator("iframe.demo-frame").get_attribute("sandbox") == "allow-scripts", "iframe 没关沙箱"
+        diagram_base_hash = pg.evaluate("location.hash")
         pg.click('.demo-box button[aria-label="全屏查看"]')
         pg.wait_for_selector(".demo-full")
-        pg.keyboard.press("Escape")
+        assert "fullscreen=diagram" in pg.evaluate("location.hash"), "图解全屏没有压入 hash 历史"
+        assert pg.locator('.demo-full button[aria-label="返回答题页"]').count() == 1, \
+            "图解全屏左上角没有返回按钮"
+        pg.click('.demo-full button[aria-label="返回答题页"]')
         pg.wait_for_selector(".demo-full", state="detached")
+        assert pg.evaluate("location.hash") == diagram_base_hash, "退出图解全屏后没有回到原答题路由"
+        assert pg.locator(".stem").count() == 1, "浏览器返回误退出了答题界面"
         pg.click('.explain-tabs button:text-is("解析")')
         pg.click('.explain-tabs button:has-text("AI 解析")')
         pg.click('.explain-tabs button:has-text("图解")')
@@ -199,10 +205,14 @@ def run():
         pg.click('.explain-tabs button:has-text("AI 解析")')
 
         # AI 文字解析同样能全屏
+        ai_base_hash = pg.evaluate("location.hash")
         pg.click('.ai-box button[aria-label="全屏查看"]')
         pg.wait_for_selector(".ai-full .ai-text b")
-        pg.keyboard.press("Escape")
+        assert "fullscreen=ai" in pg.evaluate("location.hash"), "AI 解析全屏没有压入 hash 历史"
+        pg.go_back()
         pg.wait_for_selector(".ai-full", state="detached")
+        assert pg.evaluate("location.hash") == ai_base_hash, "退出 AI 全屏后没有回到原答题路由"
+        assert pg.locator(".stem").count() == 1, "浏览器返回误退出了答题界面"
 
         # 重新解析：真发一次新请求；换题再回来走内存缓存，不再请求
         n0 = len(ai_hits)

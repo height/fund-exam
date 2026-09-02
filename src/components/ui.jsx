@@ -344,7 +344,7 @@ function AiExplain({ q, picked }) {
   )
 
   return (
-    <FullWrap className="ai-box" fullClass="ai-box ai-full">
+    <FullWrap className="ai-box" fullClass="ai-box ai-full" hashValue="ai">
       {(text || state === 'loading') && (
         // 推理模型先想后说，内容没到之前给个交代，别只闪光标
         <div className="ai-text"><Md text={state === 'loading' ? `${text || '正在思考'}▍` : text} /></div>
@@ -386,21 +386,68 @@ const SIZER = `<script>(function(){
 })()<\/script>`
 
 /**
- * 全屏包装：右上角切换按钮，Esc 退出。全屏层 portal 到 body 下——
+ * 全屏包装：右上角切换按钮，Esc 退出。打开时额外 push 一层 hash 历史，
+ * iOS 横划返回会先退掉全屏，而不是直接退出整场练习/考试。
+ * 全屏层 portal 到 body 下——
  * 祖先的 transform/滚动容器会把 position:fixed 圈住（iOS 上尤其），必须逃出去。
  * iOS 没有元素级原生全屏，走 CSS 覆盖层。
  */
-function FullWrap({ className, fullClass, children }) {
+function FullWrap({ className, fullClass, hashValue, children }) {
   const [full, setFull] = useState(false)
+  const tokenRef = useRef(`fullscreen:${hashValue}:${Math.random().toString(36).slice(2)}`)
+
+  function hashWithFullscreen(value) {
+    const [route = 'home', query = ''] = location.hash.replace(/^#\/?/, '').split('?')
+    const params = new URLSearchParams(query)
+    if (value) params.set('fullscreen', value)
+    else params.delete('fullscreen')
+    const next = params.toString()
+    return `#/${route}${next ? `?${next}` : ''}`
+  }
+
+  function openFull() {
+    if (full) return
+    const previous = history.state && typeof history.state === 'object' ? history.state : {}
+    history.pushState({ ...previous, __fullWrap: tokenRef.current }, '', hashWithFullscreen(hashValue))
+    setFull(true)
+  }
+
+  function closeFull() {
+    setFull(false)
+    // 只有自己创建的历史项才后退；若外部路由已经变化，只收起覆盖层。
+    if (history.state?.__fullWrap === tokenRef.current) history.back()
+  }
+
+  // 浏览器返回/前进（包括 iOS 边缘横划）与覆盖层状态保持一致。
+  useEffect(() => {
+    const syncHistory = () => setFull(history.state?.__fullWrap === tokenRef.current)
+    window.addEventListener('popstate', syncHistory)
+    window.addEventListener('hashchange', syncHistory)
+    return () => {
+      window.removeEventListener('popstate', syncHistory)
+      window.removeEventListener('hashchange', syncHistory)
+    }
+  }, [])
+
   useEffect(() => {
     if (!full) return
-    const onKey = e => { if (e.key === 'Escape') setFull(false) }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    const onKey = e => {
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      e.stopPropagation()
+      closeFull()
+    }
+    document.addEventListener('keydown', onKey, true)
+    return () => document.removeEventListener('keydown', onKey, true)
   }, [full])
   const box = (
     <div className={full ? fullClass : className}>
-      <button className="btn-sm fs-btn" onClick={() => setFull(f => !f)}
+      {full && (
+        <button className="btn-sm full-back" onClick={closeFull} aria-label="返回答题页">
+          <Icon name="back" size={18} />
+        </button>
+      )}
+      <button className="btn-sm fs-btn" onClick={full ? closeFull : openFull}
         aria-label={full ? '退出全屏' : '全屏查看'}>
         <Icon name={full ? 'shrink' : 'expand'} size={14} />
       </button>
@@ -459,7 +506,7 @@ function Demo({ q }) {
     </div>
   )
   return (
-    <FullWrap className="demo-box" fullClass="demo-full">
+    <FullWrap className="demo-box" fullClass="demo-full" hashValue="diagram">
       {/* ponytail: 切全屏会换 DOM 父级，iframe 重载、演示步骤回到第一步；要保状态得上 postMessage */}
       <div className="demo-scroll">
         <iframe ref={frameRef} className="demo-frame" sandbox="allow-scripts"
