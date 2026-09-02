@@ -193,6 +193,10 @@ def run():
         assert "fullscreen=diagram" in pg.evaluate("location.hash"), "图解全屏没有压入 hash 历史"
         assert pg.locator('.demo-full button[aria-label="返回答题页"]').count() == 1, \
             "图解全屏左上角没有返回按钮"
+        assert pg.locator('.demo-full button[aria-label="退出全屏"]').count() == 0, \
+            "图解全屏仍显示右上角退出按钮"
+        assert pg.eval_on_selector(".demo-full", "e=>{const b=e.querySelector('.full-back').getBoundingClientRect(),c=e.querySelector('.demo-frame').getBoundingClientRect();return c.top>=b.bottom}") , \
+            "图解内容侵入了顶部返回按钮安全区"
         pg.click('.demo-full button[aria-label="返回答题页"]')
         pg.wait_for_selector(".demo-full", state="detached")
         assert pg.evaluate("location.hash") == diagram_base_hash, "退出图解全屏后没有回到原答题路由"
@@ -209,6 +213,10 @@ def run():
         pg.click('.ai-box button[aria-label="全屏查看"]')
         pg.wait_for_selector(".ai-full .ai-text b")
         assert "fullscreen=ai" in pg.evaluate("location.hash"), "AI 解析全屏没有压入 hash 历史"
+        assert pg.locator('.ai-full button[aria-label="退出全屏"]').count() == 0, \
+            "AI 解析全屏仍显示右上角退出按钮"
+        assert pg.eval_on_selector(".ai-full", "e=>{const b=e.querySelector('.full-back').getBoundingClientRect(),c=e.querySelector('.ai-text').getBoundingClientRect();return c.top>=b.bottom}") , \
+            "AI 解析内容侵入了顶部返回按钮安全区"
         pg.go_back()
         pg.wait_for_selector(".ai-full", state="detached")
         assert pg.evaluate("location.hash") == ai_base_hash, "退出 AI 全屏后没有回到原答题路由"

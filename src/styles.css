@@ -399,17 +399,17 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .full-back{position:fixed;top:calc(10px + env(safe-area-inset-top));left:12px;z-index:2;
   width:36px;height:36px;padding:0;background:var(--sheet);opacity:.92}
 .demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff}
-.demo-full .demo-scroll{max-height:none;height:100dvh}
+.demo-full .demo-scroll{max-height:none;height:100dvh;box-sizing:border-box;
+  padding-top:calc(58px + env(safe-area-inset-top))}
 /* 内容比屏幕短时也铺满，别在白底上露出一截页面底色 */
-.demo-full .demo-frame{min-height:100dvh}
-.demo-full .fs-btn,.ai-full .fs-btn{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px}
+.demo-full .demo-frame{min-height:calc(100dvh - 58px - env(safe-area-inset-top))}
 
 /* AI 文字解析的全屏态：铺满、可滚、字放大一档 */
 .ai-box{position:relative}
 .ai-box .fs-btn{top:6px;right:6px}
 .ai-full{position:fixed;inset:0;z-index:var(--z-overlay);margin:0;border-radius:0;overflow-y:auto;
   background:var(--paper);
-  padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
+  padding:calc(64px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
 .ai-full .ai-text{font-size:16px;line-height:1.9;max-width:660px;margin:0 auto;width:100%}
 
 /* 朗读按钮保持纯图标；所有场景固定同一尺寸，不被所在行高拉伸。 */

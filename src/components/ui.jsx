@@ -386,7 +386,8 @@ const SIZER = `<script>(function(){
 })()<\/script>`
 
 /**
- * 全屏包装：右上角切换按钮，Esc 退出。打开时额外 push 一层 hash 历史，
+ * 全屏包装：卡片右上角进入全屏，全屏后只留左上角返回按钮，Esc 也可退出。
+ * 打开时额外 push 一层 hash 历史，
  * iOS 横划返回会先退掉全屏，而不是直接退出整场练习/考试。
  * 全屏层 portal 到 body 下——
  * 祖先的 transform/滚动容器会把 position:fixed 圈住（iOS 上尤其），必须逃出去。
@@ -447,10 +448,11 @@ function FullWrap({ className, fullClass, hashValue, children }) {
           <Icon name="back" size={18} />
         </button>
       )}
-      <button className="btn-sm fs-btn" onClick={full ? closeFull : openFull}
-        aria-label={full ? '退出全屏' : '全屏查看'}>
-        <Icon name={full ? 'shrink' : 'expand'} size={14} />
-      </button>
+      {!full && (
+        <button className="btn-sm fs-btn" onClick={openFull} aria-label="全屏查看">
+          <Icon name="expand" size={14} />
+        </button>
+      )}
       {children}
     </div>
   )
