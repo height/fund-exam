@@ -51,7 +51,7 @@ export function ExplainBody({ text }) {
 }
 
 /**
- * AI 输出的 Markdown 子集渲染：**粗体**、`代码`、# 标题、- / 1. 列表、空行分段。
+ * AI 输出的 Markdown 子集渲染：**粗体**、`代码`、# 标题、> 提示、列表、表格。
  * 模型在这个场景就写这些；全走 React 节点，不碰 innerHTML，没有 XSS 面。
  * 流式中途出现未闭合的 ** 会按原样显示，流完自然纠正。
  */
@@ -67,6 +67,14 @@ function inline(s) {
 const ROW = /^\|(.+)\|\s*$/
 const RULE = /^\|[\s:|-]+\|\s*$/
 
+// 标题颜色不是装饰，而是阅读路标。同一语义在明暗主题里保持一致。
+function headingTone(title) {
+  if (/结论|答案|考点|公式|定义/.test(title)) return 'answer'
+  if (/易错|辨析|注意|陷阱|信号词/.test(title)) return 'risk'
+  if (/记忆|口诀|怎么记|速记/.test(title)) return 'memory'
+  return 'reason'
+}
+
 export function Md({ text }) {
   const blocks = []
   let list = null
@@ -78,6 +86,18 @@ export function Md({ text }) {
   String(text).split('\n').forEach(l => {
     const t = l.trim()
     if (/^[-*_]{3,}$/.test(t)) { flush(); return } // --- 分隔线只是喘口气，不进内容
+    const heading = t.match(/^(#{1,3})\s+(.+)/)
+    if (heading) {
+      flush()
+      blocks.push({ heading: heading[2], level: heading[1].length })
+      return
+    }
+    const quote = t.match(/^>\s?(.+)/)
+    if (quote) {
+      flush()
+      blocks.push({ quote: quote[1] })
+      return
+    }
     const row = ROW.exec(t)
     if (row) {
       if (RULE.test(t)) return
@@ -102,6 +122,16 @@ export function Md({ text }) {
   return (
     <div className="md">
       {blocks.map((b, i) => {
+        if (b.heading) {
+          const level = Math.min(3, b.level)
+          return (
+            <div className={`md-h md-h${level} md-tone-${headingTone(b.heading)}`} key={i}>
+              <span className="md-h-mark" aria-hidden="true" />
+              <b>{inline(b.heading)}</b>
+            </div>
+          )
+        }
+        if (b.quote) return <aside className="md-note" key={i}>{inline(b.quote)}</aside>
         if (b.rows) {
           const [head, ...body] = b.rows
           return (
@@ -121,9 +151,7 @@ export function Md({ text }) {
           const Tag = b.ordered ? 'ol' : 'ul'
           return <Tag key={i}>{b.items.map((it, j) => <li key={j}>{inline(it)}</li>)}</Tag>
         }
-        return b.startsWith('#')
-          ? <b className="md-h" key={i}>{inline(b.replace(/^#+\s*/, ''))}</b>
-          : <p key={i}>{inline(b)}</p>
+        return <p key={i}>{inline(b)}</p>
       })}
     </div>
   )

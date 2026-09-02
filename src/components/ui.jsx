@@ -290,6 +290,50 @@ export function Explain({ q, picked }) {
  */
 const AI_CACHE = new Map() // q.id -> 讲解全文，会话级
 
+const THINK_GRID = Array.from({ length: 9 }, (_, i) => {
+  const row = Math.floor(i / 3)
+  const col = i % 3
+  return (col + Math.abs(row - 1)) * 90
+})
+const ORBIT_ORDER = [0, 1, 2, 5, 8, 7, 6, 3]
+const DRAW_GRID = Array.from({ length: 9 }, (_, i) => {
+  const step = ORBIT_ORDER.indexOf(i)
+  return step < 0 ? null : step * 105
+})
+
+function useElapsed() {
+  const [ticks, setTicks] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setTicks(n => n + 1), 100)
+    return () => clearInterval(timer)
+  }, [])
+  const seconds = ticks / 10
+  return seconds < 60
+    ? `${seconds.toFixed(1)}s`
+    : `${Math.floor(seconds / 60)}m ${(seconds % 60).toFixed(1)}s`
+}
+
+/** 长请求共用的「活着」状态：方格波前 + 阶段说明 + 真实耗时。 */
+function GenerationStatus({ kind = 'think', label, detail }) {
+  const elapsed = useElapsed()
+  const cells = kind === 'draw' ? DRAW_GRID : THINK_GRID
+  return (
+    <div className={`generation-status ${kind}`} role="status" aria-live="polite">
+      <span className="generation-grid" aria-hidden="true">
+        {cells.map((delay, i) => (
+          <i key={i} className={delay === null ? 'still' : ''}
+            style={delay === null ? undefined : { '--pixel-delay': `${delay}ms` }} />
+        ))}
+      </span>
+      <span className="generation-copy">
+        <b>{label}</b>
+        {detail && <small>{detail}</small>}
+      </span>
+      <span className="generation-time" aria-hidden="true">{elapsed}</span>
+    </div>
+  )
+}
+
 function AiExplain({ q, picked }) {
   const cached = AI_CACHE.get(q.id)
   const [state, setState] = useState(cached ? 'done' : 'loading') // key | loading | done | error
@@ -344,23 +388,31 @@ function AiExplain({ q, picked }) {
   )
 
   return (
-    <FullWrap className="ai-box" fullClass="ai-box ai-full" hashValue="ai">
-      {(text || state === 'loading') && (
-        // 推理模型先想后说，内容没到之前给个交代，别只闪光标
-        <div className="ai-text"><Md text={state === 'loading' ? `${text || '正在思考'}▍` : text} /></div>
-      )}
-      {state === 'done' && (
-        <div className="row ai-actions">
-          <Speaker getText={() => mdToSpeech(text)} label="朗读解析" />
-          <button className="btn-sm btn-ghost" onClick={() => { AI_CACHE.delete(q.id); ask() }}>
-            <Icon name="refresh" /> 重新解析
-          </button>
-        </div>
-      )}
-      {state === 'error' && (
-        <div className="row"><span className="muted grow">{err}</span>
-          <button className="btn-sm" onClick={ask}>重试</button></div>
-      )}
+    <FullWrap className="ai-box" fullClass="ai-box ai-full" hashValue="ai" showButton={false}>
+      {({ full, toggleFull }) => (<>
+        {state === 'loading' && (
+          <GenerationStatus
+            label={text ? '正在继续生成解析' : '正在梳理考点'}
+            detail={text ? '内容已开始返回' : '模型响应后会逐字显示'} />
+        )}
+        {text && <div className={`ai-text ${state === 'loading' ? 'streaming' : ''}`}><Md text={text} /></div>}
+        {state === 'done' && (
+          <div className="row ai-actions">
+            <Speaker getText={() => mdToSpeech(text)} label="朗读解析" />
+            <button className="btn-sm btn-ghost" onClick={() => { AI_CACHE.delete(q.id); ask() }}>
+              <Icon name="refresh" /> 重新解析
+            </button>
+            <button className="btn-sm btn-ghost ai-full-toggle" onClick={toggleFull}
+              aria-label={full ? '退出全屏' : '全屏查看'}>
+              <Icon name={full ? 'shrink' : 'expand'} size={16} />
+            </button>
+          </div>
+        )}
+        {state === 'error' && (
+          <div className="row"><span className="muted grow">{err}</span>
+            <button className="btn-sm" onClick={ask}>重试</button></div>
+        )}
+      </>)}
     </FullWrap>
   )
 }
@@ -383,6 +435,10 @@ const SIZER = `<script>(function(){
   addEventListener('load',send);addEventListener('resize',send);setTimeout(send,60)
   if(window.ResizeObserver)new ResizeObserver(send).observe(document.documentElement)
   addEventListener('click',function(){setTimeout(send,80)},true)
+  addEventListener('dblclick',function(e){
+    if(e.target.closest&&e.target.closest('button,a,input,select,textarea'))return
+    parent.postMessage({__demoToggleFull:true},'*')
+  },true)
 })()<\/script>`
 
 /**
@@ -393,7 +449,7 @@ const SIZER = `<script>(function(){
  * 祖先的 transform/滚动容器会把 position:fixed 圈住（iOS 上尤其），必须逃出去。
  * iOS 没有元素级原生全屏，走 CSS 覆盖层。
  */
-function FullWrap({ className, fullClass, hashValue, children }) {
+function FullWrap({ className, fullClass, hashValue, children, showButton = true, toggleRef }) {
   const [full, setFull] = useState(false)
   const tokenRef = useRef(`fullscreen:${hashValue}:${Math.random().toString(36).slice(2)}`)
 
@@ -419,6 +475,17 @@ function FullWrap({ className, fullClass, hashValue, children }) {
     if (history.state?.__fullWrap === tokenRef.current) history.back()
   }
 
+  function toggleFull() {
+    if (full) closeFull()
+    else openFull()
+  }
+
+  useEffect(() => {
+    if (!toggleRef) return
+    toggleRef.current = toggleFull
+    return () => { toggleRef.current = null }
+  }, [full, toggleRef])
+
   // 浏览器返回/前进（包括 iOS 边缘横划）与覆盖层状态保持一致。
   useEffect(() => {
     const syncHistory = () => setFull(history.state?.__fullWrap === tokenRef.current)
@@ -441,19 +508,25 @@ function FullWrap({ className, fullClass, hashValue, children }) {
     document.addEventListener('keydown', onKey, true)
     return () => document.removeEventListener('keydown', onKey, true)
   }, [full])
+  const content = typeof children === 'function' ? children({ full, toggleFull }) : children
   const box = (
-    <div className={full ? fullClass : className}>
+    <div className={full ? fullClass : className} onDoubleClick={e => {
+      if (e.target.closest?.('button,a,input,select,textarea,iframe,[role="button"]')) return
+      e.preventDefault()
+      getSelection()?.removeAllRanges()
+      toggleFull()
+    }}>
       {full && (
         <button className="btn-sm full-back" onClick={closeFull} aria-label="返回答题页">
           <Icon name="back" size={18} />
         </button>
       )}
-      {!full && (
+      {showButton && !full && (
         <button className="btn-sm fs-btn" onClick={openFull} aria-label="全屏查看">
           <Icon name="expand" size={14} />
         </button>
       )}
-      {children}
+      {content}
     </div>
   )
   return full ? createPortal(box, document.body) : box
@@ -466,11 +539,13 @@ function Demo({ q }) {
   const [h, setH] = useState(0)
   const ctlRef = useRef(null)
   const frameRef = useRef(null)
+  const toggleFullRef = useRef(null)
 
   // 只认自己那个 iframe 发来的高度，别的页面/扩展发的消息一律不理
   useEffect(() => {
     const onMsg = e => {
       if (e.source !== frameRef.current?.contentWindow) return
+      if (e.data?.__demoToggleFull) return toggleFullRef.current?.()
       const v = Number(e.data?.__demoH)
       if (v > 0) setH(Math.ceil(v))
     }
@@ -503,12 +578,13 @@ function Demo({ q }) {
       <button className="btn-sm" onClick={run}>重试</button></div>
   )
   if (!html) return (
-    <div className="muted demo-wait">
-      <Icon name="loader" /> 正在画图解…{prog > 1 ? `已写 ${(prog / 1000).toFixed(1)}k 字符` : '正在连接'}
-    </div>
+    <GenerationStatus kind="draw"
+      label={prog > 1 ? '正在绘制图解' : '正在连接绘图模型'}
+      detail={prog > 1 ? `已生成 ${(prog / 1000).toFixed(1)}k 字符` : '将生成可互动的考点演示'} />
   )
   return (
-    <FullWrap className="demo-box" fullClass="demo-full" hashValue="diagram">
+    <FullWrap className="demo-box" fullClass="demo-full" hashValue="diagram"
+      toggleRef={toggleFullRef}>
       {/* ponytail: 切全屏会换 DOM 父级，iframe 重载、演示步骤回到第一步；要保状态得上 postMessage */}
       <div className="demo-scroll">
         <iframe ref={frameRef} className="demo-frame" sandbox="allow-scripts"

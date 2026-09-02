@@ -18,6 +18,10 @@
   --accent-soft:#DDE2F0;
   --ok:#0F7B54;   --ok-soft:#D6EFE3;
   --bad:#C42F42;  --bad-soft:#FADFE3;
+  /* Markdown 阅读语义：结论 / 风险 / 记忆。颜色只在对应信息上出现。 */
+  --md-answer:#2F3D73;--md-answer-soft:#E7EAF4;
+  --md-risk:#A74725;--md-risk-soft:#F8E8E0;
+  --md-memory:#187060;--md-memory-soft:#DFF0EB;
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
   --f-num:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
   /* 圆角有层级：外层容器松，内层控件紧，别一个数用到底 */
@@ -39,6 +43,9 @@
   --ink:#E9ECF1; --ink2:#8B94A1;
   --accent:#1266D6; --accent-ink:#6FA6FF; --on-accent:#FFFFFF; --accent-soft:#16304F;
   --ok:#3FB984; --ok-soft:#143326; --bad:#E8586A; --bad-soft:#3A1D25;
+  --md-answer:#83ADFF;--md-answer-soft:#192943;
+  --md-risk:#F0A17E;--md-risk-soft:#36251F;
+  --md-memory:#67C9B4;--md-memory-soft:#17312C;
   /* 卡片改回描边分层，阴影在暗背景上看不见 */
   --card-line:var(--rule);
   --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
@@ -49,6 +56,9 @@
   --paper:#F1F2F4;--sheet:#FFFFFF;--sheet2:#E9EBEF;--rule:#DCDFE5;--ink:#14181F;--ink2:#626C7C;
   --accent:#2F3D73;--accent-ink:#2F3D73;--on-accent:#FFFFFF;--accent-soft:#DDE2F0;
   --ok:#0F7B54;--ok-soft:#D6EFE3;--bad:#C42F42;--bad-soft:#FADFE3;
+  --md-answer:#2F3D73;--md-answer-soft:#E7EAF4;
+  --md-risk:#A74725;--md-risk-soft:#F8E8E0;
+  --md-memory:#187060;--md-memory-soft:#DFF0EB;
   --card-line:transparent;
   --shadow:0 1px 2px rgba(20,24,31,.05),0 8px 24px -18px rgba(20,24,31,.35);
   --grain:none;
@@ -57,6 +67,9 @@
   --paper:#0B0D10;--sheet:#15181D;--sheet2:#1E232A;--rule:#2B3138;--ink:#E9ECF1;--ink2:#8B94A1;
   --accent:#1266D6;--accent-ink:#6FA6FF;--on-accent:#FFFFFF;--accent-soft:#16304F;
   --ok:#3FB984;--ok-soft:#143326;--bad:#E8586A;--bad-soft:#3A1D25;
+  --md-answer:#83ADFF;--md-answer-soft:#192943;
+  --md-risk:#F0A17E;--md-risk-soft:#36251F;
+  --md-memory:#67C9B4;--md-memory-soft:#17312C;
   --card-line:var(--rule);
   --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
@@ -344,36 +357,82 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .ai-key input{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 11px;
   border:1px solid var(--rule);border-radius:var(--r-m);background:var(--sheet);color:inherit}
 .ai-key .muted{font-size:12px}
-.ai-box{background:var(--sheet);border-radius:var(--r-m);padding:10px 12px;
-  display:flex;flex-direction:column;gap:6px}
+.ai-box{border-radius:var(--r-m);display:flex;flex-direction:column;gap:6px}
 /* anywhere：长算式是无空格连续串，不许它撑破容器把中间结果顶没了 */
-.ai-text{font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.ai-text{font-size:15px;line-height:1.85;overflow-wrap:anywhere}
+
+/* AI 长请求：3×3 演算格显示思路正在向前推进，耗时让用户知道页面没有卡住。 */
+.generation-status{min-width:0;display:grid;grid-template-columns:18px minmax(0,1fr) auto;
+  align-items:center;gap:10px;padding:10px 11px;color:var(--ink)}
+.generation-grid{display:grid;grid-template-columns:repeat(3,4px);gap:2px;width:max-content}
+.generation-grid i{display:block;width:4px;height:4px;border-radius:1px;background:var(--accent-ink);opacity:.14}
+.generation-status.draw .generation-grid i{border-radius:50%}
+.generation-grid i.still{opacity:.06}
+.generation-copy{min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.35}
+.generation-copy b{width:max-content;max-width:100%;font-size:13px;font-weight:650;color:var(--accent-ink)}
+.generation-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--ink2)}
+.generation-time{font:500 11px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--ink2)}
+/* 真实流式文本的末尾光标：不改 Markdown 结构，只标记最后一个可见文本块。 */
+.ai-text.streaming .md>p:last-child::after,
+.ai-text.streaming .md>.md-h:last-child::after,
+.ai-text.streaming .md>:is(ol,ul):last-child>li:last-child::after,
+.ai-text.streaming .md>.md-table:last-child td:last-child::after{
+  content:"";display:inline-block;width:2px;height:.9em;margin-left:4px;border-radius:2px;
+  vertical-align:-.08em;background:var(--accent-ink)}
+@media (prefers-reduced-motion:no-preference){
+  .generation-grid i:not(.still){animation:pixel-on 720ms ease-in-out var(--pixel-delay) infinite}
+  .generation-status.draw .generation-grid i:not(.still){animation-duration:940ms}
+  .generation-copy b{background:linear-gradient(90deg,var(--accent-ink) 30%,var(--ink) 50%,var(--accent-ink) 70%);
+    background-size:220% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;
+    animation:generation-shimmer 1.6s linear infinite}
+  .ai-text.streaming .md>p:last-child::after,
+  .ai-text.streaming .md>.md-h:last-child::after,
+  .ai-text.streaming .md>:is(ol,ul):last-child>li:last-child::after,
+  .ai-text.streaming .md>.md-table:last-child td:last-child::after{animation:stream-caret .75s ease-in-out infinite alternate}
+  @keyframes pixel-on{0%,100%{opacity:.12;transform:scale(.8)}45%{opacity:1;transform:scale(1.22)}}
+  @keyframes generation-shimmer{from{background-position:100% 0}to{background-position:-120% 0}}
+  @keyframes stream-caret{from{opacity:.25}to{opacity:1}}
+}
 
 /* ---- Markdown 排版 ----
    .md 显式设色，不吃继承：之前没设色，塞进哪个容器就跟着那个容器变灰，
    划词气泡里整段正文因此糊成一片读不了。
-   层级靠「字号 + 字重 + 颜色」三样一起拉开：
-   标题＝更大更重的墨色，行内重点＝主色，正文＝墨色常规字重。
+   层级靠「字号 + 字重 + 语义色」一起拉开：
+   标题负责导航，行内重点只标记必背项，正文保持墨色常规字重。
    全走令牌，明暗两套主题各自成立。 */
-.md{color:var(--ink);display:flex;flex-direction:column;gap:7px}
+.md{color:var(--ink);display:flex;flex-direction:column;gap:9px}
 .ai-text p,.ai-text ol,.ai-text ul{margin:0}
-.ai-text ol,.ai-text ul{padding-left:1.4em;display:flex;flex-direction:column;gap:5px}
-.ai-text li::marker{color:var(--ink2)}
+.ai-text p{max-width:68ch}
+.ai-text ol,.ai-text ul{padding-left:1.5em;display:flex;flex-direction:column;gap:6px}
+.ai-text li{padding-left:.15em}
+.ai-text li::marker{color:var(--accent-ink);font-family:var(--f-num);font-weight:650}
 .ai-text code{font-family:var(--f-num);font-size:13px;background:var(--sheet2);
   color:var(--ink);padding:1px 5px;border-radius:4px}
-/* 标题：比正文大一号、更重，左边一道主色短杠，一眼看出是分节 */
-.md-h{display:block;font-size:15px;font-weight:700;line-height:1.5;color:var(--ink);
-  margin-top:4px;padding-left:9px;border-left:3px solid var(--accent);border-radius:1px}
+/* 标题是阅读路径：短线 + 语义色，不使用大色块抢正文注意力。 */
+.md-h{--md-tone:var(--accent-ink);display:flex;align-items:center;gap:8px;
+  font-size:15px;line-height:1.45;color:var(--md-tone);margin-top:9px;letter-spacing:.01em}
+.md-h1{font-size:17px}.md-h3{font-size:14px}
+.md-h-mark{width:12px;height:3px;flex:none;border-radius:3px;background:currentColor}
+.md-tone-answer{--md-tone:var(--md-answer)}
+.md-tone-risk{--md-tone:var(--md-risk)}
+.md-tone-memory{--md-tone:var(--md-memory)}
 .md>.md-h:first-child{margin-top:0}
 /* 行内重点：用主色跟标题区分开——同样加粗但不是分节 */
-.md b:not(.md-h){font-weight:600;color:var(--accent-ink)}
+.md b{font-weight:650;color:var(--accent-ink)}
+.md-h>b{color:inherit}
+.md-note{margin:1px 0;padding:9px 11px;border-left:2px solid var(--md-memory);
+  border-radius:0 var(--r-s) var(--r-s) 0;background:var(--md-memory-soft);color:var(--ink);font-size:.94em}
 /* 表格自己横向滚，别把整页撑宽 */
-.md-table{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:2px 0}
+.md-table{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:3px 0;border:1px solid var(--rule);
+  border-radius:var(--r-m)}
 .md-table table{border-collapse:collapse;font-size:13px;min-width:100%}
 /* 窄屏上宁可整表横滚，也别把单元格折成三行 */
-.md-table th,.md-table td{border:1px solid var(--rule);padding:6px 10px;text-align:left;color:var(--ink);
+.md-table th,.md-table td{border:0;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:8px 10px;text-align:left;color:var(--ink);
   vertical-align:top;white-space:nowrap}
-.md-table th{background:var(--sheet2);font-weight:600}
+.md-table th:last-child,.md-table td:last-child{border-right:0}
+.md-table tbody tr:last-child td{border-bottom:0}
+.md-table th{background:var(--md-answer-soft);color:var(--md-answer);font-weight:650}
 /* 内联图标：跟文字混排时压到基线附近；实心的几只不描边 */
 /* 图标尺寸跟字号走；对齐交给按钮的 flex，不再用 vertical-align 的魔法偏移 */
 .icon{display:block;flex:none;width:1.15em;height:1.15em}
@@ -390,7 +449,6 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
    iOS Safari 不支持 iframe 内部滚动（会把 iframe 拉成内容高、滚不动），
    所以不能让 iframe 当滚动容器。高度由 srcDoc 里注入的小脚本回传。 */
 .demo-frame{display:block;width:100%;height:380px;border:0;background:#fff}
-.demo-wait{font-size:13px;display:flex;align-items:center;gap:6px}
 .demo-box{position:relative;border:1px solid var(--rule);border-radius:var(--r-m);
   overflow:hidden;background:#fff}
 .demo-scroll{max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
@@ -398,11 +456,13 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
   padding:6px 8px;line-height:1}
 .full-back{position:fixed;top:calc(10px + env(safe-area-inset-top));left:12px;z-index:2;
   width:36px;height:36px;padding:0;background:var(--sheet);opacity:.92}
-.demo-full{position:fixed;inset:0;z-index:var(--z-overlay);background:#fff}
-.demo-full .demo-scroll{max-height:none;height:100dvh;box-sizing:border-box;
-  padding-top:calc(58px + env(safe-area-inset-top))}
+.demo-full{position:fixed;inset:0;z-index:var(--z-overlay);overflow:hidden;background:#fff;
+  display:grid;grid-template-rows:calc(58px + env(safe-area-inset-top)) minmax(0,1fr)}
+.demo-full::before{content:"";position:absolute;top:0;left:0;right:0;
+  height:calc(58px + env(safe-area-inset-top));background:var(--sheet);z-index:0}
+.demo-full .demo-scroll{grid-row:2;max-height:none;height:auto;min-height:0;padding:0;box-sizing:border-box}
 /* 内容比屏幕短时也铺满，别在白底上露出一截页面底色 */
-.demo-full .demo-frame{min-height:calc(100dvh - 58px - env(safe-area-inset-top))}
+.demo-full .demo-frame{min-height:100%}
 
 /* AI 文字解析的全屏态：铺满、可滚、字放大一档 */
 .ai-box{position:relative}
@@ -423,6 +483,7 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
   color:var(--bad);background:var(--bad-soft);border-color:var(--bad)}
 /* 朗读 + 重新解析这一排等高，两个按钮不再一高一矮 */
 .ai-actions{align-items:stretch}
+.ai-full-toggle{width:36px;height:36px;flex:0 0 36px;padding:0}
 
 /* 划词解释：桌面保留系统 Selection；触屏长按取词后用 Range 自绘，
    避开 iOS/Android 复制菜单。不设 touch-action，所以长按成立前仍是浏览器原生滚动。 */

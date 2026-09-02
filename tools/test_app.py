@@ -174,9 +174,10 @@ def run():
         # 假流式响应：SSE 解析和 Markdown 渲染都过一遍，不发真实请求
         wide = "对比项" + "很长的内容" * 30
         sse = (
-            'data: {"choices":[{"delta":{"content":"考点：**不可分性**\\n**一句话**：拆不开\\n---\\n"}}]}\n\n'
-            'data: {"choices":[{"delta":{"content":"1. 金额大\\n2. 拆不开\\n'
+            'data: {"choices":[{"delta":{"content":"## 结论\\n考点：**不可分性**\\n**一句话**：拆不开\\n---\\n"}}]}\n\n'
+            'data: {"choices":[{"delta":{"content":"## 易错辨析\\n1. 金额大\\n2. 拆不开\\n'
             f'|项目|{wide}|\\n|---|---|\\n|甲|乙|"}}}}]}}\n\n'
+            'data: {"choices":[{"delta":{"content":"\\n## 记忆提示\\n> 一整份，拆不开"}}]}\n\n'
             "data: [DONE]\n\n"
         )
         ai_hits = []
@@ -190,11 +191,17 @@ def run():
         assert "---" not in md, "分隔线不该进正文"
         assert pg.locator(".ai-text ol li").count() == 2, "编号列表没渲染"
         assert pg.locator(".md-table td").count() == 2, "表格没渲染"
+        assert pg.locator(".md-tone-answer").count() == 1, "结论标题没有语义层级"
+        assert pg.locator(".md-tone-risk").count() == 1, "易错标题没有语义层级"
+        assert pg.locator(".md-tone-memory").count() == 1, "记忆标题没有语义层级"
+        assert pg.locator(".md-note").count() == 1, "Markdown 提示块没渲染"
 
         # 图解 tab：出沙箱 iframe；三档 tab 来回切不重发请求
         h0 = len(ai_hits)
         pg.click('.explain-tabs button:has-text("图解")')
         pg.wait_for_selector('iframe.demo-frame')
+        assert pg.locator('.demo-box .generation-status').count() == 0, \
+            "图解完成后仍显示生成状态"
         assert pg.locator("iframe.demo-frame").get_attribute("sandbox") == "allow-scripts", "iframe 没关沙箱"
         diagram_base_hash = pg.evaluate("location.hash")
         pg.click('.demo-box button[aria-label="全屏查看"]')
@@ -210,6 +217,12 @@ def run():
         pg.wait_for_selector(".demo-full", state="detached")
         assert pg.evaluate("location.hash") == diagram_base_hash, "退出图解全屏后没有回到原答题路由"
         assert pg.locator(".stem").count() == 1, "浏览器返回误退出了答题界面"
+        # 图解 iframe 内的双击通过 postMessage 切换全屏，不能只在 iframe 外层生效
+        pg.frame_locator('.demo-box iframe.demo-frame').locator('body').dispatch_event('dblclick')
+        pg.wait_for_selector('.demo-full iframe.demo-frame')
+        pg.frame_locator('.demo-full iframe.demo-frame').locator('body').dispatch_event('dblclick')
+        pg.wait_for_selector('.demo-full', state='detached')
+        assert pg.evaluate("location.hash") == diagram_base_hash, "双击退出图解全屏后 hash 没恢复"
         pg.click('.explain-tabs button:text-is("解析")')
         pg.click('.explain-tabs button:has-text("AI 解析")')
         pg.click('.explain-tabs button:has-text("图解")')
@@ -218,18 +231,28 @@ def run():
         pg.click('.explain-tabs button:has-text("AI 解析")')
 
         # AI 文字解析同样能全屏
+        assert pg.locator('.ai-box .generation-status').count() == 0, \
+            "AI 解析完成后小屏仍显示生成状态"
+        assert pg.locator('.ai-actions button[aria-label="全屏查看"]').count() == 1, \
+            "AI 解析完成后操作栏没有全屏按钮"
         ai_base_hash = pg.evaluate("location.hash")
         pg.click('.ai-box button[aria-label="全屏查看"]')
         pg.wait_for_selector(".ai-full .ai-text b")
         assert "fullscreen=ai" in pg.evaluate("location.hash"), "AI 解析全屏没有压入 hash 历史"
-        assert pg.locator('.ai-full button[aria-label="退出全屏"]').count() == 0, \
-            "AI 解析全屏仍显示右上角退出按钮"
+        assert pg.locator('.ai-full .generation-status').count() == 0, \
+            "AI 解析完成后全屏仍显示生成状态"
+        assert pg.locator('.ai-full .ai-actions button[aria-label="退出全屏"]').count() == 1, \
+            "AI 解析全屏操作栏没有退出全屏按钮"
         assert pg.eval_on_selector(".ai-full", "e=>{const b=e.querySelector('.full-back').getBoundingClientRect(),c=e.querySelector('.ai-text').getBoundingClientRect();return c.top>=b.bottom}") , \
             "AI 解析内容侵入了顶部返回按钮安全区"
-        pg.go_back()
+        pg.dblclick('.ai-full .ai-text')
         pg.wait_for_selector(".ai-full", state="detached")
-        assert pg.evaluate("location.hash") == ai_base_hash, "退出 AI 全屏后没有回到原答题路由"
+        assert pg.evaluate("location.hash") == ai_base_hash, "双击退出 AI 全屏后没有回到原答题路由"
         assert pg.locator(".stem").count() == 1, "浏览器返回误退出了答题界面"
+        pg.dblclick('.ai-box .ai-text')
+        pg.wait_for_selector('.ai-full .ai-text')
+        pg.go_back()
+        pg.wait_for_selector('.ai-full', state='detached')
 
         # 重新解析：真发一次新请求；换题再回来走内存缓存，不再请求
         n0 = len(ai_hits)
