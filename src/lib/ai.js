@@ -1,6 +1,7 @@
 import { PCMPlayer } from '@speechmatics/web-pcm-player'
 import { SoundTouchNode } from '@soundtouchjs/audio-worklet'
 import soundTouchProcessorUrl from '@soundtouchjs/audio-worklet/processor?url'
+import { claimIOSPlayback } from './iosAudio'
 
 /**
  * AI 解析，走 OpenAI 兼容的 chat/completions 接口，浏览器 fetch 直连，不引 SDK。
@@ -280,17 +281,27 @@ function speechHandle(onStop) {
 
 async function playCached(url, signal) {
   if (signal?.aborted) throw new DOMException('已中止', 'AbortError')
+  const releaseIOSPlayback = claimIOSPlayback()
   const a = (audioEl = new Audio(url))
   const h = speechHandle(() => {
     if (audioEl === a) audioEl = null
     a.pause()
+    releaseIOSPlayback()
   })
   a.preservesPitch = a.webkitPreservesPitch = true
   a.playbackRate = getTtsSpeed()
-  a.onended = () => { if (audioEl === a) audioEl = null; h._end() }
-  a.onerror = () => { if (audioEl === a) audioEl = null; h._error(new Error('语音播放失败')) }
+  a.onended = () => { if (audioEl === a) audioEl = null; releaseIOSPlayback(); h._end() }
+  a.onerror = () => {
+    if (audioEl === a) audioEl = null
+    releaseIOSPlayback()
+    h._error(new Error('语音播放失败'))
+  }
   try { await a.play() }
-  catch (e) { if (audioEl === a) audioEl = null; throw e }
+  catch (e) {
+    if (audioEl === a) audioEl = null
+    releaseIOSPlayback()
+    throw e
+  }
   return h
 }
 
@@ -353,6 +364,7 @@ function makeStreamSession(text, outerSignal, onState) {
   const handle = speechHandle(() => stop())
   let session = null
   let ctx = null, player = null, touch = null, tickId = null, firstTimer = null
+  let releaseIOSPlayback = () => {}
   let rate = getTtsSpeed(), scheduledUntil = 0, pendingSamples = 0
   let pending = [], collected = [], sources = new Set(), carry = null
   let gotAudio = false, playing = false, streamDone = false, stopped = false, lastAudioAt = 0
@@ -375,6 +387,7 @@ function makeStreamSession(text, outerSignal, onState) {
     sources.clear()
     try { touch?.disconnect() } catch { /* 未连上 */ }
     ctx?.close().catch(() => {})
+    releaseIOSPlayback()
     detachOuter()
     if (streamSession === session) streamSession = null
   }
@@ -532,6 +545,8 @@ function makeStreamSession(text, outerSignal, onState) {
     try {
       try { ctx = new AudioContext({ sampleRate: TTS_SAMPLE_RATE, latencyHint: 'interactive' }) }
       catch { ctx = new AudioContext({ latencyHint: 'interactive' }) }
+      // 要在第一次 await 前认领 playback 会话，否则 iOS 会丢掉这次点击的播放授权。
+      releaseIOSPlayback = claimIOSPlayback({ webAudio: true, sampleRate: ctx.sampleRate })
       await ctx.resume()
       await SoundTouchNode.register(ctx, soundTouchProcessorUrl)
       if (stopped) return started
