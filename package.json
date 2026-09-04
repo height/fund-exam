@@ -8,8 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@soundtouchjs/audio-worklet": "^2.1.1",
     "@speechmatics/web-pcm-player": "^1.1.0",
+    "gsap": "^3.15.0",
     "posthog-js": "^1.422.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

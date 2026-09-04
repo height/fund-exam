@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
-import { BANK, CALC_IDS, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
+import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
 import { TL_N } from '../data/timeline'
 import { idb } from '../lib/db'
+import { numberQuestions } from '../lib/numbers'
 import { useStore } from '../lib/store'
 
 // 样本太少时正确率是噪声：做 2 题对 2 题不等于 100%。攒够这个数再把它当主指标
@@ -30,7 +31,7 @@ export default function Home({ go }) {
 
   useEffect(() => {
     idb.all('exams').then(all =>
-      setExams(all.filter(e => e.subject === subject).sort((a, b) => b.id - a.id).slice(0, 3)))
+      setExams(all.filter(e => e.subject === subject && e.kind !== 'numbers').sort((a, b) => b.id - a.id).slice(0, 3)))
   }, [subject])
 
   const st = stats(records, subject)
@@ -43,6 +44,7 @@ export default function Home({ go }) {
   const randN = getRandomN()
   // 章节列表按教材序，这里只取章数给副标题用
   const chs2 = chapterStats(records, subject, true)
+  const numberN = numberQuestions(subject).length
 
   return (
     <>
@@ -110,15 +112,19 @@ export default function Home({ go }) {
         </button>
         <button className="tile" onClick={() => go('formula')}>
           <b><Icon name="calc" /> 公式攻坚</b>
-          <small>{CALC_IDS.length} 道计算题 + 公式图谱</small>
+          <small>47 组公式，逐字符讲解和练题</small>
         </button>
         <button className="tile" onClick={() => go('timeline')}>
           <b><Icon name="timeline" /> 发展时间线</b>
-          <small>{TL_N.total} 个可考时点 · 默认只看考试重点</small>
+          <small>{TL_N.total} 个时点 · 默认看重点</small>
         </button>
-        <button className="tile wide" onClick={() => go('map')}>
+        <button className="tile" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>
-          <small>考点脉络一张图 · 章节 → 主题 → 必背要点，逐层点开啃</small>
+          <small>章节 → 主题 → 必背要点</small>
+        </button>
+        <button className="tile" onClick={() => go('numbers')}>
+          <b><Icon name="numbers" /> 数字必背</b>
+          <small>{numberN} 张题卡 · 背完模拟练</small>
         </button>
       </div>
 

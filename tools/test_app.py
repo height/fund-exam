@@ -79,10 +79,72 @@ def run():
         pg.goto(APP)
         pg.wait_for_selector(".tile")
 
-        # 公式攻坚：计算题清单 + 计算器 + 公式图谱
+        # 公式攻坚：47 组结构化公式 + SVG 字符讲解 + 即时练题
         pg.click('.tile:has-text("公式攻坚")')
         pg.wait_for_selector(".calc-fab")
-        assert int(pg.locator(".hero-num").inner_text()) > 20, "计算题没筛出来"
+        assert pg.locator(".formula-groups button").count() == 6, "公式没有按 6 个学习岛分组"
+        assert pg.locator(".formula-row").count() == 8, "财务底座应有 8 组公式"
+        assert pg.locator(".formula-view img").count() == 0, "公式页不应继续使用扫描截图"
+        assert pg.eval_on_selector(".formula-groups", "e=>e.scrollWidth<=e.clientWidth+1"), \
+            "公式分组仍需要横向滑动"
+        # 搜索跨分组查公式
+        pg.fill("#formula-query", "久期")
+        assert pg.locator(".formula-row").count() == 1
+        assert "债券久期" in pg.locator(".formula-row").inner_text()
+        pg.fill("#formula-query", "")
+        # 每个公式有可点击 SVG 字符、第一性原理、数字示例和一道题
+        pg.locator(".formula-row").first.click()
+        pg.wait_for_selector(".formula-workbench")
+        assert pg.locator('.formula-svg [role="button"]').count() >= 5, "公式没有拆到字符级"
+        pg.locator('.formula-svg [role="button"]').nth(1).click()
+        assert "两边表示同一个量" in pg.locator(".formula-callout").inner_text()
+        assert pg.locator(".formula-scope-highlight").count() == 0, "等号不应选中整条公式"
+        pg.locator('.formula-svg [role="button"]').nth(3).click()
+        assert "负债" in pg.locator(".formula-callout").inner_text()
+        assert "所有者权益" in pg.locator(".formula-callout").inner_text()
+        assert pg.locator(".formula-scope-highlight").count() == 1, "加号没有选中完整计算关系"
+        assert pg.eval_on_selector(".formula-svg", "e=>e.scrollWidth<=e.clientWidth+1"), \
+            "公式 SVG 出现横向溢出"
+        assert pg.locator(".principle-svg").count() == 1
+        assert pg.locator(".example-svg").count() == 1
+        pg.click('.formula-options button:has-text("50 万")')
+        pg.wait_for_selector(".quiz-feedback.right")
+        assert "这条会了" in pg.locator(".quiz-feedback").inner_text()
+        pg.click('button[aria-label="返回公式总览"]')
+        pg.wait_for_selector(".formula-index")
+        # 最长的一组公式也必须整体缩放在手机宽度内，不能换行或把横滑当兜底。
+        pg.fill("#formula-query", "除权与除息")
+        pg.locator(".formula-row").click()
+        pg.wait_for_selector(".formula-workbench")
+        assert pg.locator('.formula-svg [role="button"]').count() >= 12
+        assert pg.locator(".formula-svg .fraction-bar").count() >= 1, "除法没有改成分数线"
+        assert pg.eval_on_selector(".formula-svg", "e=>e.scrollWidth<=e.clientWidth+1"), \
+            "长公式仍有横向溢出"
+        assert pg.evaluate("document.documentElement.scrollWidth<=document.documentElement.clientWidth+1"), \
+            "公式学习页整体出现横向滚动"
+        pg.click('button[aria-label="返回公式总览"]')
+        pg.wait_for_selector(".formula-index")
+        # 全量走过 47 组、120 个公式版本，防止只把示例公式排对，复杂公式却解析成空白或 NaN。
+        pg.fill("#formula-query", "")
+        expected_group_sizes = [8, 6, 9, 9, 6, 9]
+        formula_versions = 0
+        for group_index, group_size in enumerate(expected_group_sizes):
+            pg.locator(".formula-groups button").nth(group_index).click()
+            assert pg.locator(".formula-row").count() == group_size
+            for row_index in range(group_size):
+                pg.locator(".formula-row").nth(row_index).click()
+                pg.wait_for_selector(".formula-svg")
+                variants = pg.locator(".formula-variants button")
+                version_count = variants.count() or 1
+                formula_versions += version_count
+                for variant_index in range(variants.count()):
+                    variants.nth(variant_index).click()
+                    view_box = pg.locator(".formula-svg").get_attribute("viewBox") or ""
+                    assert "NaN" not in view_box and pg.locator(".formula-svg text").count() > 0
+                    assert pg.eval_on_selector(".formula-svg", "e=>e.scrollWidth<=e.clientWidth+1")
+                pg.click('button[aria-label="返回公式总览"]')
+                pg.wait_for_selector(".formula-index")
+        assert formula_versions == 120, f"应检查 120 个公式版本，实际 {formula_versions}"
         # 计算器：复利 10000×(1+3%)² = 10609，验的是自己写的求值器不是 eval
         pg.click(".calc-fab")
         pg.wait_for_selector(".calc-drawer")
@@ -93,21 +155,29 @@ def run():
         assert pg.locator(".calc-expr").inner_text().strip() == "10609"
         pg.keyboard.press("Escape")
         pg.wait_for_selector(".calc-drawer", state="detached")
-        # 公式图谱：图片没内联进 bundle，是 public/ 下的独立文件
-        pg.click('.appbar button:has-text("公式图谱")')
-        pg.wait_for_selector(".fx-page img")
-        assert pg.locator(".fx-page").count() >= 15, "公式页数不对"
-        src = pg.eval_on_selector(".fx-page img", "e=>e.getAttribute('src')")
-        assert src.startswith("./formulas/"), f"公式图被内联了：{src[:40]}"
-        # 全局缩放已禁，全屏看图得自带放大档
-        pg.click(".fx-page >> nth=0")
-        pg.wait_for_selector(".fx-full img")
-        fit = pg.eval_on_selector(".fx-stage img", "e=>e.getBoundingClientRect().width")
-        pg.click('.fx-bar button:has-text("放大")')
-        big = pg.eval_on_selector(".fx-stage img", "e=>e.getBoundingClientRect().width")
-        assert big > fit * 1.5, f"放大档没生效 {fit} -> {big}"
-        pg.keyboard.press("Escape")
-        pg.wait_for_selector(".fx-full", state="detached")
+        pg.click('.formula-bar button[aria-label="返回首页"]')
+        pg.wait_for_selector(".hero-verdict")
+
+        # 数字必背：题卡先遮答案、翻面显示数字与易混项；模拟练习复用章节考试规格
+        pg.click('button:has-text("数字必背")')
+        pg.wait_for_selector(".number-card")
+        ledger = pg.locator(".number-ledger").inner_text()
+        card_n = int(re.search(r"共\s*(\d+)\s*张", ledger).group(1))
+        assert card_n > 50, f"科目一数字题卡只有 {card_n} 张，筛选可能漏题"
+        assert pg.locator(".number-answer").count() == 0, "题卡初始不该泄露答案"
+        assert "%" in pg.locator(".number-lock").inner_text(), "题卡遮住了数字单位"
+        pg.click('button:has-text("翻到答案")')
+        pg.wait_for_selector(".number-answer")
+        assert pg.locator(".number-parts strong").count() >= 1, "翻面后没有突出显示数字"
+        assert pg.locator(".number-confuse").count() == 1, "没有显示数字干扰项"
+        pg.click('[role="tab"]:has-text("模拟练习")')
+        pg.wait_for_selector(".number-exam-all")
+        assert pg.locator(".ch-row").count() == 0, "数字模拟练习不应按章节拆分"
+        pg.click(".number-exam-all")
+        pg.wait_for_selector('h1:has-text("数字模拟练习")')
+        assert pg.locator(".stats .stat").first.inner_text().startswith("30"), "数字模拟练习没有按最多 30 题抽题"
+        pg.click('button:has-text("返回数字必背")')
+        pg.wait_for_selector(".number-exam-all")
         pg.click('.appbar button[aria-label="返回首页"]')
         pg.wait_for_selector(".hero-verdict")
 

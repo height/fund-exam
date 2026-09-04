@@ -262,6 +262,87 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .map-detail p{margin:0;font-size:14px;line-height:1.8}
 .map-detail .btn-sm{align-self:flex-start}
 
+/* ============ 数字必背 ============
+   知识图谱画「关系」，数字题卡画「干扰」：三枚问号与横线就是翻面前的记忆占位，
+   翻面后同一位置换成真正的数字。只在这一处使用大号等宽数字，避免满页数据看板味。 */
+.number-mode{width:100%}
+.number-mode button{padding:8px 10px}
+.number-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.number-heading>div{min-width:0}
+.number-heading .muted{margin-top:4px;line-height:1.6}
+.number-heading>button{flex:none}
+.number-ledger{display:flex;gap:0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:8px 0;color:var(--ink2);font-size:12px}
+.number-ledger span{flex:1;text-align:center}
+.number-ledger span+span{border-left:1px solid var(--rule)}
+.number-ledger b{font:650 13px/1 var(--f-num);color:var(--ink);margin-left:3px}
+.number-ledger b.warn{color:var(--bad)}
+.number-filters{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px 3px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.number-filters::-webkit-scrollbar{display:none}
+.number-filters button{flex:none;cursor:pointer}
+.number-filters .chip.on{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.number-filters .chip .num{opacity:.78}
+
+.number-card{background:var(--sheet) var(--grain);border:1px solid var(--card-line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow);overflow:hidden}
+.number-card-meta{display:flex;align-items:center;gap:8px;padding:12px 15px 0}
+.number-card-meta>.muted:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.number-cue{padding:16px 17px 18px}
+.number-cue .stem{font-size:16px;line-height:1.85}
+.number-cover{border-top:1px solid var(--rule);padding:18px 17px 17px;display:flex;flex-direction:column;
+  align-items:center;gap:10px;background:var(--sheet2)}
+.number-cover>.btn-pri{width:100%;margin-top:2px}
+.number-lock{min-height:42px;max-width:100%;display:flex;align-items:center;justify-content:center;
+  color:var(--accent-ink);overflow-x:auto;padding:2px}
+.number-lock-part{display:flex;align-items:center;flex:none}
+.number-lock-part>b{display:block;width:24px;height:1px;margin:0 8px;background:var(--accent);opacity:.38}
+.number-lock i{min-width:42px;height:36px;padding:0 10px;border:1px dashed var(--accent);border-radius:9px;
+  display:grid;place-items:center;font:700 16px/1 var(--f-num);font-style:normal;background:var(--accent-soft);
+  white-space:nowrap}
+.number-lock-part>em{margin-left:5px;font:600 13px/1 var(--f-body);font-style:normal;color:var(--ink2);
+  white-space:nowrap}
+
+.number-answer{border-top:1px solid var(--rule);padding:17px;display:flex;flex-direction:column;gap:10px;
+  background:linear-gradient(145deg,var(--accent-soft),color-mix(in srgb,var(--sheet) 84%,var(--accent)))}
+.number-parts{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.number-parts strong{font:750 29px/1.15 var(--f-num);letter-spacing:-.04em;color:var(--accent-ink)}
+.number-parts strong+strong::before{content:"·";font-weight:400;color:var(--ink2);margin-right:8px}
+.number-answer-text{font-size:16px;font-weight:650;line-height:1.65;color:var(--ink)}
+.number-confuse{margin-top:3px;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--accent) 18%,var(--rule));
+  display:flex;flex-direction:column;gap:8px}
+.number-confuse .stack{gap:6px}
+.number-confuse .stack>div{display:flex;gap:8px;font-size:13px;line-height:1.65;color:var(--ink2)}
+.number-confuse .stack span{flex:none;width:20px;height:20px;border:1px solid var(--rule);border-radius:6px;
+  display:grid;place-items:center;font:600 10px/1 var(--f-num);background:var(--sheet)}
+.number-explain{margin-top:2px;padding-top:10px;border-top:1px dashed color-mix(in srgb,var(--accent) 20%,var(--rule))}
+.number-explain>summary{color:var(--accent-ink);font-size:13px;font-weight:600;cursor:pointer}
+.number-explain>summary::before{content:"▸";display:inline-block;margin-right:6px;transition:transform .15s}
+.number-explain[open]>summary::before{transform:rotate(90deg)}
+.number-explain .explain-body{margin-top:10px;font-size:13px;line-height:1.8;color:var(--ink2)}
+.number-mark button{min-height:46px}
+.number-nav{display:flex;justify-content:space-between;gap:10px}
+.number-nav button{background:transparent;border-color:transparent;color:var(--ink2);padding:7px 4px}
+
+.number-exam-all{display:flex;align-items:center;gap:12px;width:100%;padding:15px;text-align:left;
+  color:var(--on-accent);background:linear-gradient(145deg,
+    color-mix(in oklab,var(--accent) 78%,#fff),var(--accent));border:0;border-radius:var(--r-xl);box-shadow:var(--shadow)}
+.number-exam-all .muted{color:inherit;opacity:.76}
+.number-exam-all>.icon{flex:none}
+.number-exam-mark{flex:none;width:45px;height:45px;border:1px solid color-mix(in srgb,#fff 36%,transparent);
+  border-radius:12px;display:grid;place-items:center;font:750 18px/1 var(--f-num);
+  background:color-mix(in srgb,#fff 11%,transparent)}
+.number-exam-note{display:flex;align-items:flex-start;gap:11px;padding:13px 2px;border-top:1px solid var(--rule);
+  color:var(--ink2)}
+.number-exam-note>.icon{width:18px;height:18px;margin-top:2px;color:var(--accent-ink)}
+.number-exam-note>div{display:flex;flex-direction:column;gap:2px}
+.number-exam-note b{font-size:13px;font-weight:600;color:var(--ink)}
+.number-exam-note span{font-size:12px;line-height:1.7}
+@media (prefers-reduced-motion:no-preference){
+  .number-card.revealed .number-answer{animation:number-reveal .22s var(--ease)}
+  @keyframes number-reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+
 /* 页脚：版本与题库时间。谁都不看，但出问题时第一个要问的就是它 */
 .colophon{margin-top:10px;padding-top:14px;border-top:1px solid var(--rule);
   display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink2);line-height:1.7}
@@ -625,25 +706,186 @@ details summary::-webkit-details-marker{display:none}
 .calc-fab .icon{width:23px;height:23px}
 :root[data-quiz] .calc-fab{bottom:calc(72px + env(safe-area-inset-bottom))}
 
-/* 公式图谱：整页缩略图铺一列，点开全屏 */
-.fx-list{display:flex;flex-direction:column;gap:12px}
-.fx-page{position:relative;padding:0;border-radius:var(--r-m);overflow:hidden;
-  border:1px solid var(--rule);background:#fff;line-height:0}
-.fx-page img{width:100%;height:auto;display:block}
-.fx-no{position:absolute;right:8px;bottom:8px;font-size:11px;padding:2px 7px;border-radius:99px;
-  background:rgba(0,0,0,.55);color:#fff;line-height:1.6}
+/* 公式不再作为扫描图陈列。总览负责找公式，学习页把每个量拆开、代数、再练一题。 */
+.formula-view{display:flex;flex-direction:column;gap:18px;min-width:0}
+.formula-bar{display:flex;align-items:center;gap:11px;min-height:46px}
+.formula-bar>div{min-width:0}
+.formula-bar h1{font-size:22px}
+.formula-bar .muted{display:block;margin-top:1px;line-height:1.4}
 
-/* 全屏看图。全局双指缩放已禁，所以自带「适应宽度 / 放大」两档 + 双向滚动 */
-.fx-full{position:fixed;inset:0;z-index:var(--z-overlay);background:var(--paper);
-  display:flex;flex-direction:column}
-.fx-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--rule)}
-.fx-stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#fff}
-.fx-stage img{display:block;width:100%;height:auto}
-.fx-stage.big img{width:220%;max-width:none}
-.fx-nav{display:flex;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-  border-top:1px solid var(--rule)}
-.fx-nav button{flex:1}
+/* 首屏只回答两个问题：还有多少没学，会从哪里继续。圆环是进度，不是装饰。 */
+.formula-hero{display:grid;grid-template-columns:132px 1fr;gap:18px;align-items:center;
+  padding:20px;background:var(--sheet);border:1px solid var(--card-line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow);overflow:hidden}
+.formula-dial{width:118px;height:132px;position:relative;display:grid;place-items:center;align-content:center}
+.formula-dial svg{position:absolute;inset:2px;width:112px;height:112px;transform:rotate(-90deg)}
+.formula-dial circle{fill:none;stroke-width:9}
+.formula-dial .dial-track{stroke:var(--sheet2)}
+.formula-dial .dial-value{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .5s var(--ease)}
+.formula-dial strong{font-size:25px;line-height:1;color:var(--accent-ink);z-index:1}
+.formula-dial strong small{font-size:11px;color:var(--ink2);font-weight:500}
+.formula-dial>span{font-size:11px;color:var(--ink2);z-index:1;margin-top:5px}
+.formula-hero-copy{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.formula-hero-copy h2{font-size:20px;line-height:1.3;color:var(--ink);letter-spacing:-.025em}
+.formula-hero-copy p{font-size:13px;line-height:1.7;color:var(--ink2);margin:0;max-width:34ch}
+.formula-hero-copy button{margin-top:4px;white-space:nowrap}
+
+.formula-search{display:flex;align-items:center;gap:8px;background:var(--sheet);
+  border:1px solid var(--rule);border-radius:var(--r-m);padding:0 12px}
+.formula-search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:var(--ink);
+  padding:11px 0;font:inherit;font-size:14px}
+.formula-search input::placeholder{color:var(--ink2);opacity:.78}
+.formula-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.formula-search>span{font-size:11px;color:var(--ink2)}
+
+/* 六个学习岛完整露出，手机上也不要求左右找入口。 */
+.formula-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.formula-groups button{min-width:0;padding:9px 11px;text-align:left;display:flex;
+  align-items:center;justify-content:space-between;gap:10px;background:transparent}
+.formula-groups button b{font-size:13px;font-weight:600}
+.formula-groups button small{font-size:10px;color:var(--ink2)}
+.formula-groups button.on{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.formula-groups button.on small{color:inherit;opacity:.76}
+
+.formula-ledger{background:var(--sheet);border:1px solid var(--card-line);border-radius:var(--r-xl);
+  box-shadow:var(--shadow);overflow:hidden}
+.formula-ledger-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
+  padding:14px 16px 11px;border-bottom:1px solid var(--rule)}
+.formula-ledger-head h2{font-size:15px;line-height:1.4;color:var(--ink);letter-spacing:-.01em}
+.formula-ledger-head>div>.muted{display:block;margin-top:2px}
+.formula-row{width:100%;display:grid;grid-template-columns:34px minmax(0,1fr) 24px;align-items:center;
+  gap:10px;padding:13px 15px;border:0;border-bottom:1px solid var(--rule);border-radius:0;
+  background:transparent;text-align:left}
+.formula-row:last-child{border-bottom:0}
+.formula-row-no{font-size:11px;color:var(--ink2)}
+.formula-row-copy{min-width:0;display:flex;flex-direction:column;gap:4px}
+.formula-row-copy b{font-size:14px;font-weight:650;line-height:1.35}
+.formula-row-copy code{font:500 11.5px/1.5 var(--f-num);color:var(--ink2);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.formula-row-state{display:grid;place-items:center;color:var(--ink2)}
+.formula-row-state .icon{width:17px;height:17px}
+.formula-row.mastered .formula-row-no,.formula-row.mastered .formula-row-state{color:var(--ok)}
+@media (hover:hover){.formula-row:hover{background:var(--sheet2);border-color:var(--rule)}}
+
+.formula-bank{display:grid;grid-template-columns:28px minmax(0,1fr) 20px;align-items:center;gap:11px;
+  text-align:left;padding:15px;background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.formula-bank>span{display:flex;flex-direction:column;gap:2px}
+.formula-bank b{font-size:14px}
+.formula-bank small{font-size:11.5px;line-height:1.5;color:var(--ink2)}
+
+/* 学习页保持一个垂直故事：直觉、拆字符、讲原理、代数、答题。 */
+.lesson-bar{position:sticky;top:0;z-index:var(--z-bar);margin:-20px -16px 0;
+  padding:12px 16px 9px;background:color-mix(in srgb,var(--paper) 91%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule)}
+.lesson-position{flex:1;display:flex;align-items:center;gap:10px}
+.lesson-position>span{font-size:11px;color:var(--ink2);white-space:nowrap}
+.lesson-track{height:3px;flex:1;background:var(--sheet2);overflow:hidden;border-radius:2px}
+.lesson-track i{display:block;height:100%;background:var(--accent);transition:width .3s var(--ease)}
+.lesson-done{font-size:11px;color:var(--ink2);white-space:nowrap}
+.lesson-done.on{color:var(--ok);font-weight:600}
+
+.lesson-intro{padding:14px 2px 2px;display:flex;flex-direction:column;gap:8px}
+.lesson-intro>span,.lesson-section-title>span,.workbench-head>div>span{font-size:11px;color:var(--accent-ink);font-weight:650}
+.lesson-intro h1{font-size:31px;line-height:1.12;letter-spacing:-.045em}
+.lesson-intro p{margin:2px 0 0;max-width:37em;font-size:15px;line-height:1.85;color:var(--ink2)}
+.formula-journey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:6px}
+.formula-journey>span{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;
+  padding:7px 4px;border:1px solid var(--rule);border-radius:var(--r-s);font-size:11px;color:var(--ink2)}
+.formula-journey i{width:18px;height:18px;display:grid;place-items:center;border-radius:50%;font-style:normal;
+  font-size:9px;color:var(--accent-ink);background:var(--accent-soft)}
+
+.formula-variants{display:flex;flex-wrap:wrap;gap:6px}
+.formula-variants button{padding:7px 10px;border-radius:var(--r-s);font-size:12px;background:transparent}
+.formula-variants button.on{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+
+.formula-workbench{background:var(--sheet);border:1px solid var(--card-line);border-radius:var(--r-xl);
+  box-shadow:var(--shadow);overflow:hidden}
+.workbench-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 15px 9px}
+.workbench-head h2,.lesson-section-title h2{font-size:16px;color:var(--ink);line-height:1.4;letter-spacing:-.015em}
+.workbench-head>div>span{display:block;margin-bottom:2px}
+
+/* 公式是一张连续的 SVG 板：短式放大，长式缩字，只在内部受控分行。 */
+.formula-svg-frame{width:100%;padding:9px 10px;border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);background:var(--sheet2)}
+.formula-svg{display:block;width:100%;height:auto;max-height:250px;margin:0 auto;color:var(--ink);overflow:visible}
+.formula-token{cursor:pointer;outline:none;transform-box:fill-box;transform-origin:center center}
+.formula-token rect{fill:transparent;stroke:transparent;stroke-width:1.5;transition:fill .2s,stroke .2s}
+.formula-token text{fill:currentColor;font:650 25px var(--f-num);transition:fill .2s}
+.formula-token line{stroke:transparent;stroke-width:3;stroke-linecap:round;transition:stroke .2s}
+.formula-token.active rect{fill:var(--accent-soft);stroke:transparent}
+.formula-token.active text{fill:var(--accent-ink)}
+.formula-token.active line{stroke:transparent}
+.formula-token:focus-visible rect{stroke:var(--accent);stroke-width:2.5}
+.formula-scope-highlight{fill:var(--accent-soft);stroke:none;
+  transform-box:fill-box;transform-origin:center center}
+.formula-fraction-token .fraction-hit{fill:transparent;stroke:transparent}
+.formula-fraction-token .fraction-bar{stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.formula-fraction-token:focus-visible .fraction-hit{stroke:var(--accent);stroke-width:2}
+.formula-fraction-token.active .fraction-bar{stroke:var(--accent);stroke-width:2.4}
+.formula-callout{min-height:84px;padding:14px 16px;display:grid;grid-template-columns:minmax(56px,auto) 1fr;
+  gap:13px;align-items:start;background:color-mix(in srgb,var(--accent-soft) 48%,var(--sheet))}
+.formula-callout b{font:700 15px/1.5 var(--f-num);color:var(--accent-ink);word-break:break-all}
+.formula-callout span{font-size:13.5px;line-height:1.7;color:var(--ink)}
+.formula-token-nav{display:flex;align-items:center;justify-content:space-between;padding:7px 10px}
+.formula-token-nav button{padding:6px;background:transparent;border:0;border-radius:var(--r-s);font-size:12px;color:var(--ink2)}
+.formula-token-nav>span{font-size:10px;color:var(--ink2)}
+
+.lesson-principle,.lesson-example,.formula-quiz{display:flex;flex-direction:column;gap:13px;padding:4px 2px}
+.lesson-section-title{display:flex;flex-direction:column;gap:3px}
+.principle-svg,.example-svg{display:block;width:100%;height:auto;border-radius:var(--r-l);background:var(--sheet2)}
+.principle-svg>path,.principle-svg g>path,.example-svg>path{fill:none;stroke:var(--accent);stroke-width:2}
+.principle-svg marker path,.example-svg marker path{fill:var(--accent)}
+.principle-svg rect,.example-svg rect{fill:var(--sheet);stroke:var(--rule)}
+.principle-svg text,.example-svg text{fill:var(--ink);font:600 13px var(--f-body)}
+.principle-svg .principle-target rect{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.principle-svg .principle-target text{fill:var(--accent-ink);font-size:15px}
+.principle-svg .principle-target .sub{fill:var(--ink2);font-size:11px;font-weight:400}
+.principle-svg .principle-input text{font-size:12.5px}
+.lesson-principle ol{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.lesson-principle li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.lesson-principle li>span{width:25px;height:25px;display:grid;place-items:center;background:var(--accent-soft);
+  color:var(--accent-ink);border-radius:var(--r-s);font-size:11px;font-weight:650}
+.lesson-principle li p{margin:0;font-size:14px;line-height:1.75;color:var(--ink2)}
+
+.example-svg .label{fill:var(--ink2);font-size:10.5px;font-weight:500}
+.example-svg .result rect{fill:var(--accent-soft);stroke:var(--accent)}
+.example-svg .result text:not(.label){fill:var(--accent-ink)}
+.example-lines{display:flex;flex-direction:column;background:var(--sheet);border-radius:var(--r-l);overflow:hidden;
+  border:1px solid var(--card-line);box-shadow:var(--shadow)}
+.example-lines>div{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:11px 13px;border-bottom:1px solid var(--rule)}
+.example-lines>div:last-child{border-bottom:0}
+.example-lines span{font-size:11px;color:var(--ink2)}
+.example-lines b{font:550 13px/1.65 var(--f-num);word-break:break-word}
+.example-lines .answer{background:var(--accent-soft)}
+.example-lines .answer span,.example-lines .answer b{color:var(--accent-ink)}
+
+.formula-quiz{margin-top:3px;padding:16px;background:var(--sheet);border:1px solid var(--card-line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow)}
+.formula-quiz .lesson-section-title h2{font-size:16px;line-height:1.65}
+.formula-options{display:grid;grid-template-columns:1fr;gap:8px}
+.formula-options button{text-align:left;padding:11px 13px;background:var(--sheet2);border-radius:var(--r-m)}
+.formula-options button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:650}
+.formula-options button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.formula-options button:disabled{opacity:1}
+.quiz-feedback{padding:12px 13px;border-radius:var(--r-m);font-size:13px}
+.quiz-feedback b{font-size:14px}
+.quiz-feedback p{margin:4px 0 0;line-height:1.7;color:var(--ink)}
+.quiz-feedback.right{background:var(--ok-soft);color:var(--ok)}
+.quiz-feedback.wrong{background:var(--bad-soft);color:var(--bad)}
+.quiz-feedback.wrong button{margin-top:9px;background:var(--sheet)}
+
+.formula-lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-top:4px}
+.formula-lesson-nav button{min-height:46px;display:flex;align-items:center;justify-content:center;gap:6px}
+
+@media (max-width:430px){
+  .formula-hero{grid-template-columns:104px 1fr;padding:17px 14px;gap:12px}
+  .formula-dial{width:102px;height:120px;transform:scale(.9)}
+  .formula-hero-copy h2{font-size:18px}
+  .formula-hero-copy p{font-size:12.5px}
+  .formula-groups{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .formula-svg-frame{padding:7px 6px}
+  .principle-svg,.example-svg{margin:0 -2px;width:calc(100% + 4px)}
+}
 
 /* ---- 科学计算器 ---- */
 /* 底部抽屉，不是弹层：没有遮罩，页面照常滚动和点击，边看题边算。

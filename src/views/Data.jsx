@@ -5,6 +5,16 @@ import { track } from '../lib/analytics'
 import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
+import { FORMULA_LESSONS, FORMULA_MASTERY_KEY } from '../data/formulaLessons'
+
+function getFormulaMastery() {
+  try {
+    const value = JSON.parse(localStorage.getItem(FORMULA_MASTERY_KEY) || '[]')
+    return Array.isArray(value) ? value : []
+  } catch {
+    return []
+  }
+}
 
 /** 带小眼睛的 Key 输入。AI 和语音两处共用，别各写一遍 */
 function KeyField({ label, value, onChange }) {
@@ -60,6 +70,7 @@ export default function Data() {
     const data = {
       app: 'fund-quiz', version: 1, exportedAt: new Date().toISOString(),
       records: Object.values(records), exams: await idb.all('exams'), kv: await idb.all('kv'),
+      formulaMastery: getFormulaMastery(),
     }
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
@@ -86,6 +97,10 @@ export default function Data() {
       const merge = !overwrite
       let next = merge ? { ...records } : {}
       if (!merge) { await idb.clear('records'); await idb.clear('exams') }
+      const oldFormula = merge ? getFormulaMastery() : []
+      const incomingFormula = Array.isArray(d.formulaMastery) ? d.formulaMastery : []
+      const nextFormula = [...new Set([...oldFormula, ...incomingFormula])]
+      localStorage.setItem(FORMULA_MASTERY_KEY, JSON.stringify(nextFormula))
       for (const r of d.records || []) {
         const old = next[r.qid]
         next[r.qid] = old
@@ -112,12 +127,13 @@ export default function Data() {
   async function reset() {
     if (!await ask({
       title: '清空全部进度？',
-      body: '做题记录、错题本和考试成绩都会删掉，找不回来。题库不受影响。',
+      body: '做题记录、错题本、考试成绩和公式掌握进度都会删掉，找不回来。题库不受影响。',
       ok: '清空', cancel: '再想想', danger: true,
     })) return
     await idb.clear('records')
     await idb.clear('exams')
     await kvSet('activeExam', null)
+    localStorage.removeItem(FORMULA_MASTERY_KEY)
     setRecords({})
     reload()
     toast('已清空')
@@ -201,12 +217,15 @@ export default function Data() {
           <div className="list-item"><span className="grow">题库</span><b className="num">{BANK.length}</b></div>
           <div className="list-item"><span className="grow">做过的题</span><b className="num">{Object.keys(records).length}</b></div>
           <div className="list-item"><span className="grow">考试记录</span><b className="num">{exams.length}</b></div>
+          <div className="list-item"><span className="grow">掌握公式</span><b className="num">
+            {getFormulaMastery().length}/{FORMULA_LESSONS.length}
+          </b></div>
         </div>
       </div>
 
       <div className="card">
         <button className="btn-danger btn-ghost" onClick={reset}><Icon name="trash" /> 清空全部进度</button>
-        <div className="muted">删除做题记录、错题本和考试成绩，题库不受影响。</div>
+        <div className="muted">删除做题记录、错题本、考试成绩和公式掌握进度，题库不受影响。</div>
       </div>
     </>
   )

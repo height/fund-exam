@@ -4,26 +4,30 @@ import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFo
 import { track } from '../lib/analytics'
 import { idb, kvGet, kvSet } from '../lib/db'
 import { Stem, fmtTime } from '../lib/format'
+import { NUMBER_EXAM_N, numberQuestions, pickNumberExamSet } from '../lib/numbers'
 import { useStore } from '../lib/store'
 import { useQuestionNav } from '../lib/useQuestionNav'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
 /** 一场考试全程存在 kv.activeExam 里：关掉页面倒计时照走，回来能接着考 */
-export default function Exam({ go, setQuiz, chapter }) {
+export default function Exam({ go, setQuiz, chapter, scope, review }) {
   const { subject, records, setRecords, toast, ask } = useStore()
+  const numberMode = scope === 'numbers'
+  const reviewIds = review?.split(',').filter(Boolean) || null
+  const activeKey = numberMode ? 'activeNumberExam' : 'activeExam'
   const [stage, setStage] = useState('loading') // loading | resume | intro | running | result
   const [ex, setEx] = useState(null)
   const [result, setResult] = useState(null)
 
   useEffect(() => {
     ;(async () => {
-      const a = await kvGet('activeExam', null)
+      const a = await kvGet(activeKey, null)
       if (a && a.endTs > Date.now()) { setEx(a); setStage('resume'); return }
-      if (a) await kvSet('activeExam', null)
+      if (a) await kvSet(activeKey, null)
       setStage('intro')
     })()
-  }, [])
+  }, [activeKey])
 
   // 考试进行中：收起底栏，离开要确认
   useEffect(() => {
@@ -32,19 +36,22 @@ export default function Exam({ go, setQuiz, chapter }) {
   }, [stage, setQuiz])
 
   async function begin() {
-    const qs = pickExamSet(subject, chapter)
+    const qs = numberMode
+      ? pickNumberExamSet(subject, reviewIds)
+      : pickExamSet(subject, chapter)
     const now = Date.now()
     // mins 存进这场考试：单章卷比整套短，交卷算用时得按本场时长封顶，
     // 不能再拿 EXAM_MIN 当上限，否则单章考的用时会被记成最多 120 分钟
-    const mins = chapter ? minutesFor(qs.length) : EXAM_MIN
+    const mins = numberMode || chapter ? minutesFor(qs.length) : EXAM_MIN
     const fresh = {
-      subject, chapter, mins, ids: qs.map(q => q.id), answers: {},
+      subject, chapter: numberMode ? undefined : chapter, mins, kind: numberMode ? 'numbers' : undefined,
+      ids: qs.map(q => q.id), answers: {},
       startTs: now, endTs: now + mins * 60000, i: 0,
     }
-    await kvSet('activeExam', fresh)
+    await kvSet(activeKey, fresh)
     track('exam_started', {
       subject,
-      exam_type: chapter ? 'chapter' : 'full',
+      exam_type: numberMode ? 'numbers' : chapter ? 'chapter' : 'full',
       question_count: qs.length,
     })
     setEx(fresh)
@@ -72,16 +79,16 @@ export default function Exam({ go, setQuiz, chapter }) {
     }
     setRecords(next)
     const rec = {
-      id: Date.now(), subject: e.subject, chapter: e.chapter, ts: Date.now(),
+      id: Date.now(), subject: e.subject, chapter: e.chapter, kind: e.kind, ts: Date.now(),
       score: Math.round((right / qs.length) * 100), right, total: qs.length,
       usedMs: Math.min(Date.now() - e.startTs, (e.mins || EXAM_MIN) * 60000),
       ids: e.ids, answers: e.answers,
     }
     await idb.put('exams', rec)
-    await kvSet('activeExam', null)
+    await kvSet(e.kind === 'numbers' ? 'activeNumberExam' : 'activeExam', null)
     track('exam_submitted', {
       subject: e.subject,
-      exam_type: e.chapter ? 'chapter' : 'full',
+      exam_type: e.kind === 'numbers' ? 'numbers' : e.chapter ? 'chapter' : 'full',
       question_count: qs.length,
       answered_count: Object.keys(e.answers).length,
     })
@@ -93,7 +100,7 @@ export default function Exam({ go, setQuiz, chapter }) {
 
   if (stage === 'resume') return (
     <>
-      <div><h1>模拟考试</h1></div>
+      <div><h1>{numberMode ? '数字模拟练习' : '模拟考试'}</h1></div>
       <div className="card">
         <div className="row between"><b>有一场没考完</b><span className="chip">{ex.subject}</span></div>
         <div className="row between">
@@ -106,7 +113,7 @@ export default function Exam({ go, setQuiz, chapter }) {
         </div>
         <div className="grid2">
           <button className="btn-pri" onClick={() => setStage('running')}>继续考试</button>
-          <button onClick={async () => { await kvSet('activeExam', null); setEx(null); setStage('intro') }}>
+          <button onClick={async () => { await kvSet(activeKey, null); setEx(null); setStage('intro') }}>
             放弃重考
           </button>
         </div>
@@ -117,17 +124,22 @@ export default function Exam({ go, setQuiz, chapter }) {
   if (stage === 'running') return <Running ex={ex} setEx={setEx} onSubmit={submit} toast={toast} ask={ask} go={go} />
   if (stage === 'result') return <Result rec={result} go={go} />
 
-  const pool = chapter
-    ? bySubject(subject).filter(q => q.chapter === chapter).length
-    : bySubject(subject).length
-  const n = Math.min(chapter ? CHAPTER_EXAM_N : EXAM_N, pool)
-  const mins = chapter ? minutesFor(n) : EXAM_MIN
+  const allow = reviewIds?.length ? new Set(reviewIds) : null
+  const pool = numberMode
+    ? numberQuestions(subject).filter(q => !allow || allow.has(q.id)).length
+    : chapter
+      ? bySubject(subject).filter(q => q.chapter === chapter).length
+      : bySubject(subject).length
+  const n = Math.min(numberMode ? NUMBER_EXAM_N : chapter ? CHAPTER_EXAM_N : EXAM_N, pool)
+  const mins = numberMode || chapter ? minutesFor(n) : EXAM_MIN
   return (
     <>
       <div>
-        <h1>{chapter ? '章节考试' : '模拟考试'}</h1>
+        <h1>{numberMode ? (reviewIds?.length ? '数字错题重考' : '数字模拟练习') : chapter ? '章节考试' : '模拟考试'}</h1>
         <div className="muted">
-          {chapter
+          {numberMode
+            ? <>所有章节混合抽题，{mins} 分钟 {n} 道单选，{PASS} 分及格，考中不看答案</>
+            : chapter
             ? <>只考「{chapter}」这一章，{mins} 分钟 {n} 道单选，{PASS} 分及格，考中不看答案</>
             : <>按真考规格：{EXAM_MIN} 分钟 {EXAM_N} 道单选，{PASS} 分及格，考中不看答案</>}
         </div>
@@ -140,13 +152,17 @@ export default function Exam({ go, setQuiz, chapter }) {
           <div className="stat"><b>{PASS}</b><span>及格分</span></div>
         </div>
         <div className="muted">
-          {chapter
+          {numberMode
+            ? <>{SUBJ_FULL[subject]}　{reviewIds?.length ? `本次错题共 ${pool} 题` : `数字题库共 ${pool} 题，每次随机抽`}</>
+            : chapter
             ? <>{SUBJ_FULL[subject]}　本章题库共 {pool} 题，每次随机抽</>
             : <>{SUBJ_FULL[subject]}　按章节分层抽题，覆盖各知识点</>}
         </div>
         <button className="btn-pri" style={{ padding: 15 }} disabled={!n} onClick={begin}>开始考试</button>
-        {chapter && (
-          <button className="btn-sm btn-ghost" onClick={() => go('chapters')}>← 换一章</button>
+        {(chapter || numberMode) && (
+          <button className="btn-sm btn-ghost" onClick={() => go(numberMode ? 'numbers' : 'chapters', numberMode ? { mode: 'exam' } : {})}>
+            ← {numberMode ? '返回数字必背' : '换一章'}
+          </button>
         )}
       </div>
       <div className="card">
@@ -176,7 +192,12 @@ function Running({ ex, setEx, onSubmit, toast, ask, go }) {
   const q = qs[ex.i]
   const answered = Object.keys(ex.answers).length
 
-  const patch = p => { const n = { ...ex, ...p }; setEx(n); kvSet('activeExam', n); return n }
+  const patch = p => {
+    const n = { ...ex, ...p }
+    setEx(n)
+    kvSet(ex.kind === 'numbers' ? 'activeNumberExam' : 'activeExam', n)
+    return n
+  }
 
   function pick(idx) {
     patch({ answers: { ...ex.answers, [q.id]: idx }, i: ex.i < qs.length - 1 ? ex.i + 1 : ex.i })
@@ -190,7 +211,7 @@ function Running({ ex, setEx, onSubmit, toast, ask, go }) {
       body: '这场不算交卷，倒计时按真实时间继续走，回来能接着考，到点自动交卷。',
       ok: '离开', cancel: '继续考试',
     })) return
-    go('home', {}, true)
+    go(ex.kind === 'numbers' ? 'numbers' : 'home', ex.kind === 'numbers' ? { mode: 'exam' } : {}, true)
   }
 
   async function confirmSubmit() {
@@ -264,6 +285,7 @@ function Result({ rec, go }) {
   const detailRef = useRef(null)
   const qs = rec.ids.map(qById)
   const pass = rec.score >= PASS
+  const numberMode = rec.kind === 'numbers'
 
   useEffect(() => {
     if (detail !== null) {
@@ -278,7 +300,7 @@ function Result({ rec, go }) {
   return (
     <>
       <div className="card" style={{ alignItems: 'center', textAlign: 'center', gap: 6 }}>
-        <div className="eyebrow">{rec.subject} 模拟考成绩</div>
+        <div className="eyebrow">{rec.subject} {numberMode ? '数字模拟练习' : '模拟考'}成绩</div>
         <div className="num" style={{
           fontSize: 64, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-.03em',
           color: pass ? 'var(--ok)' : 'var(--bad)',
@@ -324,10 +346,20 @@ function Result({ rec, go }) {
         })()}
       </div>
 
-      <div className="grid2">
-        <button onClick={() => go('wrong')}>去刷错题</button>
-        <button className="btn-pri" onClick={() => go('home')}>回首页</button>
-      </div>
+      {numberMode ? (() => {
+        const wrongIds = qs.filter(q => rec.answers[q.id] !== q.answer).map(q => q.id).join(',')
+        return (
+          <div className="grid2">
+            <button disabled={!wrongIds} onClick={() => go('numbers', { mode: 'cards', review: wrongIds })}>重背错题卡</button>
+            <button className="btn-pri" onClick={() => go('numbers', { mode: 'exam' })}>回数字必背</button>
+          </div>
+        )
+      })() : (
+        <div className="grid2">
+          <button onClick={() => go('wrong')}>去刷错题</button>
+          <button className="btn-pri" onClick={() => go('home')}>回首页</button>
+        </div>
+      )}
     </>
   )
 }
