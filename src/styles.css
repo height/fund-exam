@@ -116,7 +116,7 @@ h2{font-size:13px;margin:0;color:var(--ink2);letter-spacing:.02em;font-weight:60
 .num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
 
 /* ---- 容器 ---- */
-.card{box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.card{display:flex;flex-direction:column;gap:12px}
 /* 不是所有分组都配当一张卡。只有首页战绩那种「要抬起来看」的才用 .card，
    其余用小标题 + 一道细线分段，页面才有节奏，不然就是一摞同款圆角方块 */
 .section{display:flex;flex-direction:column;gap:12px;padding:4px 2px 0}
@@ -525,7 +525,8 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .sel-tip[data-side="right"]:active:not(:disabled){transform:scale(.985)}
 .sel-tip[data-side="left"]:active:not(:disabled){transform:translateX(-100%) scale(.985)}
 .bubble{position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));
-  max-width:636px;margin:0 auto;max-height:46vh;overflow-y:auto;
+  max-width:636px;margin:0 auto;max-height:46vh;overflow-y:auto;padding:18px;
+  background:var(--sheet) var(--grain);border:1px solid var(--card-line);border-radius:var(--r-xl);
   box-shadow:0 10px 34px rgba(0,0,0,.3)}
 .bubble-term{font-size:15px}
 
