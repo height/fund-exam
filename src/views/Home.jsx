@@ -113,7 +113,7 @@ export default function Home({ go }) {
         </button>
         <button className="tile" onClick={() => go('formula')}>
           <b><Icon name="calc" /> 公式攻坚</b>
-          <small>47 组公式，逐字符讲解和练题</small>
+          <small>6 节带练微课，从看懂到独立做题</small>
         </button>
         <button className="tile" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>

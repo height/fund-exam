@@ -6,6 +6,8 @@ import { BANK } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
 import { FORMULA_LESSONS, FORMULA_MASTERY_KEY } from '../data/formulaLessons'
+import { FORMULA_PROGRESS_KEY, emptyProgress, mergeProgress } from '../lib/formulaProgress'
+import { loadFormulaProgress, saveFormulaProgress } from '../lib/formulaStorage'
 
 function getFormulaMastery() {
   try {
@@ -67,18 +69,22 @@ export default function Data() {
   useEffect(() => { reload() }, [])
 
   async function exportAll() {
-    const data = {
-      app: 'fund-quiz', version: 1, exportedAt: new Date().toISOString(),
-      records: Object.values(records), exams: await idb.all('exams'), kv: await idb.all('kv'),
-      formulaMastery: getFormulaMastery(),
-    }
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
-    a.download = `基金刷题进度_${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(a.href)
-    toast('已导出到下载目录')
-    track('progress_exported')
+    try {
+      const formulaProgress = await loadFormulaProgress()
+      const data = {
+        app: 'fund-quiz', version: 1, exportedAt: new Date().toISOString(),
+        records: Object.values(records), exams: await idb.all('exams'), kv: await idb.all('kv'),
+        formulaMastery: getFormulaMastery(),
+        formulaProgress,
+      }
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
+      a.download = `基金刷题进度_${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(a.href)
+      toast('已导出到下载目录')
+      track('progress_exported')
+    } catch (err) { toast(`导出失败：${err.message}`) }
   }
 
   async function importFile(e) {
@@ -95,6 +101,9 @@ export default function Data() {
       })
       if (overwrite === null) { e.target.value = ''; return }
       const merge = !overwrite
+      const incomingProgress = d.formulaProgress ?? (Array.isArray(d.kv) ? d.kv.find(row => row.k === FORMULA_PROGRESS_KEY)?.v : null)
+      if (incomingProgress && incomingProgress.version !== 1) throw new Error('此微课堂记录版本暂不支持，请更新应用后重试')
+      const nextProgress = mergeProgress(await loadFormulaProgress(), incomingProgress, !merge)
       let next = merge ? { ...records } : {}
       if (!merge) { await idb.clear('records'); await idb.clear('exams') }
       const oldFormula = merge ? getFormulaMastery() : []
@@ -114,6 +123,7 @@ export default function Data() {
         await idb.put('records', next[r.qid])
       }
       for (const x of d.exams || []) await idb.put('exams', x)
+      await saveFormulaProgress(nextProgress)
       setRecords(next)
       reload()
       toast(`导入成功，${(d.records || []).length} 条做题记录`)
@@ -133,6 +143,7 @@ export default function Data() {
     await idb.clear('records')
     await idb.clear('exams')
     await kvSet('activeExam', null)
+    await saveFormulaProgress(emptyProgress())
     localStorage.removeItem(FORMULA_MASTERY_KEY)
     setRecords({})
     reload()
@@ -214,7 +225,7 @@ export default function Data() {
           <div className="list-item"><span className="grow">题库</span><b className="num">{BANK.length}</b></div>
           <div className="list-item"><span className="grow">做过的题</span><b className="num">{Object.keys(records).length}</b></div>
           <div className="list-item"><span className="grow">考试记录</span><b className="num">{exams.length}</b></div>
-          <div className="list-item"><span className="grow">掌握公式</span><b className="num">
+          <div className="list-item"><span className="grow">旧公式历史记录</span><b className="num">
             {getFormulaMastery().length}/{FORMULA_LESSONS.length}
           </b></div>
         </div>

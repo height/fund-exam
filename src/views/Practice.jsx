@@ -7,6 +7,7 @@ import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
 import { useStore } from '../lib/store'
 import { useQuestionNav } from '../lib/useQuestionNav'
+import { courseUnit } from '../data/formulaCourses'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
@@ -26,10 +27,13 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
   }, [initialScope, initialOrder])
 
   async function start(scope, order) {
+    const formula = scope.startsWith('formula:') ? courseUnit(scope.slice(8)) : null
     // 计算题不分科目：31 道里 29 道在科目二，按科目切会把另一科那 2 道藏起来
-    let qs = scope === 'calc'
-      ? BANK.filter(q => CALC_IDS.includes(q.id))
-      : bySubject(subject)
+    let qs = scope.startsWith('formula:')
+      ? BANK.filter(q => q.subject === '科目二' && formula?.bankIds.includes(q.id))
+      : scope === 'calc'
+        ? BANK.filter(q => CALC_IDS.includes(q.id))
+        : bySubject(subject)
     if (scope === 'new') qs = qs.filter(q => !records[q.id]?.seen)
     else if (scope === 'wrong') qs = qs.filter(q => records[q.id]?.wrongFlag)
     else if (scope.startsWith('ch:')) qs = qs.filter(q => q.chapter === scope.slice(3))
@@ -38,7 +42,7 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
     if (order === 'rand') qs = shuffle(qs).slice(0, getRandomN())
     const key = keepsCursor(scope) ? `cursor:${subject}:${scope}:${order}` : null
     const saved = key && order === 'seq' ? await kvGet(key, 0) : 0
-    const scopeType = scope.startsWith('ch:') ? 'chapter' : scope
+    const scopeType = scope.startsWith('formula:') ? 'formula' : scope.startsWith('ch:') ? 'chapter' : scope
     track('practice_started', {
       subject,
       scope: scopeType,
@@ -52,8 +56,11 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
   useEffect(() => { setQuiz(!!session); return () => setQuiz(false) }, [session, setQuiz])
 
   return session
-    ? <Runner session={session} setSession={setSession} onQuit={() => setSession(null)} />
-    : <Setup onStart={start} />
+    ? <Runner session={session} setSession={setSession} onQuit={() => {
+      setSession(null)
+      if (initialScope?.startsWith('formula:')) go('formula', { unit: initialScope.slice(8) }, true)
+    }} />
+    : <>{initialScope?.startsWith('formula:') && <button className="btn-sm" onClick={() => go('formula', { unit: initialScope.slice(8) })}>返回微课堂</button>}<Setup onStart={start} /></>
 }
 
 function Setup({ onStart }) {

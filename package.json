@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:formula": "node --test tests/formula.test.js",
+    "test:formula:browser": "python3 tools/test_formula_webkit.py"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

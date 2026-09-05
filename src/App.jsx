@@ -9,7 +9,7 @@ import Chapters from './views/Chapters'
 import Data from './views/Data'
 import Exam from './views/Exam'
 import Home from './views/Home'
-import Formula from './views/Formula'
+import Formula from './views/FormulaClassroom'
 import FundOps from './views/FundOps'
 import KnowledgeMap from './views/KnowledgeMap'
 import Numbers from './views/Numbers'
@@ -97,7 +97,7 @@ export default function App() {
   // 挂在 Formula 里的话，正要算题的那一刻它反而没了。
   // 出现条件＝这页可能要算：公式攻坚本身、它带出来的计算题专练、以及科目二的做题页
   const needsCalc = view === 'formula'
-    || (['practice', 'exam'].includes(view) && (subject === '科目二' || params.scope === 'calc'))
+    || (['practice', 'exam'].includes(view) && (subject === '科目二' || params.scope === 'calc' || params.scope?.startsWith('formula:')))
 
   return (
     <>
@@ -110,7 +110,7 @@ export default function App() {
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'map' && <KnowledgeMap go={go} />}
         {view === 'numbers' && <Numbers go={go} initialMode={params.mode} review={params.review} />}
-        {view === 'formula' && <Formula go={go} />}
+        {view === 'formula' && <Formula go={go} unitId={params.unit} mode={params.mode} />}
         {view === 'timeline' && <Timeline go={go} />}
         {view === 'fundops' && <FundOps go={go} />}
         {view === 'tools' && <Tools go={go} />}

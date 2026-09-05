@@ -50,7 +50,7 @@ function useReducedMotion() {
   return reduce
 }
 
-export default function Formula({ go }) {
+export default function Formula({ go, referenceOnly = false }) {
   const [selectedId, setSelectedId] = useState(null)
   const [group, setGroup] = useState('finance')
   const [query, setQuery] = useState('')
@@ -74,7 +74,7 @@ export default function Formula({ go }) {
     const lesson = FORMULA_LESSONS.find(item => item.id === selectedId)
     const index = FORMULA_LESSONS.indexOf(lesson)
     return (
-      <FormulaLesson key={lesson.id} lesson={lesson} index={index} mastered={mastered.has(lesson.id)}
+      <FormulaLesson referenceOnly={referenceOnly} key={lesson.id} lesson={lesson} index={index} mastered={mastered.has(lesson.id)}
         onMastered={() => markMastered(lesson.id)} onClose={() => setSelectedId(null)}
         onMove={step => openLesson(FORMULA_LESSONS[index + step].id)} />
     )
@@ -91,7 +91,7 @@ export default function Formula({ go }) {
       <PageHeader
         variant="subpage"
         title="公式攻坚"
-        subtitle="看懂 → 代数 → 做题"
+        subtitle="公式目录与旧版讲解"
         onBack={() => go('home')}
         backLabel="首页"
       />
@@ -99,8 +99,8 @@ export default function Formula({ go }) {
       <section className="formula-hero" aria-labelledby="formula-start-title">
         <ProgressDial value={mastered.size} total={FORMULA_LESSONS.length} />
         <div className="formula-hero-copy">
-          <span className="eyebrow">不是背咒语</span>
-          <h2 id="formula-start-title">每次只弄懂一个关系</h2>
+          <span className="eyebrow">公式查阅</span>
+          <h2 id="formula-start-title">查一条公式，回顾一个关系</h2>
           <p>点公式里的任意字符，先知道它是谁，再用一组小数字亲手算一遍。</p>
           <button className="btn-pri" onClick={() => openLesson(next.id)}>
             <Icon name={mastered.size ? 'play' : 'right'} />
@@ -137,7 +137,7 @@ export default function Formula({ go }) {
             <h2>{normalized ? '搜索结果' : formulaGroup(group).name}</h2>
             <span className="muted">{normalized ? '点一条进入拆解练习' : `公式 ${formulaGroup(group).range}`}</span>
           </div>
-          <span className="muted">答对才算会</span>
+          <span className="muted">查阅公式与符号</span>
         </div>
         {shown.length ? shown.map(item => (
           <button className={`formula-row ${mastered.has(item.id) ? 'mastered' : ''}`} key={item.id}
@@ -147,7 +147,7 @@ export default function Formula({ go }) {
               <b>{item.title}</b>
               <code>{item.formula}</code>
             </span>
-            <span className="formula-row-state" aria-label={mastered.has(item.id) ? '已掌握' : '未掌握'}>
+            <span className="formula-row-state" aria-label={mastered.has(item.id) ? '历史记录' : '尚无历史记录'}>
               {mastered.has(item.id) ? <Icon name="done" /> : <Icon name="right" />}
             </span>
           </button>
@@ -165,7 +165,7 @@ export default function Formula({ go }) {
   )
 }
 
-function FormulaLesson({ lesson, index, mastered, onMastered, onClose, onMove }) {
+function FormulaLesson({ referenceOnly, lesson, index, mastered, onMastered, onClose, onMove }) {
   const reduceMotion = useReducedMotion()
   const workbenchRef = useRef(null)
   const calloutRef = useRef(null)
@@ -237,7 +237,7 @@ function FormulaLesson({ lesson, index, mastered, onMastered, onClose, onMove })
         subtitle={`第 ${index + 1}/${FORMULA_LESSONS.length} 个 · ${lesson.title}`}
         onBack={onClose}
         backLabel="总览"
-        action={<span className={`lesson-done ${mastered ? 'on' : ''}`}>{mastered ? '已掌握' : '学习中'}</span>}
+        action={<span className={`lesson-done ${mastered ? 'on' : ''}`}>{mastered ? '历史记录' : '学习中'}</span>}
         progress={((index + 1) / FORMULA_LESSONS.length) * 100}
       />
 
@@ -245,8 +245,8 @@ function FormulaLesson({ lesson, index, mastered, onMastered, onClose, onMove })
         <span>{formulaGroup(lesson.group).name}</span>
         <h1>{lesson.title}</h1>
         <p>{lesson.plain}</p>
-        <div className="formula-journey" aria-label="本公式的四步学习路径">
-          {['认字符', '懂关系', '会代入', '答一题'].map((label, i) => (
+        <div className="formula-journey" aria-label="旧版讲解内容">
+          {(referenceOnly ? ['认字符', '懂关系', '看例题'] : ['认字符', '懂关系', '会代入', '答一题']).map((label, i) => (
             <span key={label}><i className="num">{i + 1}</i>{label}</span>
           ))}
         </div>
@@ -304,7 +304,7 @@ function FormulaLesson({ lesson, index, mastered, onMastered, onClose, onMove })
         </div>
       </section>
 
-      <section className={`formula-quiz ${correct ? 'correct' : ''}`}>
+      {!referenceOnly && <section className={`formula-quiz ${correct ? 'correct' : ''}`}>
         <div className="lesson-section-title"><span>轮到你</span><h2>{quiz.question}</h2></div>
         <div className="formula-options">
           {quiz.options.map((option, i) => {
@@ -321,7 +321,7 @@ function FormulaLesson({ lesson, index, mastered, onMastered, onClose, onMove })
             {!correct && <button className="btn-sm" onClick={() => setPicked(null)}>再答一次</button>}
           </div>
         )}
-      </section>
+      </section>}
 
       <footer className="formula-lesson-nav">
         <button disabled={index === 0} onClick={() => onMove(-1)}><Icon name="left" /> 上一个公式</button>
@@ -684,14 +684,14 @@ function ProgressDial({ value, total }) {
   const circumference = 2 * Math.PI * radius
   const offset = circumference * (1 - value / total)
   return (
-    <div className="formula-dial" aria-label={`已掌握 ${value} 个，共 ${total} 个`}>
+    <div className="formula-dial" aria-label={`历史记录 ${value} 个，共 ${total} 个`}>
       <svg viewBox="0 0 112 112" aria-hidden="true">
         <circle className="dial-track" cx="56" cy="56" r={radius} />
         <circle className="dial-value" cx="56" cy="56" r={radius}
           strokeDasharray={circumference} strokeDashoffset={offset} />
       </svg>
       <strong className="num">{value}<small>/{total}</small></strong>
-      <span>已掌握</span>
+      <span>历史记录</span>
     </div>
   )
 }

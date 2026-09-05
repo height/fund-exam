@@ -16,13 +16,22 @@ export function openDB() {
   })
 }
 
-const tx = (store, mode = 'readonly') => db.transaction(store, mode).objectStore(store)
+// Resolve writes only after commit; request success alone can precede a quota/transaction failure.
+function request(store, mode, operation) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(store, mode)
+    const req = operation(transaction.objectStore(store))
+    transaction.oncomplete = () => resolve(req.result)
+    transaction.onerror = () => reject(transaction.error || req.error || new Error('本地存储失败'))
+    transaction.onabort = () => reject(transaction.error || req.error || new Error('本地存储被中断'))
+  })
+}
 
 export const idb = {
-  get: (s, k) => new Promise(r => { const q = tx(s).get(k); q.onsuccess = () => r(q.result) }),
-  all: s => new Promise(r => { const q = tx(s).getAll(); q.onsuccess = () => r(q.result || []) }),
-  put: (s, v) => new Promise(r => { const q = tx(s, 'readwrite').put(v); q.onsuccess = () => r() }),
-  clear: s => new Promise(r => { const q = tx(s, 'readwrite').clear(); q.onsuccess = () => r() }),
+  get: (s, k) => request(s, 'readonly', store => store.get(k)),
+  all: (s) => request(s, 'readonly', store => store.getAll()),
+  put: (s, v) => request(s, 'readwrite', store => store.put(v)),
+  clear: (s) => request(s, 'readwrite', store => store.clear()),
 }
 
 export const kvGet = async (k, dflt) => ((await idb.get('kv', k)) || { v: dflt }).v
