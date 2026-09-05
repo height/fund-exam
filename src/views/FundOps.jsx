@@ -238,6 +238,8 @@ export default function FundOps({ go }) {
   const tlRef = useRef(null)
   const playingRef = useRef(playing)
   playingRef.current = playing
+  const reduceRef = useRef(reduceMotion)
+  reduceRef.current = reduceMotion
 
   const cur = STEPS[step]
   const last = step === STEPS.length - 1
@@ -247,15 +249,17 @@ export default function FundOps({ go }) {
     const tl = gsap.timeline({
       defaults: { ease: 'power2.out', overwrite: 'auto' },
       onComplete() {
-        if (!playingRef.current) return
+        if (!playingRef.current || reduceRef.current) return
         if (step < STEPS.length - 1) setStep(step + 1)
         else setPlaying(false)
       },
     })
-    if (reduceMotion) tl.timeScale(25)
     tlRef.current = tl
     setLit(null)
     cur.build(tl, q, (who, at) => tl.call(() => setLit(who), [], at))
+    // 减弱动态效果：不是加速放完（timeScale 会让整个时间轴飞快闪过），
+    // 而是直接落到本步终态，也不自动连播——iOS 开着「减弱动态效果」时就是这条路
+    if (reduceMotion) tl.progress(1)
     return () => { tl.kill() }
   }, { scope: sceneRef, dependencies: [step, run, reduceMotion], revertOnUpdate: true })
 
