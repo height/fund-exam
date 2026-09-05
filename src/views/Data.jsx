@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Icon } from '../components/ui'
+import { Icon, PageHeader } from '../components/ui'
 import { PRESETS, TTS_SPEEDS, getTtsSpeed, loadStore, pingAI, provDefault, saveStore, setTtsSpeed } from '../lib/ai'
 import { track } from '../lib/analytics'
 import { BANK } from '../lib/bank'
@@ -142,10 +142,7 @@ export default function Data() {
 
   return (
     <>
-      <div>
-        <h1>设置</h1>
-        <div className="muted">配置和进度只存在这台设备的浏览器里</div>
-      </div>
+      <PageHeader title="设置" subtitle="外观、AI 与本机进度管理" />
 
       <div className="card">
         <h2>外观</h2>

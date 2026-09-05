@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Icon } from '../components/ui'
+import { PageHeader } from '../components/ui'
 import { TIMELINE, TL_N as N, TRAPS } from '../data/timeline'
 import { Md } from '../lib/format'
 
@@ -101,19 +101,21 @@ export default function Timeline({ go }) {
     <>
       {/* 这页没有底栏，顶栏的返回就是唯一出口——和年份轴一起钉在顶上，别让它滚走 */}
       <div className="tl-sticky">
-        <header className="appbar">
-          <button className="btn-sm btn-ghost" onClick={() => go('home')} aria-label="返回首页">
-            <Icon name="back" />
+        <PageHeader
+          variant="subpage"
+          title="发展时间线"
+          subtitle={`1822—今日 · ${count} 个当前可见时点`}
+          onBack={() => go('tools')}
+          backLabel="工具"
+        />
+        <div className="seg tl-scope" role="tablist">
+          <button role="tab" aria-selected={key} className={key ? 'on' : ''} onClick={() => setKey(true)}>
+            考试重点<small>{N.key}</small>
           </button>
-          <div className="seg" role="tablist">
-            <button role="tab" aria-selected={key} className={key ? 'on' : ''} onClick={() => setKey(true)}>
-              考试重点<small>{N.key}</small>
-            </button>
-            <button role="tab" aria-selected={!key} className={!key ? 'on' : ''} onClick={() => setKey(false)}>
-              全部<small>{N.total}</small>
-            </button>
-          </div>
-        </header>
+          <button role="tab" aria-selected={!key} className={!key ? 'on' : ''} onClick={() => setKey(false)}>
+            全部<small>{N.total}</small>
+          </button>
+        </div>
 
         <div className="tl-years" ref={rail}>
           {years.map(g => (

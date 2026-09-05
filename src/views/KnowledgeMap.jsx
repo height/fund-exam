@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Icon, SubjectSeg } from '../components/ui'
+import { Icon, PageHeader, SubjectSeg } from '../components/ui'
 import { CH_OF, KNOWLEDGE } from '../data/knowledge'
 import { PASS, SUBJ_SHORT, chapterStats } from '../lib/bank'
 import { useStore } from '../lib/store'
@@ -113,16 +113,21 @@ export default function KnowledgeMap({ go }) {
 
   return (
     <>
-      <header className="appbar">
-        <button className="btn-sm btn-ghost" onClick={() => go('home')} aria-label="返回首页">‹ 返回</button>
-        <SubjectSeg />
-        <button className="btn-sm btn-ghost"
-          onClick={() => { setOpen(expanded ? new Set() : new Set(allIds(chapters))); setSel(null) }}>
-          {expanded ? '全部收起' : '全部展开'}
-        </button>
-      </header>
+      <PageHeader
+        variant="subpage"
+        title="知识图谱"
+        subtitle="章节 → 主题 → 必背要点"
+        onBack={() => go('home')}
+        backLabel="首页"
+        action={(
+          <button onClick={() => { setOpen(expanded ? new Set() : new Set(allIds(chapters))); setSel(null) }}>
+            {expanded ? '收起' : '展开'}
+          </button>
+        )}
+      />
+      <SubjectSeg />
 
-      <p className="muted map-hint">章节 → 主题 → 必背要点。点节点展开，点要点看详情；正确率来自你的练习记录。</p>
+      <p className="muted map-hint">点节点展开，点要点看详情；正确率来自你的练习记录。</p>
 
       <div className="map-wrap card" ref={wrapRef}>
         <svg width={width} height={height} role="tree" aria-label={`${subject}知识图谱`}

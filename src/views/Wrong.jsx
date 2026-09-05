@@ -1,4 +1,4 @@
-import { Icon, Options, Speaker, SubjectSeg } from '../components/ui'
+import { Icon, Options, PageHeader, Speaker, SubjectSeg } from '../components/ui'
 import { mdToSpeech } from '../lib/ai'
 import { track } from '../lib/analytics'
 import { bySubject } from '../lib/bank'
@@ -16,10 +16,7 @@ export default function Wrong({ go }) {
 
   return (
     <>
-      <div>
-        <h1>错题本</h1>
-        <div className="muted">答错自动收进来，再答对自动移出去</div>
-      </div>
+      <PageHeader title="错题本" subtitle="答错自动收录 · 再答对后移出" />
       <SubjectSeg />
 
       <div className="card">

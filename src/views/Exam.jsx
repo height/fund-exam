@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Explain, Icon, Options, SubjectSeg } from '../components/ui'
+import { Explain, Icon, Options, PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFor, pickExamSet, qById } from '../lib/bank'
 import { track } from '../lib/analytics'
 import { idb, kvGet, kvSet } from '../lib/db'
@@ -100,7 +100,13 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
 
   if (stage === 'resume') return (
     <>
-      <div><h1>{numberMode ? '数字模拟练习' : '模拟考试'}</h1></div>
+      <PageHeader
+        variant={numberMode ? 'subpage' : 'tab'}
+        title={numberMode ? '数字模拟练习' : '模拟考试'}
+        subtitle="检测到一场未完成的考试"
+        onBack={numberMode ? () => go('numbers', { mode: 'exam' }) : undefined}
+        backLabel="数字必背"
+      />
       <div className="card">
         <div className="row between"><b>有一场没考完</b><span className="chip">{ex.subject}</span></div>
         <div className="row between">
@@ -134,16 +140,19 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
   const mins = numberMode || chapter ? minutesFor(n) : EXAM_MIN
   return (
     <>
-      <div>
-        <h1>{numberMode ? (reviewIds?.length ? '数字错题重考' : '数字模拟练习') : chapter ? '章节考试' : '模拟考试'}</h1>
-        <div className="muted">
-          {numberMode
-            ? <>所有章节混合抽题，{mins} 分钟 {n} 道单选，{PASS} 分及格，考中不看答案</>
-            : chapter
-            ? <>只考「{chapter}」这一章，{mins} 分钟 {n} 道单选，{PASS} 分及格，考中不看答案</>
-            : <>按真考规格：{EXAM_MIN} 分钟 {EXAM_N} 道单选，{PASS} 分及格，考中不看答案</>}
-        </div>
-      </div>
+      <PageHeader
+        variant={chapter || numberMode ? 'subpage' : 'tab'}
+        title={numberMode ? (reviewIds?.length ? '数字错题重考' : '数字模拟练习') : chapter ? '章节考试' : '模拟考试'}
+        subtitle={numberMode
+          ? `${mins} 分钟 · ${n} 道单选 · ${PASS} 分及格`
+          : chapter
+          ? `只考「${chapter}」 · ${mins} 分钟 · ${n} 题`
+          : `真考规格 · ${EXAM_MIN} 分钟 · ${EXAM_N} 题 · ${PASS} 分及格`}
+        onBack={chapter || numberMode
+          ? () => go(numberMode ? 'numbers' : 'chapters', numberMode ? { mode: 'exam' } : {})
+          : undefined}
+        backLabel={numberMode ? '数字必背' : '章节'}
+      />
       {!chapter && <SubjectSeg />}
       <div className="card">
         <div className="stats">
@@ -159,11 +168,6 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
             : <>{SUBJ_FULL[subject]}　按章节分层抽题，覆盖各知识点</>}
         </div>
         <button className="btn-pri" style={{ padding: 15 }} disabled={!n} onClick={begin}>开始考试</button>
-        {(chapter || numberMode) && (
-          <button className="btn-sm btn-ghost" onClick={() => go(numberMode ? 'numbers' : 'chapters', numberMode ? { mode: 'exam' } : {})}>
-            ← {numberMode ? '返回数字必背' : '换一章'}
-          </button>
-        )}
       </div>
       <div className="card">
         <div className="muted">中途关掉页面没关系：倒计时按真实时间走，回来能接着考，时间到自动交卷。</div>
@@ -228,15 +232,20 @@ function Running({ ex, setEx, onSubmit, toast, ask, go }) {
 
   return (
     <>
-      <div className="topbar">
-        {/* 底栏在考试中收起了，这里得留一个出口——离开不交卷，倒计时照走 */}
-        <button className="btn-sm btn-ghost" onClick={leave} aria-label="退出考试"><Icon name="back" /></button>
-        <div className={`timer ${left < 10 * 60000 ? 'low' : ''}`}>{fmtTime(left)}</div>
-        <div className="bar"><i style={{ width: `${(answered / qs.length) * 100}%` }} /></div>
-        <button className="btn-sm" onClick={() => setSheet(true)} aria-label="答题卡">
-          <Icon name="grid" /><span className="num">{answered}/{qs.length}</span>
-        </button>
-      </div>
+      {/* 底栏在考试中收起了，这里得留一个出口——离开不交卷，倒计时照走 */}
+      <PageHeader
+        variant="subpage"
+        title={ex.kind === 'numbers' ? '数字模拟' : ex.chapter ? '章节考试' : '模拟考试'}
+        subtitle={<span className={`timer ${left < 10 * 60000 ? 'low' : ''}`}>{fmtTime(left)} 剩余</span>}
+        onBack={leave}
+        backLabel="离开"
+        action={(
+          <button onClick={() => setSheet(true)} aria-label="打开答题卡">
+            <Icon name="grid" /><span className="num">{answered}/{qs.length}</span>
+          </button>
+        )}
+        progress={(answered / qs.length) * 100}
+      />
 
       <div className="card">
         <div className="eyebrow">第 {ex.i + 1} 题 / {qs.length}</div>
@@ -299,6 +308,10 @@ function Result({ rec, go }) {
 
   return (
     <>
+      <PageHeader
+        title={numberMode ? '数字模拟成绩' : '模拟考成绩'}
+        subtitle={`${rec.subject} · 答对 ${rec.right}/${rec.total} · 用时 ${Math.round(rec.usedMs / 60000)} 分钟`}
+      />
       <div className="card" style={{ alignItems: 'center', textAlign: 'center', gap: 6 }}>
         <div className="eyebrow">{rec.subject} {numberMode ? '数字模拟练习' : '模拟考'}成绩</div>
         <div className="num" style={{

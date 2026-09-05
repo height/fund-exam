@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Explain, Icon, Options, Speaker, SubjectSeg } from '../components/ui'
+import { Explain, Icon, Options, PageHeader, Speaker, SubjectSeg } from '../components/ui'
 import { qToSpeech } from '../lib/ai'
 import { track } from '../lib/analytics'
 import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
@@ -75,10 +75,7 @@ function Setup({ onStart }) {
 
   return (
     <>
-      <div>
-        <h1>练习模式</h1>
-        <div className="muted">选完选项立刻出答案和解析，答错自动进错题本</div>
-      </div>
+      <PageHeader title="练习模式" subtitle="选完立刻看解析 · 答错自动进错题本" />
       <SubjectSeg />
 
       <div className="card">
@@ -213,11 +210,15 @@ function Runner({ session: s, setSession, onQuit }) {
 
   return (
     <>
-      <div className="topbar">
-        <button className="btn-sm btn-ghost" onClick={quit} aria-label="退出练习"><Icon name="back" /></button>
-        <div className="bar"><i style={{ width: `${((s.i + 1) / s.qs.length) * 100}%` }} /></div>
-        <div className="num muted">{s.i + 1}/{s.qs.length}</div>
-      </div>
+      <PageHeader
+        variant="subpage"
+        title="练习中"
+        subtitle={`${q.chapter} · 本轮答对 ${s.right}/${s.done}`}
+        onBack={quit}
+        backLabel="退出"
+        action={<span className="page-head-stat num">{s.i + 1}/{s.qs.length}</span>}
+        progress={((s.i + 1) / s.qs.length) * 100}
+      />
 
       <div className="card">
         <div className="row" style={{ gap: 6, flexWrap: 'wrap' }}>

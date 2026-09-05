@@ -64,6 +64,56 @@ export function Icon({ name, size }) {
 }
 
 /**
+ * 全站页头：返回、标题说明、页面动作和进度都使用同一套骨架。
+ * 页面自己的筛选/分段器放在页头下方，避免窄屏上把标题挤成一列字。
+ */
+export function PageHeader({
+  title,
+  subtitle,
+  onBack,
+  backLabel = '返回',
+  action,
+  progress,
+  variant = 'tab',
+  className = '',
+}) {
+  const classes = [
+    'page-head',
+    `is-${variant}`,
+    onBack ? '' : 'no-back',
+    action ? '' : 'no-action',
+    className,
+  ].filter(Boolean).join(' ')
+  const safeProgress = progress === undefined ? null : Math.max(0, Math.min(100, progress))
+
+  return (
+    <>
+      <header className={classes}>
+        {onBack && (
+          <button className="page-head-back" onClick={onBack} aria-label={backLabel}>
+            <Icon name="back" />
+            <span>{backLabel}</span>
+          </button>
+        )}
+        <div className="page-head-copy">
+          <h1>{title}</h1>
+          {subtitle && <p>{subtitle}</p>}
+        </div>
+        {action && <div className="page-head-action">{action}</div>}
+        {safeProgress !== null && (
+          <div className="page-head-progress" aria-hidden="true">
+            <i style={{ width: safeProgress > 0 && safeProgress < 100
+              ? `max(20px, ${safeProgress}%)`
+              : `${safeProgress}%` }} />
+          </div>
+        )}
+      </header>
+      {variant === 'subpage' && <div className="page-head-spacer" aria-hidden="true" />}
+    </>
+  )
+}
+
+/**
  * 应用内确认框。挂在 App 顶层，由 store.ask() 驱动。
  * 打开时焦点移到主按钮，Esc 取消——原生 confirm 白送的两件事得自己补回来。
  * 三态返回：主按钮 true、次按钮 false、点外面或 Esc 是 null（= 什么都别做）。

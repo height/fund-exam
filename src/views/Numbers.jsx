@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Icon, SubjectSeg } from '../components/ui'
+import { Icon, PageHeader, SubjectSeg } from '../components/ui'
 import { PASS, minutesFor } from '../lib/bank'
 import { kvGet, kvSet } from '../lib/db'
 import { ExplainBody, Stem } from '../lib/format'
@@ -18,18 +18,24 @@ import { useStore } from '../lib/store'
 const MARK_KEY = subject => `number-cards:${subject}`
 
 export default function Numbers({ go, initialMode, review }) {
+  const { subject } = useStore()
   const [mode, setMode] = useState(initialMode === 'exam' ? 'exam' : 'cards')
 
   useEffect(() => setMode(initialMode === 'exam' ? 'exam' : 'cards'), [initialMode])
 
   return (
     <>
-      <header className="appbar">
-        <button className="btn-sm btn-ghost" onClick={() => go('home')} aria-label="返回首页">
-          <Icon name="back" />
-        </button>
-        <SubjectSeg />
-      </header>
+      <PageHeader
+        variant="subpage"
+        title={mode === 'exam' ? '数字模拟练习' : review ? '重背本次错题' : '数字必背'}
+        subtitle={`${subject} · ${mode === 'exam' ? '混合抽题，交卷后统一判分' : '先自己想，再翻面核对'}`}
+        onBack={() => go('home')}
+        backLabel="首页"
+        action={review && mode === 'cards'
+          ? <button onClick={() => go('numbers', { mode: 'cards' })}>看全部</button>
+          : undefined}
+      />
+      <SubjectSeg />
 
       <div className="seg number-mode" role="tablist">
         <button role="tab" aria-selected={mode === 'cards'} className={mode === 'cards' ? 'on' : ''}
@@ -101,16 +107,6 @@ function CardDeck({ go, review }) {
 
   return (
     <>
-      <div className="number-heading">
-        <div>
-          <h1>{reviewIds.size ? '重背本次错题' : '数字必背'}</h1>
-          <div className="muted">先自己想，再翻面；把容易串台的数字放在一起对照。</div>
-        </div>
-        {reviewIds.size > 0 && (
-          <button className="btn-sm btn-ghost" onClick={() => go('numbers', { mode: 'cards' })}>看全部</button>
-        )}
-      </div>
-
       <div className="number-ledger" aria-label="题卡状态">
         <span>共 <b>{all.length}</b> 张</span>
         <span>记住 <b>{known}</b></span>
@@ -228,11 +224,6 @@ function ExamSetup({ go }) {
 
   return (
     <>
-      <div>
-        <h1>数字模拟练习</h1>
-        <div className="muted">所有章节混合抽题，考中不看答案，交卷后统一判分。</div>
-      </div>
-
       <button className="number-exam-all" disabled={!total} onClick={start}>
         <span className="number-exam-mark num">{n}</span>
         <span className="ch-body">

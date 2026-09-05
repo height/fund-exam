@@ -15,7 +15,7 @@ function serviceWorker() {
       const html = readFileSync(join(dir, 'index.html'))
       const v = createHash('sha256').update(html).digest('hex').slice(0, 12)
       writeFileSync(join(dir, 'sw.js'), `const V='q-${v}';
-const FILES=['./','./index.html','./icon-180.png','./icon-512.png','./manifest.webmanifest'];
+const FILES=['./','./index.html','./favicon-32.png','./icon-180.png','./icon-192.png','./icon-512.png','./icon-maskable-192.png','./icon-maskable-512.png','./manifest.webmanifest'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(V).then(c=>c.addAll(FILES)))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys()
   .then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

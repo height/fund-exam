@@ -16,6 +16,7 @@
   --accent-ink:#2F3D73;
   --on-accent:#FFFFFF;
   --accent-soft:#DDE2F0;
+  --nav-bg:#FFFFFF;
   --ok:#0F7B54;   --ok-soft:#D6EFE3;
   --bad:#C42F42;  --bad-soft:#FADFE3;
   /* Markdown 阅读语义：结论 / 风险 / 记忆。颜色只在对应信息上出现。 */
@@ -42,19 +43,21 @@
   --paper:#0B0D10; --sheet:#15181D; --sheet2:#1E232A; --rule:#2B3138;
   --ink:#E9ECF1; --ink2:#8B94A1;
   --accent:#1266D6; --accent-ink:#6FA6FF; --on-accent:#FFFFFF; --accent-soft:#16304F;
+  --nav-bg:#0B0D10;
   --ok:#3FB984; --ok-soft:#143326; --bad:#E8586A; --bad-soft:#3A1D25;
   --md-answer:#83ADFF;--md-answer-soft:#192943;
   --md-risk:#F0A17E;--md-risk-soft:#36251F;
   --md-memory:#67C9B4;--md-memory-soft:#17312C;
-  /* 卡片改回描边分层，阴影在暗背景上看不见 */
-  --card-line:var(--rule);
-  --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
+  /* 暗色也靠色阶和柔和投影分层，不给每个容器加一圈线 */
+  --card-line:transparent;
+  --shadow:0 1px 2px rgba(0,0,0,.34),0 18px 42px -28px rgba(0,0,0,.85);
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
 }}
 /* 阅读器的明暗开关必须盖过系统偏好，两个方向都要 */
 :root[data-theme="light"]{
   --paper:#F1F2F4;--sheet:#FFFFFF;--sheet2:#E9EBEF;--rule:#DCDFE5;--ink:#14181F;--ink2:#626C7C;
   --accent:#2F3D73;--accent-ink:#2F3D73;--on-accent:#FFFFFF;--accent-soft:#DDE2F0;
+  --nav-bg:#FFFFFF;
   --ok:#0F7B54;--ok-soft:#D6EFE3;--bad:#C42F42;--bad-soft:#FADFE3;
   --md-answer:#2F3D73;--md-answer-soft:#E7EAF4;
   --md-risk:#A74725;--md-risk-soft:#F8E8E0;
@@ -66,11 +69,12 @@
 :root[data-theme="dark"]{
   --paper:#0B0D10;--sheet:#15181D;--sheet2:#1E232A;--rule:#2B3138;--ink:#E9ECF1;--ink2:#8B94A1;
   --accent:#1266D6;--accent-ink:#6FA6FF;--on-accent:#FFFFFF;--accent-soft:#16304F;
+  --nav-bg:#0B0D10;
   --ok:#3FB984;--ok-soft:#143326;--bad:#E8586A;--bad-soft:#3A1D25;
   --md-answer:#83ADFF;--md-answer-soft:#192943;
   --md-risk:#F0A17E;--md-risk-soft:#36251F;
   --md-memory:#67C9B4;--md-memory-soft:#17312C;
-  --card-line:var(--rule);
+  --card-line:transparent;
   --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 34px -24px rgba(0,0,0,.9);
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
 }
@@ -128,10 +132,10 @@ h2{font-size:13px;margin:0;color:var(--ink2);letter-spacing:.02em;font-weight:60
 .stack{display:flex;flex-direction:column;gap:10px}
 
 /* ---- 控件 ---- */
-button{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(--rule);
+button{font:inherit;color:inherit;background:var(--sheet2);border:1px solid transparent;
   border-radius:var(--r-l);padding:11px 14px;cursor:pointer;
   transition:background .18s var(--ease),border-color .18s var(--ease),transform .1s var(--ease)}
-@media (hover:hover){button:hover:not(:disabled){border-color:var(--accent)}}
+@media (hover:hover){button:hover:not(:disabled){background:var(--accent-soft);border-color:transparent}}
 button:active:not(:disabled){transform:scale(.985)}
 button:disabled{opacity:.42;cursor:default}
 .btn-pri{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
@@ -147,11 +151,11 @@ button:disabled{opacity:.42;cursor:default}
 .btn-sm{padding:7px 11px;font-size:13px;border-radius:var(--r-s)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(--rule);
+select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid transparent;
   border-radius:var(--r-m);padding:11px;width:100%}
 
 /* 科目切换：上下文切换器，不是内容。压成一行，别占掉首屏 */
-.seg{display:flex;gap:0;border:1px solid var(--rule);border-radius:99px;overflow:hidden;
+.seg{display:flex;gap:0;border:0;border-radius:99px;overflow:hidden;
   background:var(--sheet2);padding:3px}
 .seg button{flex:1;border:0;border-radius:99px;background:transparent;padding:7px 8px;font-size:13px;
   line-height:1.3;white-space:nowrap;color:var(--ink2)}
@@ -162,9 +166,62 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
 .seg-n{flex:none;width:auto}
 .seg-n button{flex:none;min-width:44px;padding:6px 10px}
 
-/* 顶栏：科目切换 + 主题。首页不再顶一个 26px 的 app 名字——图标已经说过了 */
-.appbar{display:flex;align-items:center;gap:10px}
-.appbar .seg{flex:1}
+/* ============ 两套页头规范 ============
+   一级 Tab 页用 Apple 式大标题，不做容器；子页用主题色导航条，标题几何居中。 */
+.page-head{position:relative;min-width:0}
+.page-head-copy{min-width:0}
+.page-head h1,.page-head p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.page-head p{margin:2px 0 0}
+
+/* 首页 / 练习 / 模拟考 / 错题本 / 设置 */
+.page-head.is-tab{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:14px;
+  min-height:64px;padding:4px 2px 2px;background:transparent}
+.page-head.is-tab .page-head-copy{grid-column:1}
+.page-head.is-tab h1{font-size:29px;line-height:1.16;letter-spacing:-.045em;font-weight:750}
+.brand-title{display:inline-flex;align-items:center;gap:10px;vertical-align:middle}
+.brand-title img{width:34px;height:34px;flex:none;border-radius:9px;object-fit:cover}
+.page-head.is-tab p{color:var(--ink2);font-size:12.5px;line-height:1.45}
+.page-head.is-tab .page-head-action{grid-column:2;align-self:center}
+.page-head.is-tab .page-head-action>button{min-height:40px;padding:8px 11px;border:0;
+  border-radius:var(--r-m);background:var(--sheet2)}
+
+/* 所有子页与沉浸式作答页：返回 / 居中标题 / 页面动作 */
+.page-head.is-subpage{display:grid;grid-template-columns:76px minmax(0,1fr) 76px;align-items:center;
+  position:fixed;left:50%;top:0;z-index:var(--z-bar);transform:translateX(-50%);
+  width:min(100%,660px);height:calc(56px + env(safe-area-inset-top));
+  padding:env(safe-area-inset-top) 12px 0;overflow:hidden;color:var(--ink);
+  background:var(--nav-bg);border:0;border-radius:0;box-shadow:none}
+.page-head.is-subpage>*{position:relative}
+.page-head.is-subpage .page-head-copy{grid-column:2;text-align:center}
+.page-head.is-subpage h1{color:inherit;font-size:19px;line-height:1.28;letter-spacing:-.025em;font-weight:700}
+/* 子页导航只呈现一行标题，页面说明回到正文里 */
+.page-head.is-subpage p{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.page-head-back,.page-head.is-subpage .page-head-action>button{height:44px;min-width:44px;padding:0 10px;
+  border:0;border-radius:10px;color:var(--accent-ink);background:transparent;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.page-head-back{grid-column:1;justify-self:start;margin-left:-8px}
+.page-head-back .icon{width:23px;height:23px}
+.page-head-back span{display:none}
+.page-head.is-subpage .page-head-action{grid-column:3;justify-self:end;display:flex;align-items:center}
+.page-head.is-subpage .page-head-action>span{white-space:nowrap}
+.page-head.is-subpage .page-head-stat{font-size:12px;color:var(--ink2)}
+.page-head.is-subpage .lesson-done{color:var(--ink2)}
+.page-head.is-subpage .lesson-done.on{color:var(--ok)}
+.page-head-progress{position:absolute;left:0;right:0;bottom:0;height:3px;
+  grid-column:1/-1;width:100%;background:var(--sheet2)}
+.page-head-progress i{display:block;height:100%;background:var(--accent);transition:width .3s var(--ease)}
+.page-head-spacer{height:calc(36px + env(safe-area-inset-top));flex:none}
+@media (hover:hover){
+  .page-head.is-subpage button:hover:not(:disabled){background:var(--sheet2);border-color:transparent}
+}
+@media (max-width:380px){
+  .page-head.is-subpage{grid-template-columns:62px minmax(0,1fr) 62px;padding-inline:8px}
+  .page-head.is-subpage h1{font-size:18px}
+  .page-head.is-tab h1{font-size:27px}
+  .brand-title{gap:8px}
+  .brand-title img{width:31px;height:31px;border-radius:8px}
+}
 
 /* ============ 签名元素：及格线刻度 ============
    这门考试只有一个事实——60 分及格，100 题答对 60 题。所以正确率、章节掌握度、
@@ -267,10 +324,6 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid var(
    翻面后同一位置换成真正的数字。只在这一处使用大号等宽数字，避免满页数据看板味。 */
 .number-mode{width:100%}
 .number-mode button{padding:8px 10px}
-.number-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.number-heading>div{min-width:0}
-.number-heading .muted{margin-top:4px;line-height:1.6}
-.number-heading>button{flex:none}
 .number-ledger{display:flex;gap:0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
   padding:8px 0;color:var(--ink2);font-size:12px}
 .number-ledger span{flex:1;text-align:center}
@@ -616,12 +669,7 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
   border:1px solid var(--rule);border-radius:var(--r-m);background:var(--sheet2)}
 .plain-body b{color:var(--accent-ink);font-weight:600;margin-right:6px}
 
-/* ---- 常驻状态条 / 操作条 ---- */
-.topbar{position:fixed;top:0;left:0;right:0;width:100%;max-width:660px;z-index:var(--z-bar);
-  margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
-  background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:12px}
-.topbar .bar{flex:1}
+/* ---- 常驻操作条 ---- */
 .actionbar{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom) + var(--calc-h));z-index:var(--z-bar);
   padding:10px 16px;background:color-mix(in srgb,var(--paper) 90%,transparent);
   backdrop-filter:blur(12px);border-top:1px solid var(--rule)}
@@ -657,8 +705,8 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 /* 答题中收起底栏：底栏没了，操作条落到最底，正文和 toast 的留白跟着收 */
 :root[data-quiz] body,:root[data-bare] body{
   padding-bottom:calc(env(safe-area-inset-bottom) + var(--calc-h))}
-:root[data-quiz] #app.fade{animation:none}
-:root[data-quiz] #app{padding-top:calc(68px + env(safe-area-inset-top))}
+:root[data-quiz] #app.fade,:root[data-subpage] #app.fade{animation:none}
+:root[data-quiz] #app{padding-top:20px}
 :root[data-quiz] .actionbar{bottom:var(--calc-h);
   padding-bottom:calc(10px + env(safe-area-inset-bottom))}
 :root[data-quiz] .toast,:root[data-bare] .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
@@ -708,10 +756,6 @@ details summary::-webkit-details-marker{display:none}
 
 /* 公式不再作为扫描图陈列。总览负责找公式，学习页把每个量拆开、代数、再练一题。 */
 .formula-view{display:flex;flex-direction:column;gap:18px;min-width:0}
-.formula-bar{display:flex;align-items:center;gap:11px;min-height:46px}
-.formula-bar>div{min-width:0}
-.formula-bar h1{font-size:22px}
-.formula-bar .muted{display:block;margin-top:1px;line-height:1.4}
 
 /* 首屏只回答两个问题：还有多少没学，会从哪里继续。圆环是进度，不是装饰。 */
 .formula-hero{display:grid;grid-template-columns:132px 1fr;gap:18px;align-items:center;
@@ -774,13 +818,6 @@ details summary::-webkit-details-marker{display:none}
 .formula-bank small{font-size:11.5px;line-height:1.5;color:var(--ink2)}
 
 /* 学习页保持一个垂直故事：直觉、拆字符、讲原理、代数、答题。 */
-.lesson-bar{position:sticky;top:0;z-index:var(--z-bar);margin:-20px -16px 0;
-  padding:12px 16px 9px;background:color-mix(in srgb,var(--paper) 91%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule)}
-.lesson-position{flex:1;display:flex;align-items:center;gap:10px}
-.lesson-position>span{font-size:11px;color:var(--ink2);white-space:nowrap}
-.lesson-track{height:3px;flex:1;background:var(--sheet2);overflow:hidden;border-radius:2px}
-.lesson-track i{display:block;height:100%;background:var(--accent);transition:width .3s var(--ease)}
 .lesson-done{font-size:11px;color:var(--ink2);white-space:nowrap}
 .lesson-done.on{color:var(--ok);font-weight:600}
 
@@ -936,7 +973,8 @@ details summary::-webkit-details-marker{display:none}
   display:flex;flex-direction:column;gap:9px;
   background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--rule)}
-.tl-sticky .appbar{padding:0 16px}
+.tl-sticky .page-head-spacer{height:calc(56px + env(safe-area-inset-top))}
+.tl-scope{margin:0 16px}
 .tl-years{display:flex;gap:5px;overflow-x:auto;padding:0 16px;scrollbar-width:none;
   -webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .tl-years::-webkit-scrollbar{display:none}
@@ -1015,3 +1053,93 @@ button.tl-date.hidden{padding:2px 10px;border-radius:99px;background:var(--sheet
 .ch-body small{font-size:11.5px}
 .ch-acc{flex:none;font:700 14px/1 var(--f-num);color:var(--ok)}
 .ch-acc.under{color:var(--bad)}
+
+/* ============ 基金运作动画（FundOps） ============
+   SVG 里的 fill/stroke 全走设计令牌，深浅色自动跟；道具默认隐身，由 GSAP 逐步唤出。 */
+/* 舞台和步骤条通栏：演示类内容要顶满宽度，左右留白只给文字区 */
+.fo-stage{padding:8px;overflow:hidden;margin:0 -16px;border-radius:0;border-left:none;border-right:none}
+.fo-svg{width:100%;height:auto;display:block}
+.fo-svg text{fill:var(--ink);font-size:13px}
+.fo-svg .fo-sub{fill:var(--ink2);font-size:11px}
+.fo-guide{fill:none;stroke:var(--rule);stroke-width:2;stroke-dasharray:3 6}
+.fo-shadow{fill:#000;opacity:.07}
+@media (prefers-color-scheme:dark){.fo-shadow{opacity:.3}}
+:root[data-theme="dark"] .fo-shadow{opacity:.3}
+.fo-arrow-head{fill:var(--ink2)}
+.fo-watch{fill:none;stroke:var(--ink2);stroke-width:1.4;stroke-dasharray:5 5;opacity:.75}
+.fo-actor{transition:opacity .3s}
+.fo-actor .fo-roof{fill:var(--accent)}
+.fo-actor .fo-body{fill:var(--sheet);stroke:var(--rule)}
+.fo-actor .fo-win{fill:var(--accent-soft);stroke:var(--ink2);stroke-width:.8}
+.fo-actor .fo-door{fill:var(--accent-soft);stroke:var(--ink2);stroke-width:.8}
+.fo-actor .fo-col{stroke:var(--ink2);stroke-width:1.6;opacity:.55}
+.fo-gear-c{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.fo-gear-s{stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.fo-vault{fill:var(--accent-soft)}
+.fo-vault-door{fill:var(--accent);opacity:.92;stroke:var(--accent-ink);stroke-width:1.5}
+.fo-vault-knob{fill:var(--on-accent)}
+.fo-head{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.fo-torso{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.fo-mkt-box{fill:var(--sheet);stroke:var(--rule)}
+.fo-axis{stroke:var(--rule);stroke-width:2}
+.fo-bar{fill:var(--ok);transform-box:fill-box;transform-origin:50% 100%}
+.fo-b1{fill:var(--accent)}
+.fo-mkt-wick{stroke:var(--ink2);stroke-width:2}
+.fo-reg-box{fill:var(--sheet);stroke:var(--ink2);stroke-dasharray:4 3}
+.fo-reg-txt{font-size:12px;fill:var(--ink2)}
+/* 演员被点名＝整体金色高亮（描边 + 淡金光晕），不跳动。
+   点亮的先后顺序由时间轴按钱/份额的流向逐个打，节奏就是叙事本身。 */
+/* 主体变黄＝金屋顶 + 金描边 + 金光晕；墙体保持白底，不然浅灰窗户糊在金底上看不清 */
+.fo-actor.on{filter:drop-shadow(0 0 8px rgba(245,197,24,.6))}
+.fo-actor.on .fo-roof{fill:#F5C518;stroke:#C99A06;stroke-width:2;stroke-linejoin:round}
+.fo-actor.on .fo-body{stroke:#C99A06;stroke-width:2.4}
+.fo-actor.on .fo-head,.fo-actor.on .fo-torso{fill:#F7E08A;stroke:#C99A06}
+.fo-actor.on .fo-mkt-box,.fo-actor.on .fo-reg-box{stroke:#C99A06;stroke-width:2.2}
+.fo-actor.on .fo-bob>text{fill:#A07C00}
+.fo-prop{opacity:0;visibility:hidden}
+.fo-prop rect{fill:var(--sheet);stroke:var(--accent);stroke-width:1.6}
+.fo-prop-t{font-size:10px;fill:var(--accent-ink)}
+.fo-bp-line,.fo-ldg-line{stroke:var(--rule);stroke-width:2;stroke-linecap:round}
+.fo-ldg-spine{stroke:var(--accent);stroke-width:1.4}
+.fo-scale-post{stroke:var(--ink2);stroke-width:2.4;stroke-linecap:round}
+.fo-pan{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.fo-mega-b{fill:var(--accent);stroke:var(--accent);stroke-width:1.4}
+.fo-arc{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+.fo-lock-t{fill:none;stroke:var(--accent);stroke-width:2.4}
+.fo-lock-b{fill:var(--accent);stroke:none}
+.fo-check circle{fill:var(--ok)}
+.fo-check-m{fill:none;stroke:var(--on-accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fo-done circle{fill:var(--ok)}
+.fo-done .fo-prop-t{fill:var(--ok)}
+.fo-coin{opacity:0;visibility:hidden}
+.fo-coin-b{fill:#F5C518;stroke:#C99A06;stroke-width:2}
+.fo-coin-t{font-size:12px;font-weight:700;fill:#7A5B00}
+.fo-caption{display:flex;flex-direction:column;gap:8px;animation:fo-cap-in .3s var(--ease)}
+.fo-caption b{font-size:15px;display:flex;align-items:center;gap:8px}
+.fo-caption p{margin:0;font-size:14px;color:var(--ink2)}
+.fo-no{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;
+  border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:12px}
+.fo-caption .row button:disabled{opacity:.4}
+@keyframes fo-cap-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fo-steps{display:flex;gap:6px;overflow-x:auto;padding:0 16px 4px;margin:0 -16px;
+  scrollbar-width:none;-ms-overflow-style:none} /* 步骤条自己滚，不亮系统滚动条 */
+.fo-steps::-webkit-scrollbar{display:none}
+.fo-steps button{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-size:12px;padding:7px 10px;
+  border-radius:99px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink2)}
+.fo-steps button i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;background:var(--sheet2);font-size:10px}
+.fo-steps button.on{border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.fo-steps button.on i{background:var(--accent);color:var(--on-accent)}
+.fo-parties dl{margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
+.fo-parties dt{font-size:13px;font-weight:600;color:var(--accent-ink)}
+.fo-parties dd{margin:2px 0 0;font-size:13px;color:var(--ink2)}
+/* 首页「其他工具」一格：里面罗列工具行，点行进具体页面 */
+.tools{display:flex;flex-direction:column;gap:4px}
+.tools>b{font-size:14px;margin-bottom:2px}
+.tool-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:10px 8px;border:none;border-radius:var(--r-m);background:none}
+@media (hover:hover){.tool-row:hover:not(:disabled){background:var(--sheet2);border:none}}
+.tool-row .grow{display:flex;flex-direction:column;gap:1px;flex:1}
+.tool-row b{font-size:14px;font-weight:600}
+.tool-row small{font-weight:400}
+.tool-row .icon{color:var(--accent)}

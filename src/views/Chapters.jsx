@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Icon, SubjectSeg } from '../components/ui'
+import { PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, PASS, chapterStats, minutesFor } from '../lib/bank'
 import { useStore } from '../lib/store'
 
@@ -20,12 +20,14 @@ export default function Chapters({ go }) {
 
   return (
     <>
-      <header className="appbar">
-        <button className="btn-sm btn-ghost" onClick={() => go('home')} aria-label="返回首页">
-          <Icon name="back" />
-        </button>
-        <SubjectSeg />
-      </header>
+      <PageHeader
+        variant="subpage"
+        title="章节练习"
+        subtitle={`按教材目录推进 · 已做 ${done}/${total} 题`}
+        onBack={() => go('home')}
+        backLabel="首页"
+      />
+      <SubjectSeg />
 
       <div className="row between">
         <div className="seg" role="tablist" style={{ flex: 1 }}>

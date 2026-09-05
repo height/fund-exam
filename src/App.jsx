@@ -10,10 +10,12 @@ import Data from './views/Data'
 import Exam from './views/Exam'
 import Home from './views/Home'
 import Formula from './views/Formula'
+import FundOps from './views/FundOps'
 import KnowledgeMap from './views/KnowledgeMap'
 import Numbers from './views/Numbers'
 import Practice from './views/Practice'
 import Timeline from './views/Timeline'
+import Tools from './views/Tools'
 import Wrong from './views/Wrong'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
@@ -26,7 +28,7 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
-const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters']
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools']
 
 // 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
 function parseHash() {
@@ -44,8 +46,10 @@ export default function App() {
   // 答题中（练习进行、考试进行）：收起底栏，只留「退出」一个出口，
   // 免得手滑点到别的 tab 把一轮答题丢了
   const [quiz, setQuiz] = useState(false)
-  // 时间线自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
-  const bare = view === 'timeline'
+  // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
+  const bare = view === 'timeline' || view === 'fundops'
+  const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools'].includes(view)
+    || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
   useEffect(() => {
     document.documentElement.toggleAttribute('data-quiz', quiz)
     return () => document.documentElement.removeAttribute('data-quiz')
@@ -54,6 +58,10 @@ export default function App() {
     document.documentElement.toggleAttribute('data-bare', bare)
     return () => document.documentElement.removeAttribute('data-bare')
   }, [bare])
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-subpage', subpage)
+    return () => document.documentElement.removeAttribute('data-subpage')
+  }, [subpage])
 
   useEffect(() => {
     const on = () => setNav(parseHash())
@@ -104,6 +112,8 @@ export default function App() {
         {view === 'numbers' && <Numbers go={go} initialMode={params.mode} review={params.review} />}
         {view === 'formula' && <Formula go={go} />}
         {view === 'timeline' && <Timeline go={go} />}
+        {view === 'fundops' && <FundOps go={go} />}
+        {view === 'tools' && <Tools go={go} />}
         {view === 'chapters' && <Chapters go={go} />}
         {view === 'data' && <Data />}
       </main>

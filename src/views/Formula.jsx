@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { Icon } from '../components/ui'
+import { Icon, PageHeader } from '../components/ui'
 import { CALC_IDS } from '../lib/bank'
 import { FORMULA_GROUPS, FORMULA_LESSONS, FORMULA_MASTERY_KEY, formulaGroup } from '../data/formulaLessons'
 
@@ -88,15 +88,13 @@ export default function Formula({ go }) {
 
   return (
     <div className="formula-view formula-index">
-      <header className="formula-bar">
-        <button className="btn-sm btn-ghost" onClick={() => go('home')} aria-label="返回首页">
-          <Icon name="back" />
-        </button>
-        <div>
-          <h1>公式攻坚</h1>
-          <span className="muted">看懂，再代数，再做题</span>
-        </div>
-      </header>
+      <PageHeader
+        variant="subpage"
+        title="公式攻坚"
+        subtitle="看懂 → 代数 → 做题"
+        onBack={() => go('home')}
+        backLabel="首页"
+      />
 
       <section className="formula-hero" aria-labelledby="formula-start-title">
         <ProgressDial value={mastered.size} total={FORMULA_LESSONS.length} />
@@ -233,14 +231,15 @@ function FormulaLesson({ lesson, index, mastered, onMastered, onClose, onMove })
 
   return (
     <article className="formula-view formula-lesson">
-      <header className="formula-bar lesson-bar">
-        <button className="btn-sm btn-ghost" onClick={onClose} aria-label="返回公式总览"><Icon name="back" /></button>
-        <div className="lesson-position">
-          <span className="num">{index + 1} / {FORMULA_LESSONS.length}</span>
-          <div className="lesson-track" aria-hidden="true"><i style={{ width: `${((index + 1) / FORMULA_LESSONS.length) * 100}%` }} /></div>
-        </div>
-        <span className={`lesson-done ${mastered ? 'on' : ''}`}>{mastered ? '已掌握' : '学习中'}</span>
-      </header>
+      <PageHeader
+        variant="subpage"
+        title="公式攻坚"
+        subtitle={`第 ${index + 1}/${FORMULA_LESSONS.length} 个 · ${lesson.title}`}
+        onBack={onClose}
+        backLabel="总览"
+        action={<span className={`lesson-done ${mastered ? 'on' : ''}`}>{mastered ? '已掌握' : '学习中'}</span>}
+        progress={((index + 1) / FORMULA_LESSONS.length) * 100}
+      />
 
       <section className="lesson-intro">
         <span>{formulaGroup(lesson.group).name}</span>

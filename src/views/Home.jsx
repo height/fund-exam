@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
+import { Icon, PageHeader, SubjectSeg, ThemeToggle } from '../components/ui'
 import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
-import { TL_N } from '../data/timeline'
 import { idb } from '../lib/db'
 import { numberQuestions } from '../lib/numbers'
 import { useStore } from '../lib/store'
@@ -48,10 +47,12 @@ export default function Home({ go }) {
 
   return (
     <>
-      <header className="appbar">
-        <SubjectSeg />
-        <ThemeToggle />
-      </header>
+      <PageHeader
+        title={<span className="brand-title"><img src="./icon-192.png" alt="" aria-hidden="true" />考基宝</span>}
+        subtitle="把复杂留给题库，把把握留给你。"
+        action={<ThemeToggle />}
+      />
+      <SubjectSeg />
 
       <div className="card">
         <div className="hero-top">
@@ -114,10 +115,6 @@ export default function Home({ go }) {
           <b><Icon name="calc" /> 公式攻坚</b>
           <small>47 组公式，逐字符讲解和练题</small>
         </button>
-        <button className="tile" onClick={() => go('timeline')}>
-          <b><Icon name="timeline" /> 发展时间线</b>
-          <small>{TL_N.total} 个时点 · 默认看重点</small>
-        </button>
         <button className="tile" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>
           <small>章节 → 主题 → 必背要点</small>
@@ -125,6 +122,10 @@ export default function Home({ go }) {
         <button className="tile" onClick={() => go('numbers')}>
           <b><Icon name="numbers" /> 数字必背</b>
           <small>{numberN} 张题卡 · 背完模拟练</small>
+        </button>
+        <button className="tile" onClick={() => go('tools')}>
+          <b><Icon name="grid" /> 其他工具</b>
+          <small>发展时间线 · 基金运作动画</small>
         </button>
       </div>
 

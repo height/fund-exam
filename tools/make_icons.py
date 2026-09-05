@@ -1,38 +1,30 @@
 #!/usr/bin/env python3
-"""生成 public/ 下的主屏图标。颜色跟 src/styles.css 的 --accent 保持一致。
+"""从 1024px 主图生成浏览器、Apple Touch 和 PWA 图标。
 
-改了配色就重跑一次，否则装到主屏上的还是上一版的颜色。
 用法: python3 tools/make_icons.py（需要 pillow）
 """
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 OUT = Path(__file__).resolve().parents[1] / "public"
-BG, FG = "#1266D6", "#FFFFFF"   # --accent / 白字
-
-
-def pick_font(px):
-    """PIL 打不开 PingFang.ttc，挑第一个能开的黑体"""
-    for p in ("/System/Library/Fonts/STHeiti Medium.ttc",
-              "/System/Library/Fonts/Hiragino Sans GB.ttc"):
-        try:
-            return ImageFont.truetype(p, px)
-        except OSError:
-            pass
+SOURCE = OUT / "kaojibao-app-icon.png"
 
 
 def main():
-    for size in (180, 512):
-        img = Image.new("RGB", (size, size), BG)
-        d = ImageDraw.Draw(img)
-        font = pick_font(int(size * 0.62))
-        if font:
-            d.text((size / 2, size * 0.52), "基", font=font, fill=FG, anchor="mm")
-        else:   # 字体都开不了就画个色块，至少不是空白
-            d.rounded_rectangle([size * .22, size * .22, size * .78, size * .78], size * .12, fill=FG)
-        img.save(OUT / f"icon-{size}.png")
-        print(f"public/icon-{size}.png")
+    source = Image.open(SOURCE).convert("RGB")
+    outputs = {
+        "favicon-32.png": 32,
+        "icon-180.png": 180,
+        "icon-192.png": 192,
+        "icon-512.png": 512,
+        "icon-1024.png": 1024,
+        "icon-maskable-192.png": 192,
+        "icon-maskable-512.png": 512,
+    }
+    for filename, size in outputs.items():
+        source.resize((size, size), Image.Resampling.LANCZOS).save(OUT / filename)
+        print(f"public/{filename}")
 
 
 if __name__ == "__main__":
