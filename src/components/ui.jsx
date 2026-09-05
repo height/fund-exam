@@ -212,7 +212,7 @@ const SPEAKER_VIEW = {
 }
 
 /** 喇叭：把生成、缓冲、播放和失败都说清楚；活跃状态再点即取消 */
-export function Speaker({ getText, label = '朗读' }) {
+export function Speaker({ getText, label = '朗读', showLabel = false, disabled = false }) {
   const [st, setSt] = useState('idle') // idle | busy | buffering | playing | error
   const { toast } = useStore()
   // 卸载时既停当前音，也掐掉还在合成路上的请求——不然翻题后音频到货照播
@@ -269,9 +269,10 @@ export function Speaker({ getText, label = '朗读' }) {
   return (
     <>
       <button type="button" className="btn-sm btn-ghost spk" data-state={st} onClick={click}
-        aria-label={actionLabel} aria-busy={st === 'busy' || st === 'buffering'}
+        disabled={disabled} aria-label={actionLabel} aria-busy={st === 'busy' || st === 'buffering'}
         aria-pressed={active} title={actionLabel}>
         <Icon name={view.icon} />
+        {showLabel && <span>{active ? `${view.text} · 停止` : st === 'error' ? '重试试听' : label}</span>}
       </button>
       <span className="sr-only" role="status" aria-live="polite">
         {st === 'idle' ? '' : st === 'error' ? '朗读失败，可以重试' : view.text}

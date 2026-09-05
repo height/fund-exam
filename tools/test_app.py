@@ -471,72 +471,75 @@ def run():
         pg.wait_for_selector("text=练什么")
         assert pg.locator('button:has-text("章节顺序")').count() == 1
 
-        # 设置页：存量统计对得上
+        # 设置首页收纳详细配置；二级页可以独立刷新。
         pg.click('nav button:has-text("设置")')
-        # 考试记录是异步从 IndexedDB 读的，用 wait 而不是立刻断言
+        assert pg.locator('.settings-link').count() == 3
+        assert pg.locator('.settings input').count() == 0
+        pg.get_by_role('button', name='数据与备份', exact=False).click()
         pg.wait_for_selector('.list-item:has-text("考试记录") b:text-is("1")')
+        pg.click('.page-head-back')
+        pg.get_by_role('button', name='AI 解析', exact=False).click()
+        pg.locator('.settings-advanced summary').click()
         small = pg.eval_on_selector_all(
-            "input", "es=>es.filter(e=>!e.hidden&&getComputedStyle(e).display!=='none')"
+            ".settings input", "es=>es.filter(e=>!e.hidden&&getComputedStyle(e).display!=='none')"
                      ".map(e=>parseFloat(getComputedStyle(e).fontSize)).filter(s=>s<16)")
         assert not small, f"输入框字号 {small} 小于 16px，iOS 聚焦时会自动放大页面"
 
-        # AI 配置：下拉切预设，自动带出地址和模型名
-        ai_sel = pg.locator('.card:has(h2:text-is("AI 解析")) select')
-        assert ai_sel.locator("option").count() >= 3, "预设少了"
+        # 各服务预设、保存成功/失败和刷新后持久化。
+        ai_sel = pg.get_by_label('AI 服务', exact=True)
+        assert ai_sel.locator("option").count() >= 3
         ai_sel.select_option("glm")
-        assert pg.locator(".ai-field input").nth(1).input_value() == "glm-5.3"
-        assert "bigmodel.cn" in pg.locator(".ai-field input").nth(0).input_value()
+        assert pg.get_by_label('模型名称', exact=True).input_value() == "glm-5.3"
+        assert "bigmodel.cn" in pg.get_by_label('接口地址', exact=True).input_value()
         ai_sel.select_option("zenmux")
-        assert pg.locator(".ai-field input").nth(1).input_value() == "deepseek/deepseek-v4-pro"
-        assert "zenmux.ai" in pg.locator(".ai-field input").nth(0).input_value()
+        assert pg.get_by_label('模型名称', exact=True).input_value() == "deepseek/deepseek-v4-pro"
+        assert "zenmux.ai" in pg.get_by_label('接口地址', exact=True).input_value()
         ai_sel.select_option("deepseek")
-        assert pg.locator(".ai-field input").nth(1).input_value() == "deepseek-v4-pro"
-
-        # 保存前先试调用：通了才落盘（沿用上面注册的假接口），401 则保存失败
-        pg.click('button:has-text("保存并测试")')
-        pg.wait_for_selector('.toast:has-text("已保存")')
+        assert pg.get_by_label('模型名称', exact=True).input_value() == "deepseek-v4-pro"
+        pg.get_by_role('button', name='保存并测试', exact=True).click()
+        pg.wait_for_selector('.settings-feedback:has-text("配置已保存")')
         pg.unroute("**/chat/completions")
         pg.route("**/chat/completions", lambda r: r.fulfill(status=401, body="{}"))
-        pg.click('button:has-text("保存并测试")')
-        pg.wait_for_selector('.toast:has-text("保存失败：Key 无效")')
+        pg.get_by_role('button', name='保存并测试', exact=True).click()
+        pg.wait_for_selector('.settings-feedback:has-text("保存失败：Key 无效")')
 
-        # 下拉选中即默认模型：切到 GLM 后刷新，还停在 GLM；DeepSeek 那份配置也没丢
-        # 顺带验证 hash 路由：刷新后还在设置页，不用重新点导航
-        pg.locator('.card:has(h2:text-is("AI 解析")) select').select_option("glm")
+        ai_sel.select_option("glm")
         pg.reload()
-        pg.wait_for_selector('h1:has-text("设置")')
-        assert pg.locator('.card:has(h2:text-is("AI 解析")) select').input_value() == "glm", "刷新后默认模型没记住"
-        pg.locator('.card:has(h2:text-is("AI 解析")) select').select_option("deepseek")
-        assert pg.locator(".ai-field input").nth(2).input_value() == "sk-test", "DeepSeek 的 Key 没记住"
-        # 配没配 Key 在下拉里要看得出来
-        opts = pg.locator('.card:has(h2:text-is("AI 解析")) select').locator("option").all_inner_texts()
-        assert any("DeepSeek" in o and "已配" in o for o in opts), f"已配标记不见了：{opts}"
-        assert any("ZenMux" in o and "未配" in o for o in opts), f"未配标记不见了：{opts}"
+        pg.get_by_role('heading', name='AI 解析', exact=True).wait_for()
+        assert ai_sel.input_value() == "glm"
+        ai_sel.select_option("deepseek")
+        assert pg.get_by_label('API Key', exact=True).input_value() == "sk-test"
+        opts = ai_sel.locator("option").all_inner_texts()
+        assert any("DeepSeek" in o and "已配" in o for o in opts)
+        assert any("ZenMux" in o and "未配" in o for o in opts)
 
-        # 朗读语速：改了要存住，刷新后还在
-        tts = pg.locator('.card:has(h2:text-is("语音朗读")) .seg-n')
-        assert tts.locator("button.on").inner_text() == "1×", "语速默认档不对"
+        pg.click('.page-head-back')
+        pg.get_by_role('button', name='语音朗读', exact=False).click()
+        tts = pg.locator('.settings-speed .seg')
+        assert tts.locator("button.on").inner_text() == "1×"
         tts.locator('button:text-is("1.5×")').click()
+        pg.get_by_label('朗读音色', exact=True).select_option('茉莉')
+        pg.get_by_label('朗读风格', exact=True).select_option('natural')
         pg.reload()
-        pg.wait_for_selector('h1:has-text("设置")')
-        tts = pg.locator('.card:has(h2:text-is("语音朗读")) .seg-n')
-        assert tts.locator("button.on").inner_text() == "1.5×", "语速没存住"
+        pg.get_by_role('heading', name='语音朗读', exact=True).wait_for()
+        assert tts.locator("button.on").inner_text() == "1.5×"
+        assert pg.get_by_label('朗读音色', exact=True).input_value() == '茉莉'
+        assert pg.get_by_label('朗读风格', exact=True).input_value() == 'natural'
         assert pg.evaluate("()=>JSON.parse(localStorage.getItem('ai-config')).ttsSpeed") == 1.5
 
-        # 清空进度：危险操作要二次确认，点外面等于取消
+        # 清空进度仍需确认；取消后保留存量。
+        pg.click('.page-head-back')
+        pg.get_by_role('button', name='数据与备份', exact=False).click()
         pg.click('button:has-text("清空全部进度")')
         pg.wait_for_selector("text=清空全部进度？")
-        pg.mouse.click(195, 60)  # 点弹层外的遮罩
+        pg.mouse.click(195, 60)
         pg.wait_for_selector('.overlay.center', state="detached")
         pg.wait_for_selector('.list-item:has-text("考试记录") b:text-is("1")')
-
-        # 跳过导航链接：第一个 Tab 就能拿到
         pg.keyboard.press("Tab")
         assert pg.evaluate("document.activeElement.className") == "skip"
 
-        # 刷新后进度还在（IndexedDB 落盘了）；hash 路由让刷新停在原页，这里在设置页
         pg.reload()
-        pg.wait_for_selector('h1:has-text("设置")')
+        pg.get_by_role('heading', name='数据与备份', exact=True).wait_for()
         pg.click('nav button:has-text("错题本")')
         pg.wait_for_selector("text=道待消灭")
         assert int(pg.locator(".card .num").first.inner_text()) == n, "刷新后错题本对不上"

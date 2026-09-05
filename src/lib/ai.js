@@ -234,6 +234,31 @@ export function stopSpeak() {
    任何音源都生效、改了立刻作用于正在播的这一段，也不用重新合成。
    preservesPitch 保证提速不变调（默认就是 true，Safari 老版本要显式给）。 */
 export const TTS_SPEEDS = [0.75, 1, 1.25, 1.5, 2]
+// MiMo v2.5 的预设 Voice ID 区分大小写；中文音色直接使用中文名。
+export const TTS_VOICES = [
+  { id: '冰糖', name: '冰糖', language: 'zh', detail: '女声' },
+  { id: '茉莉', name: '茉莉', language: 'zh', detail: '女声' },
+  { id: '苏打', name: '苏打', language: 'zh', detail: '男声' },
+  { id: '白桦', name: '白桦', language: 'zh', detail: '男声' },
+  { id: 'Mia', name: 'Mia', language: 'en', detail: '女声' },
+  { id: 'Chloe', name: 'Chloe', language: 'en', detail: '女声' },
+  { id: 'Milo', name: 'Milo', language: 'en', detail: '男声' },
+  { id: 'Dean', name: 'Dean', language: 'en', detail: '男声' },
+]
+export const TTS_STYLES = [
+  { id: 'teaching', name: '教学讲解', prompt: '用清晰平稳、不快不慢的朗读语气，像老师念题一样，读下面这段话。' },
+  { id: 'natural', name: '自然叙述', prompt: '用自然、放松的叙述语气朗读下面这段话，停顿自然，避免夸张表演。' },
+  { id: 'encouraging', name: '鼓励陪伴', prompt: '用温暖、耐心、有鼓励感的语气朗读下面这段话，吐字清晰，避免夸张表演。' },
+  { id: 'sarcastic', name: '嘲讽歹毒', prompt: '用冷淡、刻薄、带嘲讽感的毒舌语气朗读下面这段话，重音和停顿带一点挖苦意味。保持吐字清晰，只朗读原文，不添加或改写内容。' },
+]
+export const getTtsVoice = (store = loadStore()) => TTS_VOICES.find(v => v.id === store.ttsVoice)?.id || '冰糖'
+export const getTtsStyle = (store = loadStore()) => TTS_STYLES.find(v => v.id === store.ttsStyle)?.id || 'teaching'
+export function setTtsVoice(v) {
+  if (TTS_VOICES.some(voice => voice.id === v)) saveStore({ ...loadStore(), ttsVoice: v })
+}
+export function setTtsStyle(v) {
+  if (TTS_STYLES.some(style => style.id === v)) saveStore({ ...loadStore(), ttsStyle: v })
+}
 export const getTtsSpeed = () => {
   const v = Number(loadStore().ttsSpeed)
   return TTS_SPEEDS.includes(v) ? v : 1
@@ -244,7 +269,7 @@ export function setTtsSpeed(v) {
   streamSession?.setRate(v)
 }
 
-/* 合成结果按念稿缓存：同一段话停了再播、翻回上一题再播，都不该重新花钱合成。
+/* 合成结果按音色、风格和念稿缓存：换声音后不能继续播旧声音。
    存 objectURL 而不是 data: URI——重播时不用再把几 MB 的 base64 重新解析一遍。
    WAV 很占地方（一段 30 秒的稿子约 1.4MB），所以只留最近几段，超了就连
    objectURL 一起释放；会话级，刷新即清。 */
@@ -365,7 +390,7 @@ function resamplePcm(pcm, fromRate, toRate) {
  * MiMo 的 SSE 每个 delta 带一段 base64 PCM16。PCMPlayer 负责无缝排队，
  * SoundTouch AudioWorklet 负责变速时保住音调；本层只管网络、缓冲和生命周期。
  */
-function makeStreamSession(text, outerSignal, onState) {
+function makeStreamSession(text, outerSignal, onState, config, cacheKey) {
   const ctl = new AbortController()
   const handle = speechHandle(() => stop())
   let session = null
@@ -499,13 +524,13 @@ function makeStreamSession(text, outerSignal, onState) {
     if (stopped) return
     streamDone = true
     if (!gotAudio) return fail(new Error('语音接口没返回音频'))
-    cacheVoice(text, pcmToWav(collected))
+    cacheVoice(cacheKey, pcmToWav(collected))
     tick()
   }
 
   async function pump() {
-  const { ttsKey } = loadStore()
-  if (!ttsKey) throw new Error('先在「设置」页填好语音 Key')
+  const { ttsKey, voice, prompt } = config
+  if (!ttsKey) throw new Error('先在「设置」页填好 MiMo API Key')
   const res = await fetch('https://api.xiaomimimo.com/v1/chat/completions', {
     method: 'POST',
     signal: ctl.signal,
@@ -513,10 +538,10 @@ function makeStreamSession(text, outerSignal, onState) {
     body: JSON.stringify({
       model: 'mimo-v2.5-tts',
       messages: [
-        { role: 'user', content: '用清晰平稳、不快不慢的朗读语气，像老师念题一样，读下面这段话。' },
+        { role: 'user', content: prompt },
         { role: 'assistant', content: String(text).slice(0, 2000) },
       ],
-      audio: { format: 'pcm16', voice: 'mimo_default' },
+      audio: { format: 'pcm16', voice },
       stream: true,
     }),
   })
@@ -592,9 +617,14 @@ function makeStreamSession(text, outerSignal, onState) {
 /** 合成并播放。再次调用会顶掉上一段；第一段开始播放后即返回控制句柄 */
 export async function speak(text, signal, onState) {
   stopSpeak()
-  const hit = cachedVoice(text)
+  const store = loadStore()
+  const voice = getTtsVoice(store)
+  const prompt = TTS_STYLES.find(s => s.id === getTtsStyle(store)).prompt
+  const config = { ttsKey: store.ttsKey, voice, prompt }
+  const cacheKey = JSON.stringify([voice, prompt, String(text).slice(0, 2000)])
+  const hit = cachedVoice(cacheKey)
   if (hit) return playCached(hit, signal)
-  const session = makeStreamSession(text, signal, onState)
+  const session = makeStreamSession(text, signal, onState, config, cacheKey)
   streamSession = session
   try { return await session.start() }
   catch (e) {

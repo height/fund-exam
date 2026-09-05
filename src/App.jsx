@@ -50,6 +50,7 @@ export default function App() {
   // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
   const bare = view === 'timeline' || view === 'fundops' || view === 'dupont'
   const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools'].includes(view)
+    || (view === 'data' && ['ai', 'voice', 'storage'].includes(params.page))
     || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
   useEffect(() => {
     document.documentElement.toggleAttribute('data-quiz', quiz)
@@ -117,7 +118,7 @@ export default function App() {
         {view === 'tools' && <Tools go={go} />}
         {view === 'dupont' && <DuPont go={go} />}
         {view === 'chapters' && <Chapters go={go} />}
-        {view === 'data' && <Data />}
+        {view === 'data' && <Data go={go} page={params.page} />}
       </main>
 
       {!quiz && !bare && <nav>
