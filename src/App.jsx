@@ -7,6 +7,7 @@ import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
 import Chapters from './views/Chapters'
 import Data from './views/Data'
+import DuPont from './views/DuPont'
 import Exam from './views/Exam'
 import Home from './views/Home'
 import Formula from './views/FormulaClassroom'
@@ -28,7 +29,7 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
-const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools']
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'dupont']
 
 // 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
 function parseHash() {
@@ -47,7 +48,7 @@ export default function App() {
   // 免得手滑点到别的 tab 把一轮答题丢了
   const [quiz, setQuiz] = useState(false)
   // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
-  const bare = view === 'timeline' || view === 'fundops'
+  const bare = view === 'timeline' || view === 'fundops' || view === 'dupont'
   const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools'].includes(view)
     || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
   useEffect(() => {
@@ -114,6 +115,7 @@ export default function App() {
         {view === 'timeline' && <Timeline go={go} />}
         {view === 'fundops' && <FundOps go={go} />}
         {view === 'tools' && <Tools go={go} />}
+        {view === 'dupont' && <DuPont go={go} />}
         {view === 'chapters' && <Chapters go={go} />}
         {view === 'data' && <Data />}
       </main>

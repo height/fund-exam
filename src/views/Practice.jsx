@@ -32,7 +32,9 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
     let qs = scope.startsWith('formula:')
       ? BANK.filter(q => q.subject === '科目二' && formula?.bankIds.includes(q.id))
       : scope === 'calc'
-        ? BANK.filter(q => CALC_IDS.includes(q.id))
+      ? BANK.filter(q => CALC_IDS.includes(q.id))
+      : scope.startsWith('kw:')
+        ? BANK.filter(q => new RegExp(scope.slice(3)).test(q.q + q.explain)) // 专题动画「去练相关题」
         : bySubject(subject)
     if (scope === 'new') qs = qs.filter(q => !records[q.id]?.seen)
     else if (scope === 'wrong') qs = qs.filter(q => records[q.id]?.wrongFlag)
@@ -42,7 +44,7 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
     if (order === 'rand') qs = shuffle(qs).slice(0, getRandomN())
     const key = keepsCursor(scope) ? `cursor:${subject}:${scope}:${order}` : null
     const saved = key && order === 'seq' ? await kvGet(key, 0) : 0
-    const scopeType = scope.startsWith('formula:') ? 'formula' : scope.startsWith('ch:') ? 'chapter' : scope
+    const scopeType = scope.startsWith('formula:') ? 'formula' : scope.startsWith('ch:') ? 'chapter' : scope.startsWith('kw:') ? 'keyword' : scope
     track('practice_started', {
       subject,
       scope: scopeType,

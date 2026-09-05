@@ -216,13 +216,18 @@ const STEPS = [
   },
 ]
 
-function useReducedMotion() {
+export function useReducedMotion() {
   const [reduce, setReduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
     const media = matchMedia('(prefers-reduced-motion: reduce)')
     const update = e => setReduce(e.matches)
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
+    // iOS 13 及更早的 Safari 只实现了 MediaQueryList.addListener。
+    if (media.addEventListener) {
+      media.addEventListener('change', update)
+      return () => media.removeEventListener('change', update)
+    }
+    media.addListener(update)
+    return () => media.removeListener(update)
   }, [])
   return reduce
 }
@@ -231,6 +236,8 @@ export default function FundOps({ go }) {
   const reduceMotion = useReducedMotion()
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(!reduceMotion)
+  // 系统开启「减弱动态效果」时不自动播；用户主动点播放后允许本次动画正常运行。
+  const [allowMotion, setAllowMotion] = useState(!reduceMotion)
   const [lit, setLit] = useState(null) // 当前被点名的演员：跟着钱/份额的流向走
   const [run, setRun] = useState(0) // 播放按钮的重放令牌：步数没变也要让当前步重跑一遍
   const sceneRef = useRef(null)
@@ -238,8 +245,8 @@ export default function FundOps({ go }) {
   const tlRef = useRef(null)
   const playingRef = useRef(playing)
   playingRef.current = playing
-  const reduceRef = useRef(reduceMotion)
-  reduceRef.current = reduceMotion
+  const allowMotionRef = useRef(allowMotion)
+  allowMotionRef.current = allowMotion
 
   const cur = STEPS[step]
   const last = step === STEPS.length - 1
@@ -249,7 +256,7 @@ export default function FundOps({ go }) {
     const tl = gsap.timeline({
       defaults: { ease: 'power2.out', overwrite: 'auto' },
       onComplete() {
-        if (!playingRef.current || reduceRef.current) return
+        if (!playingRef.current || !allowMotionRef.current) return
         if (step < STEPS.length - 1) setStep(step + 1)
         else setPlaying(false)
       },
@@ -257,11 +264,20 @@ export default function FundOps({ go }) {
     tlRef.current = tl
     setLit(null)
     cur.build(tl, q, (who, at) => tl.call(() => setLit(who), [], at))
-    // 减弱动态效果：不是加速放完（timeScale 会让整个时间轴飞快闪过），
-    // 而是直接落到本步终态，也不自动连播——iOS 开着「减弱动态效果」时就是这条路
-    if (reduceMotion) tl.progress(1)
+    // 减弱动态效果默认展示本步终态；手动点击播放会把 allowMotion 打开并重建时间轴。
+    if (!allowMotion) tl.progress(1)
     return () => { tl.kill() }
-  }, { scope: sceneRef, dependencies: [step, run, reduceMotion], revertOnUpdate: true })
+  }, { scope: sceneRef, dependencies: [step, run, allowMotion], revertOnUpdate: true })
+
+  useEffect(() => {
+    if (!reduceMotion) {
+      setAllowMotion(true)
+      return
+    }
+    tlRef.current?.progress(1)
+    setPlaying(false)
+    setAllowMotion(false)
+  }, [reduceMotion])
 
   // 步骤条跟着动画走：自动播到靠后的环节时，把当前那颗滚进视野中间
   useEffect(() => {
@@ -278,6 +294,8 @@ export default function FundOps({ go }) {
       setPlaying(false)
       return
     }
+    // 用户的明确播放操作优先于系统的自动播放偏好；仍然不会在进入页面时自行播放。
+    setAllowMotion(true)
     setPlaying(true)
     const tl = tlRef.current
     if (last && (!tl || tl.progress() >= 1)) setStep(0) // 演完了再按播放＝从头来
@@ -479,7 +497,9 @@ export default function FundOps({ go }) {
             <Icon name="left" /> 上一步
           </button>
           {last
-            ? <button className="btn-sm" onClick={() => { setStep(0); setPlaying(true); setRun(r => r + 1) }}>
+            ? <button className="btn-sm" onClick={() => {
+                setAllowMotion(true); setStep(0); setPlaying(true); setRun(r => r + 1)
+              }}>
                 <Icon name="refresh" /> 再演一遍
               </button>
             : <button className="btn-sm" onClick={() => jump(step + 1)}>下一步 <Icon name="right" /></button>}

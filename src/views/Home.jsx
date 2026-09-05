@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Icon, PageHeader, SubjectSeg, ThemeToggle } from '../components/ui'
-import { BANK, EXAM_MIN, EXAM_N, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
+import { BANK, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
 import { idb } from '../lib/db'
 import { numberQuestions } from '../lib/numbers'
 import { useStore } from '../lib/store'
@@ -49,7 +49,7 @@ export default function Home({ go }) {
     <>
       <PageHeader
         title={<span className="brand-title"><img src="./icon-192.png" alt="" aria-hidden="true" />考基宝</span>}
-        subtitle="把复杂留给题库，把把握留给你。"
+        subtitle="考点刷透，过线有数。"
         action={<ThemeToggle />}
       />
       <SubjectSeg />
@@ -101,16 +101,6 @@ export default function Home({ go }) {
       </div>
 
       <div className="grid2">
-        <button className="tile" onClick={() => go('exam')}>
-          <b><Icon name="exam" /> 模拟考试</b>
-          <small>{EXAM_MIN} 分钟 · {EXAM_N} 题</small>
-        </button>
-        <button className="tile" onClick={() => go('wrong')}>
-          <b><Icon name="wrong" /> 错题本</b>
-          {st.wrong
-            ? <small><span className="n">{st.wrong}</span> 道待消灭</small>
-            : <small>暂时是空的</small>}
-        </button>
         <button className="tile" onClick={() => go('formula')}>
           <b><Icon name="calc" /> 公式攻坚</b>
           <small>6 节带练微课，从看懂到独立做题</small>

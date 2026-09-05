@@ -1143,3 +1143,52 @@ button.tl-date.hidden{padding:2px 10px;border-radius:99px;background:var(--sheet
 .tool-row b{font-size:14px;font-weight:600}
 .tool-row small{font-weight:400}
 .tool-row .icon{color:var(--accent)}
+
+/* ============ 杜邦分析动画（DuPont） ============ */
+/* 链上每一截默认隐身：当前步由 GSAP 唤出，走过的步用 .done 常亮 */
+.dp-p{opacity:0;visibility:hidden}
+.dp-p.done{opacity:1;visibility:visible}
+.dp-scene.hide{display:none}
+.dp-base{stroke:var(--rule);stroke-width:2}
+.dp-bar-0,.dp-bar-e,.dp-seg-e{fill:var(--accent)}
+.dp-bar-d,.dp-seg-d{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4;stroke-dasharray:4 3}
+.dp-bar-2{fill:var(--ok)}
+.dp-bar-3{fill:#F5C518;stroke:#C99A06;stroke-width:1.5}
+.dp-val{font-size:16px;font-weight:700;fill:var(--ink)}
+.dp-name{font-size:13px;font-weight:600;fill:var(--ink)}
+.dp-sub{font-size:11px;fill:var(--ink2)}
+.dp-arr{fill:none;stroke:var(--ink2);stroke-width:2}
+.dp-lab rect{fill:var(--sheet);stroke:var(--accent);stroke-width:1.6}
+.dp-lab-k{font-size:17px;font-weight:700;fill:var(--accent-ink)}
+.dp-lab-n{font-size:10.5px;fill:var(--ink2)}
+.dp-roe{fill:none;stroke:var(--ok);stroke-width:2.5;stroke-linejoin:round}
+.dp-roe-lab rect{fill:var(--ok)}
+.dp-roe-v{font-size:16px;font-weight:700;fill:var(--on-accent)}
+.dp-roe-n{font-size:11px;fill:var(--on-accent)}
+.dp-cost rect{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1.4}
+.dp-cost text{font-size:11px;fill:var(--bad)}
+.dp-formula rect{fill:var(--sheet);stroke:var(--accent);stroke-width:2}
+.dp-formula text{font-size:13px;fill:var(--ink)}
+.dp-formula .dp-eq{font-weight:700;fill:var(--ok)}
+.dp-frac-num{font-size:24px;font-weight:700;fill:var(--ink)}
+.dp-frac-line{stroke:var(--ink);stroke-width:2.5}
+.dp-frac-name{font-size:11px;fill:var(--ink2)}
+.dp-op{font-size:24px;fill:var(--ink2)}
+.dp-x{stroke:var(--bad);stroke-width:3;stroke-linecap:round}
+.dp-chip rect{fill:var(--ok)}
+.dp-chip text{font-size:13px;font-weight:600;fill:var(--on-accent)}
+.dp-box rect{fill:var(--sheet);stroke:var(--rule)}
+.dp-box .dp-h{font-size:13px;font-weight:700;fill:var(--ink)}
+.dp-box .dp-l{font-size:12px;fill:var(--ink2)}
+.dp-box .dp-big{font-size:22px;font-weight:700;fill:var(--accent-ink)}
+/* 追问/练习：复用 .plain 的折叠样式，答案藏在 details 里，先想再看 */
+.dp-ask{margin-top:4px;padding-top:6px;border-top:none}
+.dp-ask>summary{font-size:13px;line-height:1.6;white-space:normal;display:flex;align-items:baseline}
+.dp-ask>p{margin:6px 0 0 1.1em;font-size:13px;line-height:1.7;color:var(--ink2)}
+.fo-parties dl>div{display:contents}
+.fo-parties button{margin-top:12px;align-self:flex-start}
+/* 滑块卡：原生 range，改个主题色就够 */
+.dp-ctl{display:flex;flex-direction:column;gap:10px}
+.dp-ctl label{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:13px;align-items:center}
+.dp-ctl label b{color:var(--accent-ink)}
+.dp-ctl input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--accent)}
