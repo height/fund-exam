@@ -11,28 +11,6 @@
 .fc-save:has(button){color:var(--bad);font-size:14px;background:var(--bad-soft);padding:10px;border-radius:8px}
 .fc-save button{padding:0 10px;border:1px solid currentColor;background:transparent;color:inherit}
 .fc-kicker{font-size:13px;font-weight:600;color:var(--accent-ink);display:block;margin-bottom:12px}
-.fc-welcome{padding:22px 0 36px;max-width:750px}
-.fc-welcome h1{font-size:clamp(30px,4.8vw,48px);line-height:1.28;letter-spacing:-.045em}
-.fc-welcome p{margin:20px 0 24px;color:var(--ink2);max-width:34em;font-size:16px}
-.fc-welcome .btn-pri{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start;padding:14px 18px;min-height:52px}
-.fc-welcome .btn-pri span{font-size:13px;opacity:.85}
-.fc-diagnostic-link,.fc-reference-link{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 0;border-block:1px solid var(--rule)}
-.fc-diagnostic-link p,.fc-reference-link p{color:var(--ink2);font-size:14px;margin-top:4px}
-.fc-diagnostic-link button,.fc-reference-link button{flex-shrink:0;min-height:44px}
-.fc-paths{display:flex;flex-direction:column;gap:36px;margin:8px 0}
-.fc-path-heading{display:flex;gap:16px;align-items:baseline;margin-bottom:14px}
-.fc-path-heading p{font-size:14px;color:var(--ink2);margin-top:4px}
-.fc-path-number{font:500 28px/1 var(--f-num);color:var(--ink2);width:26px;flex-shrink:0}
-.fc-unit-link{width:calc(100% - 42px);margin-left:42px;display:flex;align-items:center;gap:16px;background:var(--sheet);padding:18px 20px;text-align:left;border:0;border-radius:10px;margin-bottom:8px;color:var(--ink);min-height:86px;transition:background .2s}
-.fc-unit-link:hover{background:var(--accent-soft)}
-.fc-unit-link div{flex:1;display:flex;flex-direction:column;gap:4px}
-.fc-unit-link b{font-size:16px;font-weight:650}
-.fc-unit-link div span{font-size:13px;color:var(--ink2)}
-.fc-unit-link small{font-size:12px;white-space:nowrap;color:var(--ink2)}
-.fc-review-list{background:var(--accent-soft);padding:22px;border-radius:14px}
-.fc-review-list>p{color:var(--ink2);margin:4px 0 12px}
-.fc-review-list button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;background:var(--sheet);padding:14px 16px;border:0;margin-top:8px;text-align:left}
-.fc-review-list button b{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--accent-ink)}
 .fc-panel{background:var(--sheet);padding:28px;border-radius:16px;display:flex;flex-direction:column;gap:20px;min-width:0}
 .fc-between{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .fc-lesson-top{display:flex;align-items:center;justify-content:space-between;gap:20px}

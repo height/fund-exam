@@ -3,12 +3,6 @@ import { calculate, formatNumber as f, percent } from '../lib/formulaMath.js'
 export const COURSE_VERSION = 1
 export const DIMENSIONS = ['relation', 'calculation', 'transfer']
 export const DIMENSION_NAMES = { relation: '建立关系', calculation: '完成计算', transfer: '换情境迁移' }
-export const COURSE_PATHS = [
-  { id: 'returns', title: '赚了多少，赚得怎样', description: '先数清赚的钱，再找到公平的比较基准。', units: ['return-amount', 'return-rate'] },
-  { id: 'time', title: '让钱沿时间走一遍', description: '向前逐期增长，向后还原今天的价值。', units: ['compound', 'discount'] },
-  { id: 'weights', title: '每一份都算上它的分量', description: '从资金分配走到组合收益，再理解概率。', units: ['weights', 'expectation'] },
-]
-
 export const BRIDGES = [
   { id: 'percent', title: '百分数是一百份里的几份', question: '10% 写成小数是多少？', answer: '0.1', options: ['10', '0.1', '0.01'], explanation: '10% = 10 ÷ 100 = 0.1。求 200 元的 10%，就是 200 × 0.1 = 20 元。', followup: '20% 写成小数是多少？', followAnswer: '0.2', followOptions: ['20', '0.2', '0.02'] },
   { id: 'base', title: '先找“跟谁比”', question: '原来有 80 元，增加了 20 元。增长率应该用 20 除以谁？', answer: '80', options: ['100', '20', '80'], explanation: '问“比原来增加多少”，原来就是比较基准。20 ÷ 80 = 25%，不能用增加后的 100 作分母。', followup: '原来 50 元，现在 60 元。增长率的分母是多少？', followAnswer: '50', followOptions: ['60', '50', '10'] },
@@ -26,7 +20,7 @@ export const BRIDGES = [
  */
 const definitions = [
   {
-    id: 'return-amount', kind: 'return', title: '先分清本金与收益', subtitle: '拿回的钱里，哪些才是赚到的？', prerequisites: ['negative'], legacyIds: [33], bankIds: ['80caed111002'],
+    id: 'return-amount', kind: 'return', title: '持有区间收益', subtitle: '拿回的钱里，哪些才是赚到的？', prerequisites: ['negative'], legacyIds: [33], bankIds: ['80caed111002'],
     objectives: ['区分本金与收益', '把价差和期间收入合起来', '识别亏损与分红抵亏'],
     scene: { initial: 100, final: 108, income: 2 },
     story: '花 100 元买入，卖出拿回 108 元，中间收到 2 元分红。先不背公式，我们把钱分清楚。',
@@ -40,7 +34,7 @@ const definitions = [
     ],
   },
   {
-    id: 'return-rate', kind: 'return', title: '为收益找到比较基准', subtitle: '同样赚 10 元，为什么不一定一样好？', prerequisites: ['percent', 'base', 'negative'], legacyIds: [7, 33], bankIds: ['80caed111002'],
+    id: 'return-rate', kind: 'return', title: '持有区间收益率', subtitle: '同样赚 10 元，为什么不一定一样好？', prerequisites: ['percent', 'base', 'negative'], legacyIds: [33], bankIds: ['80caed111002'],
     objectives: ['以最初投入为分母', '完成百分数转换', '在新情境中计算持有期收益率'],
     scene: { initial: 100, final: 108, income: 2 },
     story: '第一笔投入 100 元，赚 10 元；第二笔投入 200 元，也赚 10 元。怎样公平比较？',
@@ -54,7 +48,7 @@ const definitions = [
     ],
   },
   {
-    id: 'compound', kind: 'compound', title: '每一期重新算本金', subtitle: '第二年的利息，为什么多了一点？', prerequisites: ['percent', 'power'], legacyIds: [9, 11, 12], bankIds: ['9c25a16d6816', '572e7cb191de', 'be672a362e76'],
+    id: 'compound', kind: 'compound', title: '单利与复利终值', subtitle: '第二年的利息，为什么多了一点？', prerequisites: ['percent', 'power'], legacyIds: [9, 11, 12], bankIds: ['9c25a16d6816', '572e7cb191de', 'be672a362e76'],
     objectives: ['区分单利和复利', '逐期推算本息合计', '分清利息与终值'],
     scene: { principal: 100, rate: 0.1, periods: 2 },
     story: '本金 100 元，每年利率 10%，两年不取出，也不追加。第一年赚的利息，第二年也留在账户里。',
@@ -68,7 +62,7 @@ const definitions = [
     ],
   },
   {
-    id: 'discount', kind: 'discount', title: '把未来的钱还原到今天', subtitle: '先看它怎样长大，再反着走回来。', prerequisites: ['percent', 'power'], legacyIds: [9, 12, 18], bankIds: [],
+    id: 'discount', kind: 'discount', title: '复利现值', subtitle: '先看它怎样长大，再反着走回来。', prerequisites: ['percent', 'power'], legacyIds: [9, 12, 18], bankIds: [],
     objectives: ['区分求现值和求终值', '用除法还原逐期增长', '用正向增长检查现值'],
     scene: { future: 121, rate: 0.1, periods: 2 },
     story: '两年后需要 121 元，假设每年按 10% 复利增长，今天应准备多少元？',
@@ -82,7 +76,7 @@ const definitions = [
     ],
   },
   {
-    id: 'weights', kind: 'weights', title: '先算各份收益，再合起来', subtitle: '钱分得不一样，收益率能直接平均吗？', prerequisites: ['percent', 'base'], legacyIds: [24], bankIds: ['f0c4d7b12698', 'c73a08b0b9e5'],
+    id: 'weights', kind: 'weights', title: '投资组合收益率', subtitle: '钱分得不一样，收益率能直接平均吗？', prerequisites: ['percent', 'base'], legacyIds: [24], bankIds: ['f0c4d7b12698', 'c73a08b0b9e5'],
     objectives: ['从金额求资金权重', '由分项收益得到组合收益', '检查结果在分项收益率之间'],
     scene: { weights: [0.3, 0.7], rates: [0.1, 0.2] },
     story: '共有 100 元，30 元投向 A，收益率 10%；70 元投向 B，收益率 20%。先各算各的收益。',
@@ -96,7 +90,7 @@ const definitions = [
     ],
   },
   {
-    id: 'expectation', kind: 'expectation', title: '用发生的机会分配重量', subtitle: '期望是平均水平，不是保证会发生的结果。', prerequisites: ['percent', 'negative'], legacyIds: [14, 24], bankIds: [],
+    id: 'expectation', kind: 'expectation', title: '期望收益率', subtitle: '期望是平均水平，不是保证会发生的结果。', prerequisites: ['percent', 'negative'], legacyIds: [14, 24], bankIds: [],
     objectives: ['区分资金权重与概率', '计算概率加权收益', '解释期望不等于承诺收益'],
     scene: { weights: [0.5, 0.5], rates: [0.1, -0.02] },
     story: '某项投资有一半机会赚 10%，另一半机会亏 2%。一次投资只会发生其中一种情况。',

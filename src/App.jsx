@@ -112,7 +112,7 @@ export default function App() {
         {view === 'wrong' && <Wrong go={go} />}
         {view === 'map' && <KnowledgeMap go={go} />}
         {view === 'numbers' && <Numbers go={go} initialMode={params.mode} review={params.review} />}
-        {view === 'formula' && <Formula go={go} unitId={params.unit} mode={params.mode} />}
+        {view === 'formula' && <Formula go={go} unitId={params.unit} mode={params.mode} topicId={params.topic} chapter={params.chapter} query={params.q} stage={params.stage} />}
         {view === 'timeline' && <Timeline go={go} />}
         {view === 'fundops' && <FundOps go={go} />}
         {view === 'tools' && <Tools go={go} />}
@@ -121,7 +121,7 @@ export default function App() {
         {view === 'data' && <Data go={go} page={params.page} />}
       </main>
 
-      {!quiz && !bare && <nav>
+      {!quiz && !bare && <nav className="app-bottom-nav">
         {NAV.map(({ v, label, paths, circle }) => (
           <button key={v} className={view === v ? 'on' : ''} onClick={() => go(v)}>
             <svg viewBox="0 0 24 24">

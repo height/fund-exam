@@ -103,7 +103,7 @@ export default function Home({ go }) {
       <div className="grid2">
         <button className="tile" onClick={() => go('formula')}>
           <b><Icon name="calc" /> 公式攻坚</b>
-          <small>6 节带练微课，从看懂到独立做题</small>
+          <small>按科目二章节查公式、看例题、做练习</small>
         </button>
         <button className="tile" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>

@@ -1,17 +1,18 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { PageHeader, Icon } from '../components/ui'
-import FormulaReference from './Formula'
+import FormulaLibrary from './Formula'
 import FormulaScene, { FormulaExpression } from '../components/formula/FormulaScenes'
-import { BRIDGES, COURSE_PATHS, COURSE_UNITS, DIMENSIONS, DIMENSION_NAMES, courseUnit, guidedQuestion } from '../data/formulaCourses'
+import { BRIDGES, COURSE_UNITS, DIMENSIONS, DIMENSION_NAMES, courseUnit, guidedQuestion } from '../data/formulaCourses'
 import { judgeQuestion, formatNumber as f, parseNumeric } from '../lib/formulaMath'
 import { emptyProgress, evidenceFor, formulaReducer, initialCursor, nextQuestion, questionById } from '../lib/formulaProgress'
 import { loadFormulaProgress, saveFormulaProgress } from '../lib/formulaStorage'
+import { COURSE_TOPIC, formulaTopic } from '../data/formulaCurriculum'
 import '../formulaClassroom.css'
 
 const dateLabel = at => new Date(at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 const answerLabel = q => q.options ? q.answer : `${f(q.answer, q.digits ?? 2)} ${q.unit}`
 
-export default function FormulaClassroom({ go, unitId, mode }) {
+export default function FormulaClassroom({ go, unitId, mode, topicId, chapter, query, stage }) {
   const [progress, dispatch] = useReducer(formulaReducer, undefined, emptyProgress)
   const [loaded, setLoaded] = useState(false)
   const [loadError, setLoadError] = useState(false)
@@ -33,7 +34,7 @@ export default function FormulaClassroom({ go, unitId, mode }) {
     return () => { clearInterval(timer); document.removeEventListener('visibilitychange', update) }
   }, [])
   useEffect(() => {
-    document.documentElement.toggleAttribute('data-formula-classroom', mode !== 'reference')
+    document.documentElement.setAttribute('data-formula-classroom', '')
     return () => document.documentElement.removeAttribute('data-formula-classroom')
   }, [mode])
   const persist = value => {
@@ -44,39 +45,21 @@ export default function FormulaClassroom({ go, unitId, mode }) {
   useEffect(() => { if (loaded && dirty.current) persist(progress) }, [progress, loaded])
   const send = action => { dirty.current = true; dispatch({ ...action, at: action.at ?? Date.now() }) }
   const unit = courseUnit(unitId)
+  const backToCatalog = () => {
+    if (unit) { const topic = formulaTopic(COURSE_TOPIC[unit.id]); go('formula', { topic: topic.id, chapter: topic.chapter }); return }
+    if (topicId) { go('formula', { chapter: chapter ?? formulaTopic(topicId)?.chapter ?? '3', ...(query ? { q: query } : {}) }); return }
+    go(mode === 'diagnostic' ? 'formula' : 'home')
+  }
   useEffect(() => {
     if (loaded && unit && !progress.units[unit.id]) send({ type: 'cursor', unitId: unit.id, patch: {} })
   }, [loaded, unitId])
 
-  if (mode === 'reference') return <><div className="fc-reference-note"><button className="btn-sm" onClick={() => go('formula')}>返回微课堂</button><span>公式查阅 · 旧版勾选仅为历史记录，不计入新课程能力。</span></div><FormulaReference go={go} referenceOnly /></>
   if (!loaded) return <div className="fc-loading" role="status">{loadError ? <><p>暂时无法读取学习记录，请重试。</p><button onClick={load}>重新读取</button></> : '正在读取本机学习记录…'}</div>
-  return <div className="fc-root" ref={root}>
-    <PageHeader variant="subpage" title="公式攻坚" subtitle={unit ? `${unit.title} · 5–8 分钟` : '先懂关系，再独立做题'} onBack={() => go(unit ? 'formula' : 'home')} backLabel={unit ? '学习路径' : '首页'} />
+  return <div className={`fc-root ${unit ? 'is-course' : topicId ? 'is-topic' : 'is-catalog'}`} ref={root}>
+    <PageHeader variant="subpage" title="公式攻坚" subtitle={unit ? `${unit.title} · 分步带练` : '科目二 · 公式目录'} onBack={backToCatalog} backLabel={unit ? '公式讲解' : topicId || mode === 'diagnostic' ? '公式目录' : '首页'} />
     <div className="fc-save" role="status">{saveState === 'error' ? <><span>本次进度未保存</span><button onClick={() => persist(progress)}>重试保存</button></> : saveState === 'saving' ? '正在保存…' : '学习记录保存在本机'}</div>
-    {unitId && !unit ? <div className="fc-panel"><h2>没有找到这节课</h2><button className="btn-pri" onClick={() => go('formula')}>返回学习路径</button></div> : unit ? <Lesson key={unit.id} unit={unit} progress={progress} send={send} go={go} now={clock} /> : mode === 'diagnostic' ? <Diagnostic progress={progress} send={send} onDone={() => go('formula')} /> : <CourseHome progress={progress} go={go} now={clock} />}
+    {unitId && !unit ? <div className="fc-panel"><h2>没有找到这节课</h2><button className="btn-pri" onClick={() => go('formula')}>返回公式目录</button></div> : unit ? <Lesson key={unit.id} unit={unit} progress={progress} send={send} go={go} now={clock} /> : mode === 'diagnostic' ? <Diagnostic progress={progress} send={send} onDone={() => go('formula')} /> : <FormulaLibrary progress={progress} go={go} now={clock} topicId={topicId} chapter={chapter} query={query} stage={stage} />}
   </div>
-}
-
-function CourseHome({ progress, go, now }) {
-  const due = COURSE_UNITS.filter(u => evidenceFor(u, progress, now).status === '待复习')
-  const started = COURSE_UNITS.filter(u => progress.units[u.id] && evidenceFor(u, progress, now).status === '学习中').sort((a, b) => progress.units[b.id].cursor.updatedAt - progress.units[a.id].cursor.updatedAt)
-  const next = started[0] || COURSE_UNITS.find(u => !progress.units[u.id]) || COURSE_UNITS[0]
-  const allStarted = COURSE_UNITS.every(u => progress.units[u.id])
-  return <>
-    <section className="fc-welcome">
-      <span className="fc-kicker">一节课，解决一个问题</span>
-      <h1>公式，从你算过的<br />每一步里长出来。</h1>
-      <p>先把钱数清楚，再把关系写出来。老师带一遍，下一遍交给你。</p>
-      <button className="btn-pri" onClick={() => go('formula', { unit: next.id })}><Icon name="play" />{started.length ? '继续学习' : allStarted ? '回顾课程' : '开始第一节课'}<span>{next.title}</span></button>
-    </section>
-    {!!due.length && <section className="fc-review-list"><h2>隔一天，再试一次</h2><p>换一道新题，看看关系还记得吗。</p>{due.map(u => <button key={u.id} onClick={() => go('formula', { unit: u.id })}><span>{u.title}</span><b>待复习 <Icon name="right" /></b></button>)}</section>}
-    <div className="fc-diagnostic-link"><div><b>{progress.diagnostic.completed ? '基础诊断已完成' : '先检查四个小基础'}</b><p>百分数、比较基准、负数、重复相乘。可随时跳过。</p></div><button className="btn-sm" onClick={() => go('formula', { mode: 'diagnostic' })}>{progress.diagnostic.completed ? '重新检查' : '做四道小题'}</button></div>
-    <div className="fc-paths">{COURSE_PATHS.map((path, i) => <section className="fc-path" key={path.id}>
-      <div className="fc-path-heading"><span className="fc-path-number">{i + 1}</span><div><h2>{path.title}</h2><p>{path.description}</p></div></div>
-      {path.units.map(id => { const u = courseUnit(id), e = evidenceFor(u, progress, now); return <button className="fc-unit-link" key={id} onClick={() => go('formula', { unit: id })}><div><b>{u.title}</b><span>{u.subtitle}</span></div><small className={e.consolidated ? 'fc-positive' : ''}>{e.status}</small><Icon name="right" /></button> })}
-    </section>)}</div>
-    <section className="fc-reference-link"><div><h2>需要查一条公式？</h2><p>原有 47 组公式与变体都在这里，随时翻阅。</p></div><button className="btn-sm" onClick={() => go('formula', { mode: 'reference' })}>打开公式目录 <Icon name="right" /></button></section>
-  </>
 }
 
 function Diagnostic({ progress, send, onDone }) {
@@ -88,7 +71,7 @@ function Diagnostic({ progress, send, onDone }) {
   const next = () => { if (index === 3) { send({ type: 'diagnostic', patch: { completed: true } }); onDone() } else { setIndex(index + 1); setPicked(''); setChecked(false) } }
   return <section className="fc-panel"><div className="fc-between"><span>基础诊断 {index + 1} / 4</span><button className="btn-sm btn-ghost" onClick={onDone}>跳过，直接学习</button></div><h1>{b.question}</h1>
     <div className="fc-options">{b.options.map(option => <button key={option} aria-pressed={picked === option} disabled={checked} onClick={() => setPicked(option)}>{option}</button>)}</div>
-    {!checked ? <button className="btn-pri" disabled={!picked} onClick={submit}>检查这一题</button> : <><div className={`fc-feedback ${picked === b.answer ? 'is-correct' : ''}`} role="status"><b>{picked === b.answer ? '这个基础可以用起来了' : '从这个小关系补起'}</b><p>{b.explanation}</p></div><button className="btn-pri" onClick={next}>{index === 3 ? '回到学习路径' : '下一道'}</button></>}
+    {!checked ? <button className="btn-pri" disabled={!picked} onClick={submit}>检查这一题</button> : <><div className={`fc-feedback ${picked === b.answer ? 'is-correct' : ''}`} role="status"><b>{picked === b.answer ? '这个基础可以用起来了' : '从这个小关系补起'}</b><p>{b.explanation}</p></div><button className="btn-pri" onClick={next}>{index === 3 ? '回到公式目录' : '下一道'}</button></>}
   </section>
 }
 
@@ -131,17 +114,20 @@ function Lesson({ unit, progress, send, go, now }) {
   const exhausted = !isLesson && !q && (cursor.phase === 'assessment' ? e.independentAt === null : !e.consolidated)
   const weak = BRIDGES.filter(b => unit.prerequisites.includes(b.id) && progress.diagnostic.answers[b.id] && progress.diagnostic.answers[b.id] !== b.answer)
   const openBridge = id => { if (q && !isLesson) event(q.id, 'hint'); setBridge(id) }
+  const sourceTopic = formulaTopic(COURSE_TOPIC[unit.id])
+  const position = isLesson ? cursor.step : 4
   return <>
+    <section className="fc-course-context"><h2>{unit.title} · 分步带练</h2><div><p>第{sourceTopic.chapter}章 {sourceTopic.chapterTitle} · {sourceTopic.section} · 大纲 {sourceTopic.code}</p><button onClick={() => go('formula', { topic: sourceTopic.id, chapter: sourceTopic.chapter })}>查看公式与术语 →</button></div><p><b>本节目标：</b>{unit.objectives.join('；')}。</p><ol className="fc-course-map" aria-label="带练进度">{['理解情境', '分步计算一', '分步计算二', '归纳公式', '独立测评'].map((label, index) => <li key={label} aria-current={position === index ? 'step' : undefined}><span>{index + 1}</span>{index === 4 && cursor.phase === 'review' ? '隔日复查' : label}</li>)}</ol></section>
     <div className="fc-lesson-top"><div><span className="fc-kicker">{isLesson ? `带着做 · 第 ${cursor.step + 1} / ${unit.steps.length} 步` : cursor.phase === 'review' ? '隔日复查 · 换一道新题' : '撤掉提示 · 自己试一遍'}</span><h1 ref={heading} tabIndex="-1">{isLesson ? step.title : q ? DIMENSION_NAMES[q.dimension] : exhausted ? '这组新题已经练完' : e.status === '待复习' ? '隔了一天，再独立试一次' : '把这一节的关系带走'}</h1></div><span className="fc-status">{e.status}</span></div>
-    <div className="fc-capabilities" aria-label="独立完成的证据">{DIMENSIONS.map(d => <span key={d} className={e.passed[d] !== undefined ? 'done' : ''}>{e.passed[d] !== undefined ? '✓ ' : ''}{DIMENSION_NAMES[d]}</span>)}</div>
+    {!isLesson && <div className="fc-capabilities" aria-label="独立完成的证据">{DIMENSIONS.map(d => <span key={d} className={e.passed[d] !== undefined ? 'done' : ''}>{e.passed[d] !== undefined ? '✓ ' : ''}{DIMENSION_NAMES[d]}</span>)}</div>}
     {e.reviewFailure && e.passed[e.reviewFailure] === undefined && <div className="fc-foundation"><span>复查时「{DIMENSION_NAMES[e.reviewFailure]}」还需要帮助，补一下，再用新题检验。</span><button onClick={() => patch({ phase: 'lesson', step: e.reviewFailure === 'relation' ? unit.steps.length - 1 : 2, qid: null, input: '' })}>回到对应示范</button></div>}
     {!!weak.length && isLesson && e.independentAt === null && <div className="fc-foundation"><span>基础诊断建议补一下：</span>{weak.map(b => <button key={b.id} onClick={() => openBridge(b.id)}>{b.title}</button>)}</div>}
     {bridge && <Bridge key={bridge} bridge={BRIDGES.find(b => b.id === bridge)} onClose={() => setBridge(null)} onPass={() => send({ type: 'diagnostic', patch: { answers: { ...progress.diagnostic.answers, [bridge]: BRIDGES.find(b => b.id === bridge).answer } } })} />}
     {isLesson ? <div className={`fc-class-layout ${step.action !== 'observe' ? 'is-guided' : ''}`}>
-      <div className="fc-left"><p className="fc-story"><b>原题情境</b><br />{unit.story}</p><FormulaScene key={`${unit.id}:${cursor.step}`} unit={unit} interactive={step.action === 'observe'} /></div>
+      <div className="fc-left"><p className="fc-story"><b>教学情境（自编）</b><br />{unit.story}</p><FormulaScene key={`${unit.id}:${cursor.step}`} unit={unit} interactive={false} />{step.action === 'observe' && <details className="fc-optional-scene"><summary>可选：改动数字，观察关系</summary><FormulaScene unit={unit} interactive /></details>}</div>
       <section className="fc-workspace">
         {!q && <p className="fc-teacher">{step.text}</p>}
-        {step.action === 'observe' && <><p>{unit.explanation}</p><p className="muted">下面一步回到原题的数字，一起算。</p></>}
+        {step.action === 'observe' && <><p>{unit.explanation}</p><p className="muted">本步先读懂情境。点击“跟着算下一步”，用上面的示例数字填写答案。</p></>}
         {step.action === 'formula' && <FormulaExpression unit={unit} />}
         {q && <Question key={q.id} q={q} unit={unit} data={data} input={cursor.input} onInput={input => patch({ input })} onEvent={event} onNext={advance} guided onBridge={openBridge} />}
         {!q && <button className="btn-pri" onClick={advance}>{step.action === 'formula' ? '收起提示，独立试一遍' : '跟着算下一步'} <Icon name="right" /></button>}
@@ -155,7 +141,7 @@ function Lesson({ unit, progress, send, go, now }) {
       {exhausted ? <><p>本轮「{DIMENSION_NAMES[cursor.dimension]}」的新题已经用完。重复答同一题可以练习，但不会增加独立通过记录。</p><p>可以回看示范、复习刚才的题，或练习其他课程。</p></> : <><p>{e.consolidated ? '这节课的三项能力都通过了隔日新题复查。之后遇到题目，先认关系，再做计算。' : e.status === '待复习' ? '这一次换了数字和情境，检查关系是否还记得。' : '你已经在新题中独立建立关系、计算并完成迁移。隔一天再试一次，才知道是否记牢。'}</p>{e.dueAt && !e.consolidated && <p className="fc-review-date">复查时间：{dateLabel(e.dueAt)} 起</p>}</>}
       {e.status === '待复习' && <button className="btn-pri" onClick={() => begin('review')}>开始隔日复查</button>}
       <p>{unit.check}</p>
-      <div className="fc-summary-actions"><button className="btn-sm" onClick={() => patch({ phase: 'lesson', step: 0, qid: null, input: '' })}>再看一遍示范</button>{unit.bankIds.length > 0 && <button className="btn-sm" onClick={() => go('practice', { scope: `formula:${unit.id}`, order: 'seq' })}>去题库定向练 {unit.bankIds.length} 题</button>}<button className="btn-pri" onClick={() => { const index = COURSE_UNITS.findIndex(u => u.id === unit.id); go('formula', index < COURSE_UNITS.length - 1 ? { unit: COURSE_UNITS[index + 1].id } : {}) }}>{unit.id === 'expectation' ? '返回学习路径' : '去下一节课'}</button></div>
+      <div className="fc-summary-actions"><button className="btn-sm" onClick={() => patch({ phase: 'lesson', step: 0, qid: null, input: '' })}>再看一遍示范</button>{unit.bankIds.length > 0 && <button className="btn-sm" onClick={() => go('practice', { scope: `formula:${unit.id}`, order: 'seq' })}>去题库定向练 {unit.bankIds.length} 题</button>}<button className="btn-pri" onClick={() => { const index = COURSE_UNITS.findIndex(u => u.id === unit.id); go('formula', index < COURSE_UNITS.length - 1 ? { unit: COURSE_UNITS[index + 1].id } : {}) }}>{unit.id === 'expectation' ? '返回公式目录' : '去下一节课'}</button></div>
       {!unit.bankIds.length && <p className="muted">当前题库暂无核对通过的直接对应题，本节使用明确标注的教学自编题。</p>}
       <details><summary>回看本节作答（不增加掌握记录）</summary><Notebook unit={unit} data={data} all /></details>
     </section>}

@@ -4,8 +4,50 @@ import fs from 'node:fs'
 import { COURSE_UNITS, DIMENSIONS, guidedQuestion, courseUnit } from '../src/data/formulaCourses.js'
 import { returnModel, timeModel, discountModel, weightedModel, judgeQuestion, parseNumeric, calculate } from '../src/lib/formulaMath.js'
 import { emptyProgress, formulaReducer, normalizeProgress, mergeProgress, evidenceFor, nextQuestion, REVIEW_DELAY } from '../src/lib/formulaProgress.js'
+import { FORMULA_TOPICS, FORMULA_CHAPTERS, COURSE_TOPIC, formulaTopic, selectFormulaTopics } from '../src/data/formulaCurriculum.js'
 
 const unit = COURSE_UNITS[0]
+
+test('curriculum preserves existing topic IDs, places every topic once and provides usable lessons', () => {
+  assert.equal(FORMULA_CHAPTERS.length, 18)
+  assert.equal(new Set(FORMULA_TOPICS.map(t => t.id)).size, FORMULA_TOPICS.length)
+  for (let id = 1; id <= 47; id++) assert.ok(formulaTopic(id), `existing topic ${id}`)
+  for (const t of FORMULA_TOPICS) {
+    assert.match(t.code, /^\d+\.\d+\.[a-z]$/)
+    assert.equal(Number(t.code.split('.')[0]), t.chapter)
+    assert.ok(FORMULA_CHAPTERS[t.chapter - 1].topics.includes(t))
+    assert.ok(t.condition && t.section && t.formula && t.symbols.length && t.logic.length && t.example.length)
+    assert.ok(['掌握', '理解', '了解'].includes(t.level))
+    assert.equal(new Set([t.test[1], ...t.test[2]]).size, 3, `distinct choices for ${t.id}`)
+    assert.ok(t.test[0] && t.test[3])
+  }
+  // These concepts used to be grouped with unrelated formulas.
+  assert.equal(formulaTopic(25).chapter, 5)
+  assert.equal(formulaTopic(26).chapter, 6)
+  assert.equal(formulaTopic(43).chapter, 4)
+  assert.equal(formulaTopic(47).code, '15.4.a')
+})
+
+test('catalog searches official terminology, related variants and common abbreviations', () => {
+  assert.ok(selectFormulaTopics({ query: '  roe  ', chapter: '3' }).some(t => t.id === 8))
+  assert.ok(selectFormulaTopics({ query: '权益乘数' }).some(t => t.id === 4))
+  assert.ok(selectFormulaTopics({ query: '未分配利润' }).some(t => t.id === 1))
+  assert.ok(selectFormulaTopics({ query: 'CAPM' }).some(t => t.id === 30))
+  assert.equal(selectFormulaTopics({ query: '久期', chapter: '3' }).length, 0)
+  assert.ok(selectFormulaTopics({ query: '久期' }).length > 0)
+  assert.equal(selectFormulaTopics({ chapter: '18' }).length, 0)
+  assert.equal(selectFormulaTopics({ query: '不存在的知识点' }).length, 0)
+})
+
+test('course links resolve to relevant catalog topics without changing progress versions', () => {
+  for (const u of COURSE_UNITS) {
+    assert.ok(formulaTopic(COURSE_TOPIC[u.id]))
+    assert.ok(u.legacyIds.includes(COURSE_TOPIC[u.id]))
+    assert.equal(u.version, 1)
+    u.legacyIds.forEach(id => assert.ok(formulaTopic(id)))
+  }
+  assert.ok(!courseUnit('return-rate').legacyIds.includes(7))
+})
 const stamp = 100000
 let serial = 0
 function event(progress, q, type, input = '', at = stamp) {
