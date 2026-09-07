@@ -7,7 +7,8 @@
   tmp/distill/answers.json         双盲作答 {id: {rep0: {answer, explain}, rep1: {...}}}
 
 规则：
-- 有源答案的题直接收；双盲作答的题仅当两人答案一致才收，解析取长的一份；
+- 疑似材料题先核对原页并补全，未通过者留在待审文件，不进入题库。
+- 材料检查通过后，有源答案的题可收；双盲作答的题仅当两人答案一致才收，解析取长的一份；
   任一人标了「把握不大」的，题目标记 review=true 供后续重点复核。
 - 章节取归类结果；低置信的标记 review=true。
 - 追加进 src/data/questions.json，并把新 id->chapter 并入 tools/chapters.json，
@@ -15,6 +16,7 @@
 """
 import json
 import sys
+from question_materials import requires_review
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -36,8 +38,12 @@ from extract import dedup_key  # noqa: E402
 seen_keys = {(q["subject"], dedup_key(q)) for q in bank}
 seen_ids = {q["id"] for q in bank}
 
+pending_materials = []
 kept, dropped_noagree, dropped_nocls, dropped_dup = [], 0, 0, 0
 for q in cand:
+    if requires_review(q):
+        pending_materials.append(q)
+        continue
     c = cls.get(q["id"])
     if not c or c["chapter"] not in valid[q["subject"]]:
         dropped_nocls += 1
@@ -65,6 +71,8 @@ for q in cand:
     kept.append(q)
     chmap[q["id"]] = q["chapter"]
 
+(D / "pending-materials.json").write_text(json.dumps(pending_materials, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"材料待核对 {len(pending_materials)} 题，未入库，见 tmp/distill/pending-materials.json")
 bank.extend(kept)
 (REPO / "src/data/questions.json").write_text(
     json.dumps(bank, ensure_ascii=False, indent=1), encoding="utf-8")

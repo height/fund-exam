@@ -15,6 +15,16 @@ const ENUM = /(?<![\n、，,／/和与或及（(\sⅠ-Ⅹ])(?=[Ⅰ-Ⅹ])/g
 
 /** 题干里的 Ⅰ、Ⅱ… 各占一行，悬挂缩进 */
 export function Stem({ text, style }) {
+  if (String(text).startsWith('【题目材料】\n')) {
+    const [material, question] = String(text).slice('【题目材料】\n'.length).split('\n【问题】\n')
+    return <div className="question-with-material" style={style}>
+      <section className="question-material" aria-label="题目材料">
+        <b>题目材料</b><Md text={material} />
+        <small className="muted">已核对原资料；本题所需材料完整列于上方。</small>
+      </section>
+      <Stem text={question} />
+    </div>
+  }
   const [first, ...rest] = String(text).replace(ENUM, '\n').split('\n')
   return (
     <div className="stem" style={style}>

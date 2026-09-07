@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from question_materials import mark_material
 from extract import split_questions, parse_block, dedup_key, norm, OPT_RE, scrub  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -109,7 +110,8 @@ def parse_two_part(text):
         if num not in answers:
             continue
         ans, exp = answers[num]
-        item.update(answer=ans, explain=exp)
+        item.update(answer=ans, explain=exp, sourceQuestionNo=num)
+        mark_material(item, stem_text, block)
         out.append(item)
     return out
 
@@ -182,6 +184,7 @@ def main():
 
     def add(item, subject, source, fname):
         item = clean(item)
+        mark_material(item, text, source_file=fname)
         if len(item["q"]) < 6 or not all(item["options"]) or len(set(item["options"])) < 4:
             return
         fp = dedup_key(item)
@@ -223,6 +226,7 @@ def main():
         for block in split_questions(text):
             item = parse_block(block)
             if item:
+                mark_material(item, text, block)
                 add(item, subject, source, fname)
 
     for fname, subject, source in YATI:
@@ -230,6 +234,7 @@ def main():
         for block in split_questions(text):
             item = parse_no_answer(block)
             if item:
+                mark_material(item, text, block)
                 add(item, subject, source, fname)
 
     OUT.mkdir(parents=True, exist_ok=True)

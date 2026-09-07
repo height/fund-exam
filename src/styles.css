@@ -1101,3 +1101,10 @@ button.tl-date.hidden{padding:2px 10px;border-radius:99px;background:var(--sheet
   .settings-speed .seg button{flex:1}
   .settings-preview{gap:8px;padding:10px}
 }
+
+/* 共用材料随每道题展示，随机抽题也无需返回上一题。 */
+.question-with-material{display:grid;gap:20px;min-width:0}
+.question-material{display:grid;gap:10px;padding:16px;border:1px solid var(--rule);border-radius:12px;background:var(--sheet);min-width:0;font-size:15px;line-height:1.7}
+.question-material .md-table th,.question-material .md-table td{white-space:normal;min-width:64px}
+.question-material .md-table table{table-layout:auto;font-size:14px}
+.question-material small{font-size:12px}

@@ -180,6 +180,8 @@ def read_pdf(path):
 
 
 def main():
+    from question_materials import mark_material, requires_review
+    pending_materials = []
     bank, seen = [], {}
     dropped = defaultdict(int)
     stats = {}
@@ -194,6 +196,10 @@ def main():
             for block in split_questions(text):
                 item = parse_block(block)
                 if not item:
+                    continue
+                mark_material(item, text, block, pdf)
+                if requires_review(item):
+                    pending_materials.append(item)
                     continue
                 fp = dedup_key(item)
                 qid = hashlib.md5(fp.encode()).hexdigest()[:12]
@@ -253,6 +259,10 @@ def main():
     bank = [q for i, q in enumerate(bank) if i not in kill]
 
     bank.sort(key=lambda x: (x["subject"], CH_ORDER[x["subject"]].get(x["chapter"], 999), x["q"]))
+    pending_path = REPO / "tmp" / "pending-materials.json"
+    pending_path.parent.mkdir(parents=True, exist_ok=True)
+    pending_path.write_text(json.dumps(pending_materials, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"材料待核对 {len(pending_materials)} 题，未入库：{pending_path}")
     OUT.write_text(json.dumps(bank, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     print(f"\n去重丢弃：" + "，".join(f"{k} {v} 题" for k, v in dropped.items()))

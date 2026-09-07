@@ -66,7 +66,7 @@ export function stats(records, s) {
 export function effort(records) {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
-  const rs = Object.values(records)
+  const rs = Object.values(records).filter(r => r.seen > 0)
   return {
     today: rs.filter(r => (r.lastTs || 0) >= start.getTime()).length,
     answers: rs.reduce((a, r) => a + (r.seen || 0), 0),

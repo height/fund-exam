@@ -3,7 +3,8 @@ import { Icon, PageHeader, Speaker } from '../components/ui'
 import { PRESETS, TTS_SPEEDS, TTS_VOICES, TTS_STYLES, getTtsSpeed, getTtsVoice, getTtsStyle,
   loadStore, pingAI, provDefault, saveStore, setTtsSpeed, setTtsVoice, setTtsStyle } from '../lib/ai'
 import { track } from '../lib/analytics'
-import { BANK } from '../lib/bank'
+import { reconcileRecord, reconcileExam } from '../lib/questionQuality'
+import { BANK, qById } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
 import { THEMES, useStore } from '../lib/store'
 import { FORMULA_LESSONS, FORMULA_MASTERY_KEY } from '../data/formulaLessons'
@@ -152,11 +153,13 @@ export default function Data({ go, page }) {
       const incomingFormula = Array.isArray(d.formulaMastery) ? d.formulaMastery : []
       const nextFormula = [...new Set([...oldFormula, ...incomingFormula])]
       localStorage.setItem(FORMULA_MASTERY_KEY, JSON.stringify(nextFormula))
-      for (const r of d.records || []) {
+      for (const raw of d.records || []) {
+        const r = reconcileRecord(raw, qById(raw.qid))
         const old = next[r.qid]
         next[r.qid] = old
           ? {
               ...r,
+              superseded: [...(old.superseded || []), ...(r.superseded || [])],
               seen: old.seen + r.seen, right: old.right + r.right, wrong: old.wrong + r.wrong,
               wrongFlag: (old.lastTs || 0) > (r.lastTs || 0) ? old.wrongFlag : r.wrongFlag,
               lastTs: Math.max(old.lastTs || 0, r.lastTs || 0),
@@ -164,7 +167,7 @@ export default function Data({ go, page }) {
           : r
         await idb.put('records', next[r.qid])
       }
-      for (const x of d.exams || []) await idb.put('exams', x)
+      for (const x of d.exams || []) await idb.put('exams', reconcileExam(x, qById))
       await saveFormulaProgress(nextProgress)
       setRecords(next)
       reload()
@@ -221,7 +224,7 @@ export default function Data({ go, page }) {
           <h2>学习数据</h2>
           <div className="settings-links">
             <SettingsLink icon="download" title="数据与备份"
-              detail={`已练 ${Object.keys(records).length} 题 · ${exams.length} 次考试`} onClick={() => open('storage')} />
+              detail={`已练 ${Object.values(records).filter(r => r.seen > 0).length} 题 · ${exams.length} 次考试`} onClick={() => open('storage')} />
           </div>
           <p className="settings-note">进度和配置保存在当前浏览器，换设备前记得备份。</p>
         </section>

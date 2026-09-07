@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFor, pickExamSet, qById } from '../lib/bank'
+import { reconcileExam } from '../lib/questionQuality'
 import { track } from '../lib/analytics'
 import { idb, kvGet, kvSet } from '../lib/db'
 import { Stem, fmtTime } from '../lib/format'
@@ -22,7 +23,15 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
 
   useEffect(() => {
     ;(async () => {
-      const a = await kvGet(activeKey, null)
+      const saved = await kvGet(activeKey, null)
+      const a = saved ? reconcileExam(saved, qById) : null
+      if (a !== saved) await kvSet(activeKey, a)
+      if (a && !a.ids.length) {
+        await kvSet(`voided:${activeKey}:${a.startTs}`, a)
+        await kvSet(activeKey, null)
+        toast('原试卷题目材料有缺失，本场已作废并留存备份，请重新开考')
+        setStage('intro'); return
+      }
       if (a && a.endTs > Date.now()) { setEx(a); setStage('resume'); return }
       if (a) await kvSet(activeKey, null)
       setStage('intro')
@@ -46,6 +55,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
     const fresh = {
       subject, chapter: numberMode ? undefined : chapter, mins, kind: numberMode ? 'numbers' : undefined,
       ids: qs.map(q => q.id), answers: {},
+      questionRevisions: Object.fromEntries(qs.map(q => [q.id, q.contentRevision || 0])),
       startTs: now, endTs: now + mins * 60000, i: 0,
     }
     await kvSet(activeKey, fresh)
@@ -70,7 +80,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
       const ok = p === q.answer
       if (ok) right++
       const r = {
-        ...old, seen: old.seen + 1,
+        ...old, contentRevision: q.contentRevision || 0, seen: old.seen + 1,
         right: old.right + (ok ? 1 : 0), wrong: old.wrong + (ok ? 0 : 1),
         wrongFlag: !ok, lastTs: Date.now(),
       }
@@ -82,7 +92,8 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
       id: Date.now(), subject: e.subject, chapter: e.chapter, kind: e.kind, ts: Date.now(),
       score: Math.round((right / qs.length) * 100), right, total: qs.length,
       usedMs: Math.min(Date.now() - e.startTs, (e.mins || EXAM_MIN) * 60000),
-      ids: e.ids, answers: e.answers,
+      ids: e.ids, answers: e.answers, questionRevisions: e.questionRevisions,
+      voidedQuestionIds: e.voidedQuestionIds, superseded: e.superseded,
     }
     await idb.put('exams', rec)
     await kvSet(e.kind === 'numbers' ? 'activeNumberExam' : 'activeExam', null)
@@ -107,6 +118,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
         onBack={numberMode ? () => go('numbers', { mode: 'exam' }) : undefined}
         backLabel="数字必背"
       />
+      {ex.voidedQuestionIds?.length > 0 && <p className="muted">原卷有 {ex.voidedQuestionIds.length} 道题缺少材料，已移出本场计分并留存旧记录；继续完成其余题目。</p>}
       <div className="card">
         <div className="row between"><b>有一场没考完</b><span className="chip">{ex.subject}</span></div>
         <div className="row between">
@@ -322,6 +334,7 @@ function Result({ rec, go }) {
         <div className="muted">答对 {rec.right}/{rec.total} · 用时 {Math.round(rec.usedMs / 60000)} 分钟</div>
       </div>
 
+      {rec.voidedQuestionIds?.length > 0 && <p className="muted">本场 {rec.voidedQuestionIds.length} 道旧版缺材料题已作废，成绩仅按其余题目计算。</p>}
       {weak.length > 0 && (
         <div className="card">
           <h2>这次丢分最多的知识点</h2>

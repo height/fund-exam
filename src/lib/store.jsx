@@ -1,5 +1,7 @@
 /* 全局状态：做题记录、当前科目、主题、toast。所有写入同时落 IndexedDB */
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { qById } from './bank'
+import { reconcileRecord, reconcileExam } from './questionQuality'
 import { idb, kvGet, kvSet, openDB } from './db'
 
 const Ctx = createContext(null)
@@ -24,7 +26,15 @@ export function StoreProvider({ children }) {
     ;(async () => {
       await openDB()
       const rs = {}
-      ;(await idb.all('records')).forEach(r => (rs[r.qid] = r))
+      for (const r of await idb.all('records')) {
+        const next = reconcileRecord(r, qById(r.qid))
+        if (next !== r) await idb.put('records', next)
+        rs[r.qid] = next
+      }
+      for (const exam of await idb.all('exams')) {
+        const next = reconcileExam(exam, qById)
+        if (next !== exam) await idb.put('exams', next)
+      }
       setRecords(rs)
       setSubjectState(await kvGet('subject', '科目一'))
       setAutoNextState(await kvGet('autoNext', true))
@@ -72,7 +82,7 @@ export function StoreProvider({ children }) {
     setRecords(prev => {
       const old = prev[q.id] || { qid: q.id, subject: q.subject, seen: 0, right: 0, wrong: 0 }
       const r = {
-        ...old,
+        ...old, contentRevision: q.contentRevision || 0,
         seen: old.seen + 1,
         right: old.right + (ok ? 1 : 0),
         wrong: old.wrong + (ok ? 0 : 1),

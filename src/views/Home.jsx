@@ -53,6 +53,10 @@ export default function Home({ go }) {
         action={<ThemeToggle />}
       />
       <SubjectSeg />
+      {Object.values(records).some(r => r.superseded?.length) && <div className="card" role="status">
+        <b>题面勘误已同步</b>
+        <span className="muted">缺少材料的旧版作答已作废，不再影响错题本和正确率。旧记录仍保存在导出备份中，请按补全后的题面重新练习。</span>
+      </div>}
 
       <div className="card">
         <div className="hero-top">
@@ -77,7 +81,7 @@ export default function Home({ go }) {
         <div className="hero-foot">
           <span>已做<b>{st.done}<i>/{total}</i></b></span>
           <span>错题待清<b style={st.wrong ? { color: 'var(--bad)' } : null}>{st.wrong}</b></span>
-          <span>最近模拟考<b>{last ? last.score : '未考'}</b></span>
+          <span>最近模拟考<b>{last ? (last.score ?? '已作废') : '未考'}</b></span>
         </div>
       </div>
 
@@ -143,8 +147,8 @@ export default function Home({ go }) {
           <div className="list">
             {exams.map(e => (
               <div className="list-item" key={e.id}>
-                <span className={`score-chip ${e.score >= PASS ? 'pass' : 'fail'}`}>{e.score}</span>
-                <span className="grow muted">答对 {e.right}/{e.total} · 用时 {Math.round(e.usedMs / 60000)} 分</span>
+                <span className={`score-chip ${e.score >= PASS ? 'pass' : 'fail'}`}>{e.score ?? '已作废'}</span>
+                <span className="grow muted">{e.voidedQuestionIds?.length > 0 && `已作废 ${e.voidedQuestionIds.length} 题 · `}答对 {e.right}/{e.total} · 用时 {Math.round(e.usedMs / 60000)} 分</span>
                 <span className="muted num">
                   {new Date(e.ts).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
                 </span>
