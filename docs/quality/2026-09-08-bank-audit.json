@@ -1,0 +1,508 @@
+{
+  "scope": "全库结构、章节覆盖、题干与选项二元字符相似度；相似候选需逐对审读，不是完整语义去重或官方知识认证。",
+  "total": 1663,
+  "active": 1645,
+  "pending": [
+    {
+      "id": "8b47b3a92a00",
+      "subject": "科目一",
+      "reason": "D同时含金融市场和金融场所，其中金融市场明确为体系组成；题干仅问“不包含”，无法把这一混合选项整体排除，且“场所”缺少定义。"
+    },
+    {
+      "id": "6f91ab8034fe",
+      "subject": "科目一",
+      "reason": "C期权无限期持有错误；B期货必须在到期前交割也过度绝对，D所有基金没有强制到期日也不成立，无法唯一选择C。"
+    },
+    {
+      "id": "616aaa768457",
+      "subject": "科目一",
+      "reason": "C建立持有人利益绑定机制与D按合同章程合理确定薪酬均可成立，解析仅用另一措辞否定D，没有证明D违反治理或合规要求。"
+    },
+    {
+      "id": "0e8afd99f502",
+      "subject": "科目一",
+      "reason": "A托管人根据需要向基金管理人提供本基金投资信息并非当然泄密；解析未区分正常履职信息交流与对外泄密，A与D可能同时成立。"
+    },
+    {
+      "id": "b514fb1d86ed",
+      "subject": "科目一",
+      "reason": "组合答案排除Ⅱ“私募基金要严格监管”，解析以私募监管不同于公募为由否定严格监管，逻辑不足，Ⅱ与Ⅰ、Ⅳ并不冲突。"
+    },
+    {
+      "id": "c24d69d2608f",
+      "subject": "科目一",
+      "reason": "题干为单选，但A风险评估疏漏、B温度控制需改进、C已设置巡查机制均能由场景支持；解析仅说“Ⅳ项错误”，疑原组合题解析与选项结构错配。"
+    },
+    {
+      "id": "85fba92e3c2c",
+      "subject": "科目一",
+      "reason": "将向投资总监/总经理合规汇报内幕信息以及向客户提供交易信息统判为泄密；未交代授权、信息公开状态或是否为客户本人交易，无法认定四项全部违法。"
+    },
+    {
+      "id": "faaea13de7ee",
+      "subject": "科目一",
+      "reason": "A学习掌握法规、B遵守法规、C监督他人行为均属守法合规要求；解析只称“Ⅳ项错误”，疑原组合题被错误拆成单选。"
+    },
+    {
+      "id": "8c7251f0b3f3",
+      "subject": "科目一",
+      "reason": "答案C称协助银行分红避税合规，解析却称监管明令禁止；需核实案例发生时点、原题版本和分红决策依据，不能沿用相反结论计分。"
+    },
+    {
+      "id": "1c3330065b55",
+      "subject": "科目二",
+      "reason": "欧式期权题选项只有I—III组合，题干未提供各时间点；主代理已核对原PDF第16—17页第51题，原件同样缺失陈述，无法还原唯一答案。"
+    },
+    {
+      "id": "407e9024ecf1",
+      "subject": "科目二",
+      "reason": "Ⅳ“超额收益率”与Ⅴ“跟踪偏离度”均指组合减基准的逐期收益差，原解析无理由排除Ⅳ而保留Ⅴ，组合答案不唯一。"
+    },
+    {
+      "id": "c64da5ee7c65",
+      "subject": "科目二",
+      "reason": "“内部信息”与“私人信息”在强式有效市场的信息集合中重合，原题不能以私人信息不属有效市场信息为由选择D；待对照教材原文重新设题。"
+    },
+    {
+      "id": "2d7078bc4fb1",
+      "subject": "科目二",
+      "reason": "限价指令导致未成交可能包含延迟成本及机会成本；原题未规定成本分解体系或后续是否完成交易，无法唯一排除D。"
+    },
+    {
+      "id": "5b8ba983eb0b",
+      "subject": "科目二",
+      "reason": "原题只给市场价格下降而未给基金经理限价授权、盘口卖价和可成交量；无法唯一推出交易员必须报17元，18元限价也可能成交于更优价格。"
+    },
+    {
+      "id": "f18885fc70c4",
+      "subject": "科目二",
+      "reason": "原题把VaR记为负收益阈值，却将“损失超过−0.5%”直接作损失金额比较，符号语义相反；并无分布、均值条件就断言震荡加剧必使尾部概率增加，无法可靠确认II、III组合。"
+    },
+    {
+      "id": "463494e48567",
+      "subject": "科目二",
+      "reason": "2016年8月5日15:30为周五收市后，下一日8月6日为周六，原解析把周六当赎回开放日；缺少下一实际开放日净值，无法据题面计算。"
+    },
+    {
+      "id": "93ffef27621e",
+      "subject": "科目二",
+      "reason": "四个选项均为亚洲证券交易所，“主要”未定义规模、市场或时期，不能只因教材未列其他三个便唯一选择新加坡。"
+    },
+    {
+      "id": "5aa5d936ef6d",
+      "subject": "科目二",
+      "reason": "保证金、当日无负债结算及风险准备金均承担风险控制作用；笼统问“用于应对市场风险”不能唯一定位风险准备金，缺少该制度的资金提取及应急补偿特征。"
+    }
+  ],
+  "coverage": [
+    {
+      "subject": "科目一",
+      "chapter": "金融市场与资产管理",
+      "total": 81,
+      "active": 80
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金概述",
+      "total": 109,
+      "active": 108
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金法律法规体系和监管体系",
+      "total": 72,
+      "active": 72
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金市场参与主体及其从业人员的法规要求",
+      "total": 175,
+      "active": 173
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金活动的法规要求",
+      "total": 256,
+      "active": 255
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金管理人的合规管理、风险管理和内部控制",
+      "total": 110,
+      "active": 109
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金职业道德规范",
+      "total": 88,
+      "active": 85
+    },
+    {
+      "subject": "科目一",
+      "chapter": "基金行业文化建设",
+      "total": 42,
+      "active": 42
+    },
+    {
+      "subject": "科目二",
+      "chapter": "证券投资基金概述",
+      "total": 18,
+      "active": 18
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金的类型",
+      "total": 37,
+      "active": 37
+    },
+    {
+      "subject": "科目二",
+      "chapter": "投资管理基础",
+      "total": 79,
+      "active": 79
+    },
+    {
+      "subject": "科目二",
+      "chapter": "权益投资",
+      "total": 45,
+      "active": 45
+    },
+    {
+      "subject": "科目二",
+      "chapter": "固定收益投资",
+      "total": 62,
+      "active": 62
+    },
+    {
+      "subject": "科目二",
+      "chapter": "衍生工具",
+      "total": 38,
+      "active": 37
+    },
+    {
+      "subject": "科目二",
+      "chapter": "另类投资",
+      "total": 23,
+      "active": 23
+    },
+    {
+      "subject": "科目二",
+      "chapter": "投资管理流程",
+      "total": 21,
+      "active": 21
+    },
+    {
+      "subject": "科目二",
+      "chapter": "投资组合管理",
+      "total": 62,
+      "active": 60
+    },
+    {
+      "subject": "科目二",
+      "chapter": "投资交易管理",
+      "total": 26,
+      "active": 24
+    },
+    {
+      "subject": "科目二",
+      "chapter": "投资风险管理",
+      "total": 39,
+      "active": 38
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金业绩评价",
+      "total": 49,
+      "active": 49
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金的募集、交易与登记",
+      "total": 45,
+      "active": 44
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金的投资交易与结算",
+      "total": 55,
+      "active": 53
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金的估值、费用与会计核算",
+      "total": 43,
+      "active": 43
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金的利润分配与税收",
+      "total": 23,
+      "active": 23
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金的信息披露",
+      "total": 24,
+      "active": 24
+    },
+    {
+      "subject": "科目二",
+      "chapter": "基金销售基础知识",
+      "total": 41,
+      "active": 41
+    }
+  ],
+  "structuralIssues": [],
+  "shortExplanations": [
+    {
+      "id": "da5989b91268",
+      "explain": "1971年，第一只货币市场基金成立。"
+    },
+    {
+      "id": "c2dadcc9e908",
+      "explain": "基金及其发行人主要由中国证监会监管。"
+    },
+    {
+      "id": "d9e42ee77b37",
+      "explain": "泄露持仓信息违背了诚实守信和保守秘密。"
+    },
+    {
+      "id": "b7611f6abf6b",
+      "explain": "竞争是市场经济的核心机制。"
+    },
+    {
+      "id": "73f693009cf6",
+      "explain": "股票基金收益不确定。"
+    },
+    {
+      "id": "a34cd6abb314",
+      "explain": "实物申购、赎回机制是ETF最大的特色。"
+    },
+    {
+      "id": "c1d9ad8d79ab",
+      "explain": "选项B正确：市场组合本身的β系数为1。"
+    },
+    {
+      "id": "b716f6405dbc",
+      "explain": "转托管在转出方进行申报，故C选项错误。"
+    }
+  ],
+  "duplicateCandidates": [
+    {
+      "ids": [
+        "cdcbe77c6077",
+        "134ee4c253a7"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.632,
+      "optionsSimilarity": 1
+    },
+    {
+      "ids": [
+        "ea6b79165650",
+        "a961a33b1a81"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 1,
+      "optionsSimilarity": 0.623
+    },
+    {
+      "ids": [
+        "4755fdd6eb84",
+        "fce08b32506d"
+      ],
+      "crossSubject": true,
+      "stemSimilarity": 0.612,
+      "optionsSimilarity": 1
+    },
+    {
+      "ids": [
+        "ad598d5dd1e5",
+        "ddbc691b6692"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.594,
+      "optionsSimilarity": 1
+    },
+    {
+      "ids": [
+        "5590c2445790",
+        "39c0728d5799"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.667,
+      "optionsSimilarity": 0.917
+    },
+    {
+      "ids": [
+        "e266ba4e709e",
+        "89a4cce47198"
+      ],
+      "crossSubject": true,
+      "stemSimilarity": 0.561,
+      "optionsSimilarity": 1
+    },
+    {
+      "ids": [
+        "11b70dd63b4c",
+        "9cd5d7659778"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.491,
+      "optionsSimilarity": 1
+    },
+    {
+      "ids": [
+        "87183a7b2f55",
+        "31458c9badf0"
+      ],
+      "crossSubject": true,
+      "stemSimilarity": 0.679,
+      "optionsSimilarity": 0.8
+    },
+    {
+      "ids": [
+        "65ea8ed40652",
+        "52074c2a0476"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.667,
+      "optionsSimilarity": 0.81
+    },
+    {
+      "ids": [
+        "4755fdd6eb84",
+        "dbe7a9ffb75c"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.453,
+      "optionsSimilarity": 1
+    },
+    {
+      "ids": [
+        "262beafaed7f",
+        "52f83f155816"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.522,
+      "optionsSimilarity": 0.895
+    },
+    {
+      "ids": [
+        "ac67941b792c",
+        "7cd2dba1f69a"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.647,
+      "optionsSimilarity": 0.759
+    },
+    {
+      "ids": [
+        "c4e11bafac9a",
+        "375ab6263e58"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.788,
+      "optionsSimilarity": 0.614
+    },
+    {
+      "ids": [
+        "85d222919d8c",
+        "c1dc033bd69f"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.857,
+      "optionsSimilarity": 0.537
+    },
+    {
+      "ids": [
+        "50de4b308d1f",
+        "73e7b21132cf"
+      ],
+      "crossSubject": true,
+      "stemSimilarity": 0.653,
+      "optionsSimilarity": 0.732
+    },
+    {
+      "ids": [
+        "8733c2c76e5a",
+        "b8dfc33c3a46"
+      ],
+      "crossSubject": true,
+      "stemSimilarity": 1,
+      "optionsSimilarity": 0.384
+    },
+    {
+      "ids": [
+        "cd04fd7b4a64",
+        "99d8cc06e51c"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.644,
+      "optionsSimilarity": 0.706
+    },
+    {
+      "ids": [
+        "0a36405b4df3",
+        "71caf9ca943e"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.492,
+      "optionsSimilarity": 0.857
+    },
+    {
+      "ids": [
+        "a17da386333d",
+        "8398b80e34bd"
+      ],
+      "crossSubject": true,
+      "stemSimilarity": 0.513,
+      "optionsSimilarity": 0.814
+    },
+    {
+      "ids": [
+        "81cc70b93ff9",
+        "d0cc68c38954"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.462,
+      "optionsSimilarity": 0.842
+    },
+    {
+      "ids": [
+        "dc630fc73e7e",
+        "ba0395c95ce6"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.8,
+      "optionsSimilarity": 0.5
+    },
+    {
+      "ids": [
+        "12cb44107791",
+        "8a8152b1603f"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 1,
+      "optionsSimilarity": 0.259
+    },
+    {
+      "ids": [
+        "68db809c30dd",
+        "47e07bc526d1"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.706,
+      "optionsSimilarity": 0.45
+    },
+    {
+      "ids": [
+        "73f693009cf6",
+        "98d1df4eb291"
+      ],
+      "crossSubject": false,
+      "stemSimilarity": 0.625,
+      "optionsSimilarity": 0.462
+    }
+  ]
+}

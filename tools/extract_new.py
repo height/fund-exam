@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from question_materials import mark_material
+from question_materials import mark_material, trim_following_material
 from extract import split_questions, parse_block, dedup_key, norm, OPT_RE, scrub  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -49,7 +49,7 @@ ANS_RE = re.compile(
 
 def parse_stem_block(block):
     """题干区的一块：题号+题干+四个选项（选项字母可能独占一行）"""
-    block = block.replace("　", " ").replace(" ", "")
+    block = trim_following_material(block).replace("　", " ").replace(" ", "")
     lines = [l.strip() for l in block.splitlines() if l.strip()]
     stem, opts, cur = [], [], None
     for line in lines:
@@ -118,7 +118,7 @@ def parse_two_part(text):
 
 def parse_no_answer(block):
     """终极押题版式：题号（单选题 1 分）题干 A. ... D. ...，无答案"""
-    block = block.replace("　", " ")
+    block = trim_following_material(block).replace("　", " ")
     lines = [l.strip() for l in block.splitlines() if l.strip()]
     stem, opts, cur = [], [], None
     for line in lines:

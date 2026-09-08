@@ -29,7 +29,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
       if (a && !a.ids.length) {
         await kvSet(`voided:${activeKey}:${a.startTs}`, a)
         await kvSet(activeKey, null)
-        toast('原试卷题目材料有缺失，本场已作废并留存备份，请重新开考')
+        toast('原试卷题目已修订或暂停使用，本场已作废并留存备份，请重新开考')
         setStage('intro'); return
       }
       if (a && a.endTs > Date.now()) { setEx(a); setStage('resume'); return }
@@ -118,7 +118,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
         onBack={numberMode ? () => go('numbers', { mode: 'exam' }) : undefined}
         backLabel="数字必背"
       />
-      {ex.voidedQuestionIds?.length > 0 && <p className="muted">原卷有 {ex.voidedQuestionIds.length} 道题缺少材料，已移出本场计分并留存旧记录；继续完成其余题目。</p>}
+      {ex.voidedQuestionIds?.length > 0 && <p className="muted">原卷有 {ex.voidedQuestionIds.length} 道题因复核修订或暂停使用，已移出本场计分并留存旧记录；继续完成其余题目。</p>}
       <div className="card">
         <div className="row between"><b>有一场没考完</b><span className="chip">{ex.subject}</span></div>
         <div className="row between">
@@ -334,7 +334,7 @@ function Result({ rec, go }) {
         <div className="muted">答对 {rec.right}/{rec.total} · 用时 {Math.round(rec.usedMs / 60000)} 分钟</div>
       </div>
 
-      {rec.voidedQuestionIds?.length > 0 && <p className="muted">本场 {rec.voidedQuestionIds.length} 道旧版缺材料题已作废，成绩仅按其余题目计算。</p>}
+      {rec.voidedQuestionIds?.length > 0 && <p className="muted">本场 {rec.voidedQuestionIds.length} 道题的旧版作答因题目复核已作废，成绩仅按其余题目计算。</p>}
       {weak.length > 0 && (
         <div className="card">
           <h2>这次丢分最多的知识点</h2>

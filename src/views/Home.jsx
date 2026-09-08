@@ -55,7 +55,7 @@ export default function Home({ go }) {
       <SubjectSeg />
       {Object.values(records).some(r => r.superseded?.length) && <div className="card" role="status">
         <b>题面勘误已同步</b>
-        <span className="muted">缺少材料的旧版作答已作废，不再影响错题本和正确率。旧记录仍保存在导出备份中，请按补全后的题面重新练习。</span>
+        <span className="muted">题目复核发现材料缺失或内容问题，受影响的旧版作答已作废，不再影响错题本和正确率。旧记录仍保存在导出备份中；已修订题可重新练习，待核实题已暂停使用。</span>
       </div>}
 
       <div className="card">

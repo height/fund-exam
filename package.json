@@ -9,6 +9,8 @@
     "test:formula": "node --test tests/formula.test.js",
     "test:formula:browser": "python3 tools/test_formula_webkit.py",
     "repair:materials": "node tools/apply-question-materials.mjs",
+    "repair:questions": "node tools/apply-question-materials.mjs && node tools/apply-question-reviews.mjs && node tools/validate-question-bank.mjs",
+    "audit:questions": "node tools/audit-question-bank.mjs",
     "test:quality": "node --test tests/question-quality.test.js && python3 -m unittest discover -s tests -p \"test_question_materials.py\""
   },
   "dependencies": {

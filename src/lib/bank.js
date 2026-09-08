@@ -3,11 +3,12 @@ import { CHAPTERS } from '../data/chapters'
 import questions from '../data/questions.json'
 import plain from '../data/plain.json'
 import calcIds from '../data/calc.json'
+import { isQuestionActive } from './questionQuality'
 
-export const BANK = questions
+export const BANK = questions.filter(isQuestionActive)
 export const PLAIN = plain
 /* 计算题 id，由 tools/extract_calc.py 从题库筛出，只存 id 不复制题面 */
-export const CALC_IDS = calcIds
+export const CALC_IDS = calcIds.filter(id => BANK.some(q => q.id === id))
 
 export const SUBJECTS = ['科目一', '科目二']
 export const SUBJ_FULL = {
@@ -35,7 +36,8 @@ export const CHAPTER_EXAM_N = 30
 export const minutesFor = n => Math.max(5, Math.round((n * EXAM_MIN) / EXAM_N))
 
 export const bySubject = s => BANK.filter(q => q.subject === s)
-export const qById = id => BANK.find(q => q.id === id)
+// 历史记录迁移仍需读取已隔离题的版本与复核原因。
+export const qById = id => questions.find(q => q.id === id)
 
 export function shuffle(a) {
   a = a.slice()

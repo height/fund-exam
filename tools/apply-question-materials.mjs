@@ -7,7 +7,8 @@ for (const fix of repairs) {
   const complete = `【题目材料】\n${fix.material}\n【问题】\n${fix.question}`
   if (!q || ![fix.original, complete].includes(q.q)) throw new Error(`题面已变化，须重新复核：${fix.id}`)
   q.q = complete
-  q.contentRevision = fix.revision
+  // 后续内容审订可能提高版本；重放材料不得把新版作答降回旧版本。
+  q.contentRevision = Math.max(q.contentRevision || 0, fix.revision)
   q.materialReview = { status: 'verified', sourceFile: fix.sourceFile, sourcePage: fix.sourcePage, invalidatesPriorRecords: fix.invalidatesPriorRecords }
 }
 fs.writeFileSync(path, JSON.stringify(bank, null, 1))

@@ -1,0 +1,2164 @@
+[
+  {
+    "id": "f175fb124e5a",
+    "reason": "原题以“必要条件”提问，总资产≥1000万元与净资产≥500万元均可由法定净资产≥1000万元推导，缺少唯一答案；改为直接考最低净资产门槛并补解析。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c106256/c1653849/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某基金的一家机构持有人原为普通投资者，如果申请转化为专业投资者，需满足下列哪个必要条件？（）",
+      "options": [
+        "最近一年末总资产不低于1000万元",
+        "最近一年末净资产不低于2000万元",
+        "最近一年末净资产不低于500万元",
+        "最近一年末金融资产不低于100万元"
+      ],
+      "explain": "",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "根据《证券期货投资者适当性管理办法》，普通投资者中的法人或其他组织申请转化为专业投资者时，最近1年末净资产的最低门槛为（）。",
+      "options": [
+        "1000万元",
+        "2000万元",
+        "500万元",
+        "100万元"
+      ],
+      "explain": "选A。第十一条要求申请转化的法人或其他组织最近1年末净资产至少1000万元、金融资产至少500万元，并具有至少1年的相关投资经历；还需提出申请并接受经营机构评估。注意这里问的是净资产门槛，不是总资产，也不是第八条直接认定专业投资者的2000万元净资产门槛。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题以“必要条件”提问，总资产≥1000万元与净资产≥500万元均可由法定净资产≥1000万元推导，缺少唯一答案；改为直接考最低净资产门槛并补解析。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c106256/c1653849/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "886dd6ddc3cb",
+    "reason": "原解析仅为占位符“解析：”；按题面现金流列方程并复算。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "explain": "解析："
+    },
+    "after": {
+      "explain": "选C。到期收益率使债券未来本息的现值等于当前价格。按每年付息、第二年末偿还本金100元，有95=6/(1+y)+106/(1+y)²。整理得95(1+y)²−6(1+y)−106=0，取正根得y≈0.08836，即8.836%。折价买入，所以到期收益率高于票面利率6%。"
+    }
+  },
+  {
+    "id": "71e1124197f7",
+    "reason": "原解析为空；核对交易所合约表后补充逐项说明。",
+    "sources": [
+      "https://www.cffex.com.cn/hs300/"
+    ],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "explain": ""
+    },
+    "after": {
+      "explain": "选C，四项均为标准化合约要素。中金所沪深300股指期货合约表规定了最后交易日、最小变动价位、合约乘数与报价单位、每日价格最大波动限制等；合约交易以手为单位。交易者协商的是成交价格，不能自行改变这些统一条款。"
+    }
+  },
+  {
+    "id": "866950e73b95",
+    "reason": "原解析为空；补充基准和特殊情形边界。",
+    "sources": [
+      "https://www.cffex.com.cn/hs300/"
+    ],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "explain": ""
+    },
+    "after": {
+      "explain": "选D。沪深300股指期货合约表列明，常规每日价格最大波动限制为上一交易日结算价的±10%。基准是结算价，而非上一日收盘价或当日、上一日开盘价；遇交易所另行调整的特殊情形按其规定执行。"
+    }
+  },
+  {
+    "id": "8e6216049fa1",
+    "reason": "原选项私募资管计划同样属于受托间接投资，替换该干扰项消除双解。",
+    "sources": [
+      "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "证券投资基金",
+        "普通股",
+        "债券",
+        "私募资管计划"
+      ],
+      "explain": "基金是一种间接投资工具，故本题选A项。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "证券投资基金",
+        "普通股",
+        "债券",
+        "优先股"
+      ],
+      "explain": "选A。投资者通过证券投资基金将资金交由管理人进行组合投资，属于间接投资。直接持有普通股、优先股或债券，则直接持有相应股东权益或债权。原选项“私募资管计划”同样具有受托投资属性，不能作为唯一答案题中的排除项。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原选项私募资管计划同样属于受托间接投资，替换该干扰项消除双解。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "3ae8a003b256",
+    "reason": "原题C单一资管计划和D符合规定的私募股权基金都能约定不托管；限定所考产品制度。",
+    "sources": [
+      "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "下列（）产品可以约定不进行托管。",
+      "explain": "公募基金、私募资产管理计划、私募基金的不同之处包括：托管；公募基金：必须托管（A项不符合题意）；私募资产管理计划：单一资产管理计划，可以约定不托管（C项符合题意）；私募证券投资基金：必须托管（B项不符合题意）；私募股权投资基金：符合监管规定的基金可由基金合同约定（D项不符合题意）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "下列产品中，属于证券期货经营机构可以在资产管理合同中约定不聘请托管机构进行托管的私募资产管理计划的是（）。",
+      "explain": "选C。《证券期货经营机构私募资产管理计划运作管理规定》第十二条允许单一资产管理计划约定不聘请托管机构，但合同应明确保障资产安全的制度措施和纠纷解决机制。题干限定证券期货经营机构的私募资管计划；私募股权基金虽可能依其适用规定约定不托管，但属于另一类产品，不在本题限定范围。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题C单一资管计划和D符合规定的私募股权基金都能约定不托管；限定所考产品制度。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "1be4a204f31e",
+    "reason": "原答案C误把连续55日视为达到60日门槛；按规定纠正为A，并明确适用范围。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c106256/c1653978/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某开放式基金合同生效后，连续55个工作日基金资产净值低于4800万元。根据规定，基金管理人应当（）。",
+      "answer": 2,
+      "explain": "开放式基金的基金合同生效后，连续20个工作日出现基金份额持有人数量不满200人或者基金资产净值低于5000万元情形的，基金管理人应当在定期报告中予以披露；连续60个工作日出现前述情形的，基金管理人应当向中国证监会报告并提出解决方案，如转换运作方式、与其他基金合并或者终止基金合同等，并召开基金份额持有人大会进行表决（C项正确）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某非发起式开放式基金合同生效后，连续55个工作日基金资产净值低于4800万元，基金合同无更严格的触发约定。仅就该情形，依据《公开募集证券投资基金运作管理办法》第四十一条，基金管理人应当（）。",
+      "answer": 0,
+      "explain": "选A。连续20个工作日出现资产净值低于5000万元等规定情形，应在定期报告中披露；连续60个工作日才触发向中国证监会报告、提出解决方案并召开持有人大会表决的要求。题面为55个工作日，尚未达到60日，因此在本题限定下选A，不能选C。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原答案C误把连续55日视为达到60日门槛；按规定纠正为A，并明确适用范围。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c106256/c1653978/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "41e23636f94f",
+    "reason": "原题仅给单只计划净资产却按全部计划净资产计算，并引入已投5亿元的冲突条件；改写为明确全部计划口径的计算题。",
+    "sources": [
+      "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某证券公司管理的私募资管计划净资产为10亿元，投资于某公司发行的债券5亿元。若该债券为非标准化债权类资产，全部资管计划投资此类资产的总资金不得超过（）。",
+      "explain": "同一证券期货经营机构管理的全部资产管理计划投资于非标准化债权类资产的资金不得超过其管理的全部资产管理计划净资产的35%。本题全部资产管理计划净资产为10亿元，10亿元×35%=3.5亿元，故本题选B项。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某证券公司管理的全部私募资产管理计划净资产合计为10亿元。按照非标准化债权类资产投资比例的规定，这些计划投资于非标准化债权类资产的资金合计不得超过（）。",
+      "explain": "选B。同一证券期货经营机构管理的全部资产管理计划投资于非标准化债权类资产的资金，上限为其管理的全部资产管理计划净资产的35%。本题分母是全部计划净资产10亿元，上限=10×35%=3.5亿元。不能用某一只计划的净资产代替全部计划净资产。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题仅给单只计划净资产却按全部计划净资产计算，并引入已投5亿元的冲突条件；改写为明确全部计划口径的计算题。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "541e22450cf0",
+    "reason": "原题未指明私募资管计划，易与私募基金的合格投资者条件混淆；按原解析补足制度范围。",
+    "sources": [
+      "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某自然人投资者近3年年均收入45万元，金融资产500万元，投资经历1年半。该投资者（）合格投资者条件，原因是（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某自然人拟投资证券期货经营机构的私募资产管理计划，其近3年本人年均收入45万元，家庭金融资产500万元，投资经历1年半。该投资者（）相应合格投资者条件，原因是（）。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题未指明私募资管计划，易与私募基金的合格投资者条件混淆；按原解析补足制度范围。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "5b0e133d3fa3",
+    "reason": "原解析错误否定基金经理的经验要求，且四个正确陈述没有全选项；修正I岗位称谓并补全D组合。",
+    "sources": [
+      "https://fg.amac.org.cn/governmentrules_3854/zcgz_zlgz/zlgz_cyry/zlgz_cyry_zzgl/202606/t20260617_27846.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "关于基金从业人员职业道德规范中的专业审慎，以下表述正确的是（）。Ⅰ基金管理公司的公司财务人员应具备基金会计知识和分析能力Ⅱ基金管理公司的基金销售人员应具备相关销售知识和执业能力Ⅲ基金管理公司的基金经理应具备相关投资管理能力和投资经验Ⅳ基金管理公司的监察稽核人员应理解并能够应用相关法律法规",
+      "options": [
+        "Ⅰ、Ⅲ、Ⅳ",
+        "Ⅱ、Ⅲ",
+        "Ⅲ、Ⅳ",
+        "Ⅰ、Ⅱ、Ⅳ"
+      ],
+      "explain": "Ⅲ项错误，专业审慎是调整基金从业人员与职业之间关系的道德规范。每种职业都要求其从业人员具备特定的职业技能。对基金经理无投资经验的要求。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "关于基金从业人员职业道德规范中的专业审慎，以下表述正确的是（）。\nⅠ.基金会计人员应具备基金会计知识和分析能力\nⅡ.基金销售人员应具备相关销售知识和执业能力\nⅢ.基金经理应具备相关投资管理能力和业务经验\nⅣ.监察稽核人员应理解并能够应用相关法律法规",
+      "options": [
+        "Ⅰ、Ⅲ、Ⅳ",
+        "Ⅱ、Ⅲ",
+        "Ⅲ、Ⅳ",
+        "Ⅰ、Ⅱ、Ⅲ、Ⅳ"
+      ],
+      "explain": "选D，四项均正确。专业审慎要求从业人员具备岗位所需的专业知识、技能和业务能力，并持续学习。基金经理同样有相关业务经验要求；基金经理注册规则明确要求投资管理、投资研究等相关业务经验，不能将“基金经理无投资经验要求”作为排除Ⅲ的理由。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原解析错误否定基金经理的经验要求，且四个正确陈述没有全选项；修正I岗位称谓并补全D组合。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://fg.amac.org.cn/governmentrules_3854/zcgz_zlgz/zlgz_cyry/zlgz_cyry_zzgl/202606/t20260617_27846.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "f114978acb4d",
+    "reason": "原题四个选项均为采集对象，无唯一答案；保留原选项并明确考查投资者子类别。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c106256/c1653941/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "证券期货市场中诚信信息的采集主体包括（）。",
+      "explain": "依据《证券期货市场诚信监督管理办法》，以下从事证券期货市场活动的公民、法人或者其他组织的诚信信息，记入诚信档案：（1）证券业从业人员、期货从业人员和基金从业人员；（2）证券期货市场投资者、交易者；（3）证券发行人、上市公司、全国中小企业股份转让系统挂牌公司、区域性股权市场挂牌转让证券的企业及其董事、监事、高级管理人员、主要股东、实际控制人；（4）区域性股权市场的运营机构及其董事、监事和高级管理人员，为区域性股权市场办理账户开立、资金存放、登记结算等业务的机构；（5）证券公司、期货公司、基金管理人、债券受托管理人、债券发行担保人及其董事、监事、高级管理人员、主要股东和实际控制人或者执行事务合伙人，合格境外机构投资者、合格境内机构投资者及其主要投资管理人员，境外证券类机构驻华代表机构及其总代表、首席代表；（6）会计师事务所、律师事务所、保荐机构、财务顾问机构、资产评估机构、投资咨询机构、信用评级机构、基金服务机构、期货合约交割仓库以及期货合约标的物质量检验检疫机构等证券期货服务机构及其相关从业人员；（7）为证券期货业务提供存管、托管业务的商业银行或者其他金融机构，及其存管、托管部门的高级管理人员；（8）为证券期货业提供信息技术服务或者软硬件产品的供应商；（9）为发行人、上市公司、全国中小企业股份转让系统挂牌公司提供投资者关系管理及其他公关服务的服务机构及其人员；（10）证券期货传播媒介",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "在证券期货市场诚信档案的采集对象中，下列哪项属于“证券期货市场投资者、交易者”这一类别？",
+      "explain": "选B。基金份额持有人属于投资者。基金公司销售人员、基金管理人的监事、基金托管部门高级管理人员也属于诚信档案采集对象，但分别属于从业人员、管理人有关人员、托管业务有关人员等类别；不能因本题选择B便认为其余人员不被采集。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题四个选项均为采集对象，无唯一答案；保留原选项并明确考查投资者子类别。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c106256/c1653941/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "8617e2060607",
+    "reason": "原C所列运营机构及监事同样在法定采集范围，与B形成双解；将C明确设为豁免记录的错误陈述。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c106256/c1653941/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "仅记录 QDII 机构本身，不记录其主要投资管理人员",
+        "境外机构驻华代表处的首席代表需被记录",
+        "区域性股权市场的运营机构及其监事需单独建档",
+        "为证券期货业提供信息技术服务或者软硬件产品的供应商可豁免记录"
+      ],
+      "explain": "依据《证券期货市场诚信监督管理办法》，以下从事证券期货市场活动的公民、法人或者其他组织的诚信信息，记入诚信档案：（1）证券业从业人员、期货从业人员和基金从业人员；（2）证券期货市场投资者、交易者；（3）证券发行人、上市公司、全国中小企业股份转让系统挂牌公司、区域性股权市场挂牌转让证券的企业及其董事、监事、高级管理人员、主要股东、实际控制人；（4）区域性股权市场的运营机构及其董事、监事和高级管理人员，为区域性股权市场办理账户开立、资金存放、登记结算等业务的机构；（5）证券公司、期货公司、基金管理人、债券受托管理人、债券发行担保人及其董事、监事、高级管理人员、主要股东和实际控制人或者执行事务合伙人，合格境外机构投资者、合格境内机构投资者及其主要投资管理人员（A项错误），境外证券类机构驻华代表机构及其总代表、首席代表（B项正确）；（6）会计师事务所、律师事务所、保荐机构、财务顾问机构、资产评估机构、投资咨询机构、信用评级机构、基金服务机构、期货合约交割仓库以及期货合约标的物质量检验检疫机构等证券期货服务机构及其相关从业人员；（7）为证券期货业务提供存管、托管业务的商业银行或者其他金融机构，及其存管、托管部门的高级管理人员；（8）为证券期货业提供信息技术服务或者软硬件产品的供应商（D项错误）；（9）为发行人、上市公司、全国中小企业股份转让系统挂牌公司提供投资者关系管理及其他公关服务的服务机",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "仅记录 QDII 机构本身，不记录其主要投资管理人员",
+        "境外机构驻华代表处的首席代表需被记录",
+        "区域性股权市场的运营机构及其监事可豁免诚信信息记录",
+        "为证券期货业提供信息技术服务或者软硬件产品的供应商可豁免记录"
+      ],
+      "explain": "选B。《证券期货市场诚信监督管理办法》第七条覆盖境外证券类机构驻华代表机构及其总代表、首席代表。QDII及其主要投资管理人员、区域性股权市场运营机构及其董事监事高管、有关信息技术服务或软硬件供应商也在采集范围内，A、C、D所称豁免或仅记录机构均不成立。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原C所列运营机构及监事同样在法定采集范围，与B形成双解；将C明确设为豁免记录的错误陈述。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c106256/c1653941/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "f8f3e40eacf7",
+    "reason": "原题及解析遗漏法律层级，错误宣称私募基金最高适用规范仅为行政法规；限定为列出的规范类型。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c106256/c1653941/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "私募基金适用法规中效力层级最高的是（）。",
+      "explain": "私募基金适用法规中效力层级由高至低为：行政法规、部门规章和规范性文件、自律规则。故本题选C项",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "在下列适用于私募基金的规范类型中，效力层级最高的是（）。",
+      "explain": "选C。在本题列出的规范类型中，行政法规的效力高于部门规章、规范性文件和自律规则。法律的效力高于行政法规；《证券投资基金法》等法律也可适用于相应私募基金活动，不能把“行政法规”误记为所有适用规范中的最高层级。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题及解析遗漏法律层级，错误宣称私募基金最高适用规范仅为行政法规；限定为列出的规范类型。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c106256/c1653941/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "1c4927106c7f",
+    "reason": "原D把契约型基金也归入合伙企业法人数规则，与错误选项B形成双错；仅保留合伙型适用范围。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "应该查证合格投资者身份后才能向其推销产品",
+        "风险承受能力弱的投资者只能购买高风险产品",
+        "私募基金募集需要执行合格投资者制度",
+        "契约型/合伙型私募基金的投资者人数应符合《合伙企业法》的规定"
+      ],
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "应该查证合格投资者身份后才能向其推销产品",
+        "风险承受能力弱的投资者只能购买高风险产品",
+        "私募基金募集需要执行合格投资者制度",
+        "合伙型私募基金的合伙人人数应符合《合伙企业法》的规定"
+      ],
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原D把契约型基金也归入合伙企业法人数规则，与错误选项B形成双错；仅保留合伙型适用范围。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "4939c3723b5b",
+    "reason": "原正确选项遗漏理财公司，与本题解析不一致；补全发行主体。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "options": [
+        "两者都由商业银行发行",
+        "银行理财产品由基金管理人发行",
+        "基金产品由商业银行或银行理财公司发行",
+        "银行理财产品由商业银行发行，基金由基金管理人发行"
+      ]
+    },
+    "after": {
+      "options": [
+        "两者都由商业银行发行",
+        "银行理财产品由基金管理人发行",
+        "基金产品由商业银行或银行理财公司发行",
+        "银行理财产品由商业银行或银行理财公司发行，基金由基金管理人发行"
+      ]
+    }
+  },
+  {
+    "id": "a67d1eb71282",
+    "reason": "将含糊的持有人比例改为解析明确的基金份额比例，避免把人数当作份额。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "options": [
+        "再次召集基金份额持有人大会的参加人数要求与首次召集没有区别",
+        "该次基金份额持有人大会有至少代表1/3的持有人参加即可召开",
+        "此次审议事项，仍然需要参加大会的基金份额持有人所持表决权的1/2通过",
+        "由于首次召集失败，再次召集的份额持有人大会应当依法采取现场方式"
+      ]
+    },
+    "after": {
+      "options": [
+        "再次召集基金份额持有人大会的参加人数要求与首次召集没有区别",
+        "该次基金份额持有人大会有代表1/3以上基金份额的持有人参加即可召开",
+        "此次审议事项，仍然需要参加大会的基金份额持有人所持表决权的1/2通过",
+        "由于首次召集失败，再次召集的份额持有人大会应当依法采取现场方式"
+      ]
+    }
+  },
+  {
+    "id": "6e5ade94eb56",
+    "reason": "基金还存在公司型和合伙型；按本题解析限定契约型，避免过度概括。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "在我国，基金的设立依据为（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "在我国，契约型证券投资基金的设立依据为（）。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "基金还存在公司型和合伙型；按本题解析限定契约型，避免过度概括。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "be73cc37acb3",
+    "reason": "原题没有明确观察主体，信用风险与流动性风险均可解释；明确正回购方自身筹资视角。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "交易双方达成一笔银行间债券回购业务，在回购到期日，正回购方因资金不足无法支付到期款项，该风险属于（）。",
+      "explain": "流动性风险是指因市场交易量不足，导致不能以合理价格及时进行证券交易的风险，或投资组合无法应付客户赎回要求所引起的违约风险。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "交易双方达成一笔银行间债券回购业务，在回购到期日，正回购方因资金调度不足无法支付到期款项。从正回购方自身筹措资金的角度看，该风险属于（）。",
+      "explain": "选B。从正回购方自身视角，不能及时筹措资金履约属于融资流动性风险；从逆回购方视角，对手未按约履约则体现交易对手信用风险。题干必须明确观察主体，不能把两种视角混为一谈。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题没有明确观察主体，信用风险与流动性风险均可解释；明确正回购方自身筹资视角。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "61608d550bcd",
+    "reason": "原A持续10日已包含持续5日，与D都触发终止；改A为仅单个工作日。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c101953/c6987995/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "持续10个工作日投资者少于2人",
+        "3个月内没有新的管理人承接",
+        "3个月内没有新的托管人承接",
+        "资产管理计划存续期届满且不展期"
+      ],
+      "explain": "有下列情形之一的，资产管理计划终止：（1）资产管理计划存续期届满且不展期；D项正确（2）证券期货经营机构被依法撤销资产管理业务资格或者依法解散、被撤销、被宣告破产，且在6个月内没有新的管理人承接；B项错误（3）托管人被依法撤销基金托管资格或者依法解散、被撤销、被宣告破产，且在6个月内没有新的托管人承接；C项错误（4）经全体投资者、证券期货经营机构和托管人协商一致决定终止的；（5）发生资产管理合同约定的应当终止的情形；（6）集合资产管理计划存续期间，持续5个工作日投资者少于2人；A项错误（7）法律、行政法规及中国证监会规定的其他情形。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "仅单个工作日投资者少于2人",
+        "3个月内没有新的管理人承接",
+        "3个月内没有新的托管人承接",
+        "资产管理计划存续期届满且不展期"
+      ],
+      "explain": "选D。存续期届满且不展期应终止；集合计划投资者少于2人须持续5个工作日才达到相应终止条件，A仅单个工作日未达到。管理人或托管人退出后未有新主体承接的期限为6个月，B、C的3个月不足。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原A持续10日已包含持续5日，与D都触发终止；改A为仅单个工作日。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c101953/c6987995/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "1f6e19421028",
+    "reason": "去除重复的“是”。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "是市场的核心是（），买方的需求和卖方的供给相互作用，决定了商品或服务的价格和数量。"
+    },
+    "after": {
+      "q": "市场的核心是（），买方的需求和卖方的供给相互作用，决定了商品或服务的价格和数量。"
+    }
+  },
+  {
+    "id": "f0e98a396450",
+    "reason": "根据信贷场景纠正OCR错字。 纠正选项OCR“目”为“且”。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "某商业银行在经济下行期，为降低不良贷款率，大幅缩减对小微企业的货款审批额度，却将更多信贷资源投向高收益的房地产短期融资项目，结合金融双重属性逻辑，该银行存在的问题是()。",
+      "options": [
+        "正确发挥了商业属性，目通过高收益项目反哺实体经济，符合双重属性要求",
+        "片面追求商业属性(盈利性)，弱化服务小微企业的功能属性，违背盈利服从功能的原则",
+        "平衡了功能属性与商业属性，但未考虑经济下行时的特殊市场环境",
+        "过度侧重功能属性，忽视服务实体经济需求，导致商业属性难以发挥"
+      ]
+    },
+    "after": {
+      "q": "某商业银行在经济下行期，为降低不良贷款率，大幅缩减对小微企业的贷款审批额度，却将更多信贷资源投向高收益的房地产短期融资项目，结合金融双重属性逻辑，该银行存在的问题是()。",
+      "options": [
+        "正确发挥了商业属性，且通过高收益项目反哺实体经济，符合双重属性要求",
+        "片面追求商业属性(盈利性)，弱化服务小微企业的功能属性，违背盈利服从功能的原则",
+        "平衡了功能属性与商业属性，但未考虑经济下行时的特殊市场环境",
+        "过度侧重功能属性，忽视服务实体经济需求，导致商业属性难以发挥"
+      ]
+    }
+  },
+  {
+    "id": "46bcaee8f2bb",
+    "reason": "保持公司型题题干；下项单独修选项。 去掉缺少后半句的“既”，不改变选项含义。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "关于公司型基金，以下表述错误的是（）。",
+      "options": [
+        "依据基金合同成立",
+        "通过出资形成独立的公司法人实体",
+        "基金的投资者既是基金份额持有人",
+        "基金投资者是基金公司的股东"
+      ]
+    },
+    "after": {
+      "q": "关于公司型基金，以下表述错误的是（）。",
+      "options": [
+        "依据基金合同成立",
+        "通过出资形成独立的公司法人实体",
+        "基金投资者是基金份额持有人",
+        "基金投资者是基金公司的股东"
+      ]
+    }
+  },
+  {
+    "id": "81fda17e78ad",
+    "reason": "纠正规章名称漏字。 按解析纠正OCR错字。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "基金经理王某在渠道交流中透露投资计划以促进其产品销售，私募基金销售人员李某得知该信息后，提前购买了王某拟投资的股票。王某的行为主要违反了《私募投资基金监管暂行办法》规定不得有行为中的(）。",
+      "options": [
+        "从事内幕交易",
+        "泄露因职务便利获取的未公开信息",
+        "玩忽职守，不按照规走履行职责",
+        "利用职务之便，为本人或投资者以外的人牟取利益，进行利益输送"
+      ]
+    },
+    "after": {
+      "q": "基金经理王某在渠道交流中透露投资计划以促进其产品销售，私募基金销售人员李某得知该信息后，提前购买了王某拟投资的股票。王某的行为主要违反了《私募投资基金监督管理暂行办法》规定不得有行为中的(）。",
+      "options": [
+        "从事内幕交易",
+        "泄露因职务便利获取的未公开信息",
+        "玩忽职守，不按照规定履行职责",
+        "利用职务之便，为本人或投资者以外的人牟取利益，进行利益输送"
+      ]
+    }
+  },
+  {
+    "id": "e36d85c291e1",
+    "reason": "纠正协会名称。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "关于中国证券基金投资协会发布的《基金募集机构投资者适当性管理实施指引（试行）》，以下说法正确的是（）。"
+    },
+    "after": {
+      "q": "关于中国证券投资基金业协会发布的《基金募集机构投资者适当性管理实施指引（试行）》，以下说法正确的是（）。"
+    }
+  },
+  {
+    "id": "7337afa5cc0c",
+    "reason": "按本题解析恢复明显OCR误识别。 按本题解析恢复内控目标措辞。 恢复本题解析对应的完整句序。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "基金管理人内部控制的总体目标包括（）。Ⅰ保证公司经营运作严格遵守股票甲有关法律法规和行业监管规则Ⅱ防范和化解经营风险，提高经营管理收益，实现公司的持续、稳定健康发展Ⅲ确保基金和基金管理人的财务和其他真实信息、准确、完整Ⅳ保障基金从业人员的利益"
+    },
+    "after": {
+      "q": "基金管理人内部控制的总体目标包括（）。Ⅰ保证公司经营运作严格遵守国家有关法律法规和行业监管规则Ⅱ防范和化解经营风险，提高经营管理效益，实现公司的持续、稳定健康发展Ⅲ确保基金和基金管理人的财务和其他信息真实、准确、完整、及时Ⅳ保障基金从业人员的利益"
+    }
+  },
+  {
+    "id": "eacaaaf37bdd",
+    "reason": "按本题解析纠正词序。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "基金管理人规范应当基金清算交割工作，在授权范围内，及时准确地完成基金清算，确保基金资产的安全。这一做法属于内部控制的（）要求。"
+    },
+    "after": {
+      "q": "基金管理人应当规范基金清算交割工作，在授权范围内，及时准确地完成基金清算，确保基金资产的安全。这一做法属于内部控制的（）要求。"
+    }
+  },
+  {
+    "id": "4972107f5762",
+    "reason": "按题干和解析明确是乙的妻子。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "options": [
+        "甲立即建议妻子在公司发现前尽快卖出所持有的证券",
+        "甲立即报告公司合规部门核查此事",
+        "甲立即向公司领导报告了此情况",
+        "甲立即提示乙应向公司进行证券投资申报"
+      ]
+    },
+    "after": {
+      "options": [
+        "甲立即建议乙的妻子在公司发现前尽快卖出所持有的证券",
+        "甲立即报告公司合规部门核查此事",
+        "甲立即向公司领导报告了此情况",
+        "甲立即提示乙应向公司进行证券投资申报"
+      ]
+    }
+  },
+  {
+    "id": "42f91bd2c357",
+    "reason": "清除OCR多余问号。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "?下列哪项不是当前信用体系建设的重点工作？（）"
+    },
+    "after": {
+      "q": "下列哪项不是当前信用体系建设的重点工作？（）"
+    }
+  },
+  {
+    "id": "578ead91d3bc",
+    "reason": "清除强调词周围的OCR问号。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "下列哪项信息?不?属于诚信档案必须记录的内容？（）"
+    },
+    "after": {
+      "q": "下列哪项信息不属于诚信档案必须记录的内容？（）"
+    }
+  },
+  {
+    "id": "29340c857656",
+    "reason": "清除OCR多余问号。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "下列情况中，应?被记入诚信档案的是（）。\nⅠ、会计师事务所获得证券业协会年度表彰\nⅡ、上市公司董事未履行公开承诺\nⅢ、投资者正常证券买卖亏损\nⅣ、期货公司被证监会采取监管措施"
+    },
+    "after": {
+      "q": "下列情况中，应被记入诚信档案的是（）。\nⅠ、会计师事务所获得证券业协会年度表彰\nⅡ、上市公司董事未履行公开承诺\nⅢ、投资者正常证券买卖亏损\nⅣ、期货公司被证监会采取监管措施"
+    }
+  },
+  {
+    "id": "7327ddb6463d",
+    "reason": "沪港通/深港通机制与此前已核查的1384410716f3、4615915b27ed、35ea25ba4d41同属科一4.1.e基金国际化业务，统一主章。",
+    "sources": [
+      "docs/chapter-classification-audit-2026-09-05.md"
+    ],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "金融市场与资产管理"
+    },
+    "after": {
+      "chapter": "基金市场参与主体及其从业人员的法规要求"
+    }
+  },
+  {
+    "id": "c24d69d2608f",
+    "reason": "题干为单选，但A风险评估疏漏、B温度控制需改进、C已设置巡查机制均能由场景支持；解析仅说“Ⅳ项错误”，疑原组合题解析与选项结构错配。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "题干为单选，但A风险评估疏漏、B温度控制需改进、C已设置巡查机制均能由场景支持；解析仅说“Ⅳ项错误”，疑原组合题解析与选项结构错配。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "faaea13de7ee",
+    "reason": "A学习掌握法规、B遵守法规、C监督他人行为均属守法合规要求；解析只称“Ⅳ项错误”，疑原组合题被错误拆成单选。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "A学习掌握法规、B遵守法规、C监督他人行为均属守法合规要求；解析只称“Ⅳ项错误”，疑原组合题被错误拆成单选。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "8c7251f0b3f3",
+    "reason": "答案C称协助银行分红避税合规，解析却称监管明令禁止；需核实案例发生时点、原题版本和分红决策依据，不能沿用相反结论计分。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "答案C称协助银行分红避税合规，解析却称监管明令禁止；需核实案例发生时点、原题版本和分红决策依据，不能沿用相反结论计分。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "85fba92e3c2c",
+    "reason": "将向投资总监/总经理合规汇报内幕信息以及向客户提供交易信息统判为泄密；未交代授权、信息公开状态或是否为客户本人交易，无法认定四项全部违法。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "将向投资总监/总经理合规汇报内幕信息以及向客户提供交易信息统判为泄密；未交代授权、信息公开状态或是否为客户本人交易，无法认定四项全部违法。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "616aaa768457",
+    "reason": "C建立持有人利益绑定机制与D按合同章程合理确定薪酬均可成立，解析仅用另一措辞否定D，没有证明D违反治理或合规要求。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "C建立持有人利益绑定机制与D按合同章程合理确定薪酬均可成立，解析仅用另一措辞否定D，没有证明D违反治理或合规要求。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "6f91ab8034fe",
+    "reason": "C期权无限期持有错误；B期货必须在到期前交割也过度绝对，D所有基金没有强制到期日也不成立，无法唯一选择C。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "C期权无限期持有错误；B期货必须在到期前交割也过度绝对，D所有基金没有强制到期日也不成立，无法唯一选择C。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "b514fb1d86ed",
+    "reason": "组合答案排除Ⅱ“私募基金要严格监管”，解析以私募监管不同于公募为由否定严格监管，逻辑不足，Ⅱ与Ⅰ、Ⅳ并不冲突。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "组合答案排除Ⅱ“私募基金要严格监管”，解析以私募监管不同于公募为由否定严格监管，逻辑不足，Ⅱ与Ⅰ、Ⅳ并不冲突。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "0e8afd99f502",
+    "reason": "A托管人根据需要向基金管理人提供本基金投资信息并非当然泄密；解析未区分正常履职信息交流与对外泄密，A与D可能同时成立。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "A托管人根据需要向基金管理人提供本基金投资信息并非当然泄密；解析未区分正常履职信息交流与对外泄密，A与D可能同时成立。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "8b47b3a92a00",
+    "reason": "D同时含金融市场和金融场所，其中金融市场明确为体系组成；题干仅问“不包含”，无法把这一混合选项整体排除，且“场所”缺少定义。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "D同时含金融市场和金融场所，其中金融市场明确为体系组成；题干仅问“不包含”，无法把这一混合选项整体排除，且“场所”缺少定义。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "6dff6bbc7241",
+    "reason": "原解析只检验100万元金额，遗漏管理人从业人员投资任职管理人所管基金的合格投资者例外。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c100028/c1002081/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "explain": "私募基金单只投资金额不低于100万元，且投资者须为合格投资者。甲60万、丙15万、丁10万均不足100万，不符合条件；乙以自有资金购买100万元，满足最低投资额要求，故选D。",
+      "contentRevision": 1,
+      "contentReview": null
+    },
+    "after": {
+      "explain": "选D。乙是该私募基金管理人的从业人员，并投资于任职管理人所管理的基金，属于《私募投资基金监督管理暂行办法》第十三条视为合格投资者的情形；其原先以自有资金购买100万元也符合材料约定的最低投资额。甲、丙、丁各自出资不足材料中的100万元门槛，不能通过凑资、借乙名义购买来规避合格投资者要求。不能仅凭“出资100万元”认定任意个人均为合格投资者。",
+      "contentRevision": 2,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原解析只检验100万元金额，遗漏管理人从业人员投资任职管理人所管基金的合格投资者例外。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c100028/c1002081/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "d9b6175b21f8",
+    "reason": "原解析“乙以自有资金代持他人份额”自相矛盾，按已还原案例改为本人及他人凑集资金。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c100028/c1002081/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "explain": "朋友圈属不特定对象渠道，公开推介违规（I）；拼凑资金实质是向不合格投资者募集并汇集资金（III）；乙以自有资金代持他人份额、借名购买违规（IV）。乙自身出资100万元购买基金不违规（II），故选I、III、IV。",
+      "contentRevision": 1,
+      "contentReview": null
+    },
+    "after": {
+      "explain": "选C（I、III、IV）。I，案例以微信朋友圈向不特定对象推介私募基金，违反非公开募集要求。III，甲、丙、丁凑集资金并借乙名义购买，不能用合并金额规避投资者适格性及单笔门槛。IV，乙将本人及他人凑集的资金以自己名义购买，属于违规汇集资金、借名投资。II，乙作为管理人的从业人员，原先以本人资金投资任职管理人所管理基金，不因该行为本身违规。",
+      "contentRevision": 2,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原解析“乙以自有资金代持他人份额”自相矛盾，按已还原案例改为本人及他人凑集资金。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c100028/c1002081/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "f644af842624",
+    "reason": "原题没有分布或评价标准，却无条件判定中位数更合理；改为可直接验算的极端值稳健性问题。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "中位数和均值中，评价结果更合理和贴近实际的是（）。",
+      "explain": "选项D正确：与另一个经常用来反映数据一般水平的统计量——均值相比，中位数的评价结果往往更为合理和贴近实际。（理解：在有极端值的情况下，中位数更能代表数据的整体水平。）选项ABC为干扰项",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "一组数据为1、2、3、4、100。若仅把最大值100增大为1000，下列哪一集中趋势指标保持不变，因此更不易受此极端值影响？（）",
+      "explain": "选D。两组数据的中位数均为3；均值由22变为202.0。这里比较的是对极端值的敏感性，不能无条件认定所有数据的中位数都比均值更合理。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题没有分布或评价标准，却无条件判定中位数更合理；改为可直接验算的极端值稳健性问题。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "dba7d6ba5f7b",
+    "reason": "原计算使用360天但题面未给约定；补充约定并删除与存货周转无关且异常的收入、净利润数据。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某公司2023年度财务数据如下：全年销售成本为6000万元，实现销售收入2000万元，年初存货余额为1200万元，年末存货余额为1800万元，当年实现净利润1500万元。则该公司2023年的存货周转天数为（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某公司2023年全年销售成本为6000万元，年初存货余额为1200万元，年末存货余额为1800万元。按一年360天计算，该公司的存货周转天数为（）。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原计算使用360天但题面未给约定；补充约定并删除与存货周转无关且异常的收入、净利润数据。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "65074abb78e7",
+    "reason": "原解析上尾定义前后相反，且未交代样本分位数插值方法；显式给定方法后复算。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某基金100个交易日的每日基金净值变化的基点值△（单位：点）从小到大排列为△（1）~△（100）。其中，△（91）~△（100）的值依次为：6.94，7.80，7.93，8.12，8.43，8.56，9.55，9.88，10.22，13.23，求△的上3.5%分位数（）。",
+      "explain": "分位数通常被用来研究随机变量X以特定概率（或者一组数据以特定比例）取得大于等于（或小于等于）某个值的情况。比如上40%分位数是指在一组数据中，即指代有40%的数据小于或等于该数值。25/40上分位数：从大到小排第（数据总数×比例）个数字。下分位数：从小到大排第（数据总数×比例）个数字。具体到这道题，求“上3.5%”，因此就是从大到小排第3.5个数字。如果不是整数，则取相邻两个整数位置的样本值的平均数，即第三大和第四大两个数值的平均数，（9.55+9.88）/2=9.715。综上，该题选A，选项BCD错误。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某基金100个交易日的每日基金净值变化的基点值△（单位：点）从小到大排列为△（1）~△（100）。其中，△（91）~△（100）的值依次为：6.94，7.80，7.93，8.12，8.43，8.56，9.55，9.88，10.22，13.23，本题约定：上尾分位位置按样本数乘尾部比例确定，非整数位置取相邻两位置样本值的均值。求△的上3.5%分位数（）。",
+      "explain": "选A。按题设的分位数约定，上尾位置=100×3.5%=3.5，取第三大与第四大观测值的均值，即(9.88+9.55)/2=9.715。样本分位数存在不同插值约定，本题结果依赖已明确给出的约定，不能把这一算法视为所有软件统一采用的方法。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原解析上尾定义前后相反，且未交代样本分位数插值方法；显式给定方法后复算。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "185a36c39f83",
+    "reason": "原题混同物价水平上升与通胀率上升，补准比较变量。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "若名义利率不变，当物价上升时，实际利率（）。",
+      "explain": "实际利率≈名义利率-通货膨胀率。名义利率不变、物价上升（通胀上升）时，实际利率下降，故选B。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "若名义利率不变，当通货膨胀率上升时，实际利率（）。",
+      "explain": "选B。按费雪关系，1+实际利率=(1+名义利率)/(1+通货膨胀率)；在通常的正价格水平条件下，名义利率不变而通胀率上升，实际利率下降。近似式为实际利率≈名义利率−通胀率。物价水平上升本身并不等同于通胀率比之前更高。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题混同物价水平上升与通胀率上升，补准比较变量。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "466e487d9eda",
+    "reason": "原A财务舞弊与B财务造假均符合定义，D财务失真亦有包含关系；替换为互斥干扰项。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c100028/c1444686/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "财务舞弊",
+        "财务造假",
+        "财务错误",
+        "财务失真"
+      ],
+      "explain": "财务舞弊指内部人员蓄意操纵、歪曲财务数据以误导投资者和利益相关方对公司财务状况的认知，强调主观故意。财务错误是无意的差错，失真/造假表述不及舞弊准确，故选A。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "财务舞弊",
+        "会计政策的合规变更",
+        "无意的会计差错",
+        "正常的财务分析"
+      ],
+      "explain": "选A。题目强调内部人员为误导利益相关方而蓄意操纵财务数据，属于财务舞弊。合规会计政策变更、无意差错和正常分析均不符合该主观故意及行为特征。原“财务造假”与财务舞弊在这一语境中重合，不能用作排除项。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原A财务舞弊与B财务造假均符合定义，D财务失真亦有包含关系；替换为互斥干扰项。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c100028/c1444686/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "7f7ee86e79af",
+    "reason": "原题发现在外为错字，现金股利及现金收购均可能不影响股本，限定行为后确保唯一答案。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "下列行为中，通常不会影响公司发现在外股本的是（）。",
+      "options": [
+        "兼并收购",
+        "分配股利",
+        "定向增发",
+        "发行债券"
+      ],
+      "explain": "影响公司发行在外股本的行为：首次公开发行、再融资、股票回购、股票拆分和分配股票股利、兼并收购和分拆等。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "下列行为中，通常不会改变公司发行在外普通股数量的是（）。",
+      "options": [
+        "增发普通股用于换股收购",
+        "分配股票股利",
+        "定向增发普通股",
+        "发行不可转换的普通债券"
+      ],
+      "explain": "选D。前三项均增加发行在外普通股数量。发行不可转换的普通债券形成债务，不直接增减普通股。现金股利、现金收购也可能不改变股数，因此必须明确股利、收购和债券类型。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题发现在外为错字，现金股利及现金收购均可能不影响股本，限定行为后确保唯一答案。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "c0c62c05f9fe",
+    "reason": "原C将净资产写为实际资产，与D每股净资产定义不一致，修正术语。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "股票的市场价格总是围绕其账面价值波动",
+        "股票的账面价值通常是财务报表的计算结果",
+        "股票的账面价值是每股股票所代表的实际资产的价值",
+        "股票的账面价值又称每股净资产"
+      ],
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "股票的市场价格总是围绕其账面价值波动",
+        "股票的账面价值通常是财务报表的计算结果",
+        "股票的账面价值是每股股票所代表的账面净资产价值",
+        "股票的账面价值又称每股净资产"
+      ],
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原C将净资产写为实际资产，与D每股净资产定义不一致，修正术语。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "3cef10daa73c",
+    "reason": "按解析纠正“违约金风险”误字。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "两种债券存在信用利差，主要是因为它们的（）不同。\nⅠ.到期期限\nⅡ.信用评级\nⅢ.票面利率\nⅣ.违约金风险"
+    },
+    "after": {
+      "q": "两种债券存在信用利差，主要是因为它们的（）不同。\nⅠ.到期期限\nⅡ.信用评级\nⅢ.票面利率\nⅣ.违约风险"
+    }
+  },
+  {
+    "id": "3012d399d3f4",
+    "reason": "原比较未固定到期收益率与付息条件，补足可比较假设。",
+    "sources": [
+      "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/yield-based-bond-duration-measures-and-properties"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "以下哪只债券的麦考利久期最长？（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "假设下列债券均为无嵌入期权、按年付息的固定利率债券，到期收益率同为5%，均刚付完当期利息。哪只债券的麦考利久期最长？（）",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原比较未固定到期收益率与付息条件，补足可比较假设。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/yield-based-bond-duration-measures-and-properties"
+        ]
+      }
+    }
+  },
+  {
+    "id": "c5645c3e12e1",
+    "reason": "按本题解析恢复重复错写的“提前赎回和再投资风险”并分行。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "债券投资面临的风险主要包括（）。\nⅠ、利率风险\nⅡ、通胀风险\nⅢ、流动性风险\nⅣ、再投资风险和再投资风险Ⅴ、信用风险"
+    },
+    "after": {
+      "q": "债券投资面临的风险主要包括（）。\nⅠ、利率风险\nⅡ、通胀风险\nⅢ、流动性风险\nⅣ、提前赎回和再投资风险\nⅤ、信用风险"
+    }
+  },
+  {
+    "id": "18c24a75bddb",
+    "reason": "混合使用麦考利和修正久期且把一阶近似当精确结果；明确修正久期、近似及百分点。",
+    "sources": [
+      "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/yield-based-bond-duration-measures-and-properties"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某债券的理论上的市场价格上涨了8%，其麦考利修正久期为2年，则其理论上的市场利率变动为（）。",
+      "options": [
+        "4%",
+        "-4%",
+        "-16%",
+        "16%"
+      ],
+      "explain": "根据久期的定义，债券价格的变化约等于久期乘以市场利率的变化率，方向相反，市场利率=-（债券价格变化/久期）=-（8%/2）=-4%。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某债券的修正久期为2年。忽略凸性，按久期的一阶线性近似，若其价格上涨8%，对应到期收益率的变动约为（）。",
+      "options": [
+        "上升4个百分点",
+        "下降4个百分点",
+        "下降16个百分点",
+        "上升16个百分点"
+      ],
+      "explain": "选B。价格相对变动ΔP/P≈−修正久期×收益率绝对变动Δy，因此Δy≈−8%/2=−4%，即下降4个百分点。这是忽略凸性的近似；不能把“麦考利久期”与“修正久期”混为一谈，也不是收益率相对下降4%。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "混合使用麦考利和修正久期且把一阶近似当精确结果；明确修正久期、近似及百分点。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/yield-based-bond-duration-measures-and-properties"
+        ]
+      }
+    }
+  },
+  {
+    "id": "e838c79652ef",
+    "reason": "原题未明确久期类型、利率绝对变动和近似条件，补足模型假设。",
+    "sources": [
+      "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/yield-based-bond-duration-measures-and-properties"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某基金管理人使用久期模型管理利率风险，当前基金久期为5年，当利率上升0.5%时，估计基金资产净值将（）。",
+      "explain": "根据久期的定义，基金净值的变化即约等于久期乘以市场利率的变化率，方向相反。因此，当市场利率上升0.5%时，该债券基金的资产净值将下跌5×0.5%=2.5%。故本题选B，选项ACD错误。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某债券基金使用修正久期模型管理利率风险，当前组合修正久期为5年。假设收益率曲线平行上移0.5个百分点，忽略凸性及其他因素，估计基金资产净值将（）。",
+      "explain": "选B。按一阶久期近似，净值相对变化≈−修正久期×收益率绝对变化=−5×0.005=−2.5%。因此估计下跌2.5%，并非精确预测。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题未明确久期类型、利率绝对变动和近似条件，补足模型假设。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/yield-based-bond-duration-measures-and-properties"
+        ]
+      }
+    }
+  },
+  {
+    "id": "04afeeb9ee91",
+    "reason": "清除完整题干被嵌套重复粘贴的乱码。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "若其他条件不变，标的资产价格的波动率越大，看涨期权价值（），看跌期权价值（选：若其他条件不变，标的资产价格的波动率越大，看涨期权价值（），看跌期权价值（）"
+    },
+    "after": {
+      "q": "若其他条件不变，标的资产价格的波动率越大，普通看涨期权价值（），普通看跌期权价值（）。"
+    }
+  },
+  {
+    "id": "34bd6b72a46e",
+    "reason": "原黄金、白银、铂金、铱均为贵金属，无法唯一选择；按商品类别重设干扰项。",
+    "sources": [
+      "https://edu.shfe.com.cn/knowledge/newmain/80.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "（）是贵金属类大宗商品的典型代表。",
+      "options": [
+        "黄金",
+        "白银",
+        "铂金",
+        "铱"
+      ],
+      "explain": "贵金属类大宗商品，通常具备相对较好的物理属性、高度的发展性和稀少等特点，其中，黄金是贵金属类大宗商品的典型代表。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "下列大宗商品中，属于贵金属的是（）。",
+      "options": [
+        "黄金",
+        "铜",
+        "原油",
+        "小麦"
+      ],
+      "explain": "选A。黄金属于贵金属；铜属于工业金属，原油属于能源，小麦属于农产品。白银、铂金等也属于贵金属，不能仅因教材举黄金为例而排除它们。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原黄金、白银、铂金、铱均为贵金属，无法唯一选择；按商品类别重设干扰项。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://edu.shfe.com.cn/knowledge/newmain/80.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "c64da5ee7c65",
+    "reason": "“内部信息”与“私人信息”在强式有效市场的信息集合中重合，原题不能以私人信息不属有效市场信息为由选择D；待对照教材原文重新设题。",
+    "sources": [
+      "https://rpc.cfainstitute.org/sites/default/files/-/media/documents/book/rf-publication/2003/rf-v2003-n2-3923-pdf.pdf"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "“内部信息”与“私人信息”在强式有效市场的信息集合中重合，原题不能以私人信息不属有效市场信息为由选择D；待对照教材原文重新设题。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://rpc.cfainstitute.org/sites/default/files/-/media/documents/book/rf-publication/2003/rf-v2003-n2-3923-pdf.pdf"
+        ]
+      }
+    }
+  },
+  {
+    "id": "27247781b11c",
+    "reason": "原A理性和D风险厌恶都属模型假设；限定考查风险态度。",
+    "sources": [
+      "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/portfolio-risk-return-part-1"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "投资组合理论的基本假设是（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "马科维茨投资组合理论中，关于投资者风险态度的基本假设是（）。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原A理性和D风险厌恶都属模型假设；限定考查风险态度。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/portfolio-risk-return-part-1"
+        ]
+      }
+    }
+  },
+  {
+    "id": "f65f998530c6",
+    "reason": "原正确选项及解析称指数基金提供稳定回报，易误导为保证收益；明确为跟踪基准。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "追求超额收益",
+        "提供稳定的市场回报",
+        "投资另类资产",
+        "承担高风险以博取高回报"
+      ],
+      "explain": "核心一卫星策略是一种广受认可的资产配置方法，其核心思想是将投资组合分为两个主要部分:一个较大的核心部分和一个较小的卫星部分。核心部分一般采用被动管理方式，在投资组合中通常占比60%~80%，通过低成本的指数基金或ETF来实现，旨在提供稳定的市场回报。卫星部门占比20%~40%，主要采用主动管理方式，通过投资于特定机会或另类资产来力求获取超额收益。综上，该题选B，选项ACD为干扰项。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "追求超额收益",
+        "以较低成本获取所跟踪市场的基准回报",
+        "投资另类资产",
+        "承担高风险以博取高回报"
+      ],
+      "explain": "选B。本题核心配置是被动管理的沪深300指数基金，其作用是以较低成本跟踪该市场基准；卫星部分用主动策略争取超额收益。指数基金仍随市场波动，不能保证稳定或正收益。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原正确选项及解析称指数基金提供稳定回报，易误导为保证收益；明确为跟踪基准。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "bf6b69d12f8c",
+    "reason": "原题只问卖空时可以下哪种指令，限价卖出等亦可；按原解析补足止损买入的目的和触发条件。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "当投资者卖空某股票时，可以下达（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "投资者已经卖空某股票，为在股价上涨触及设定价位时自动触发买入平仓、限制继续上涨带来的损失，可以下达（）。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题只问卖空时可以下哪种指令，限价卖出等亦可；按原解析补足止损买入的目的和触发条件。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "a7a0987d0a2e",
+    "reason": "原B仅给初始与最低净值，无法排除中途更高峰值，补上区间最高值条件。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "基金的最大回撤与指定的时间区间长短无关",
+        "某基金 2025 年 1 月 2 日成立，成立时基金净值为 1 元，净值于 2 月 28 日达到最小值0．85 元，则该基金成立两个月以来的最大回撤为 15%",
+        "最大回撤用于衡量基金经理对下行风险的控制能力",
+        "最大回撤只能衡量基金损失的大小，不能衡量损失发生的频率"
+      ],
+      "explain": "A错误：最大回撤是衡量投资组合下行风险的重要指标，它是指定区间内投资组合从最高点到最低点的跌幅。具体而言，最大回撤是在选定区间内任一历史时点往后推，产品净值达到最低点时的收益率回撤幅度的最大值。B正确：1-0.85=0.15，0.15/1?100%=15%。C正确：最大回撤可以在任何历史区间内计算，使其成为评估投资管理人控制下行风险能力的有力工具。D正确：最大回撤指标也有其局限性。它只能衡量损失的幅度，而不能衡量损失发生的概率、频率及持续时间。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "基金的最大回撤与指定的时间区间长短无关",
+        "某基金2025年1月2日成立，初始净值为1元，此后两个月内净值从未超过1元，并于2月28日达到区间最低值0.85元，则这两个月的最大回撤为15%",
+        "最大回撤用于衡量基金经理对下行风险的控制能力",
+        "最大回撤只能衡量基金损失的大小，不能衡量损失发生的频率"
+      ],
+      "explain": "选A。最大回撤取决于所选时间区间，是区间内从此前高点到随后低点的最大跌幅。B已明确区间最高净值为1元、后续最低为0.85元，故最大回撤=(1−0.85)/1=15%。若只给初始值和最低值而未排除中途更高峰值，无法确定最大回撤。C、D分别说明其下行风险用途及不反映发生频率的局限。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原B仅给初始与最低净值，无法排除中途更高峰值，补上区间最高值条件。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "f18885fc70c4",
+    "reason": "原题把VaR记为负收益阈值，却将“损失超过−0.5%”直接作损失金额比较，符号语义相反；并无分布、均值条件就断言震荡加剧必使尾部概率增加，无法可靠确认II、III组合。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "原题把VaR记为负收益阈值，却将“损失超过−0.5%”直接作损失金额比较，符号语义相反；并无分布、均值条件就断言震荡加剧必使尾部概率增加，无法可靠确认II、III组合。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "41fea5906c73",
+    "reason": "原题把1997年东南亚金融危机混入2008年且含“国内故事”错字，删除无关历史细节，保留不同评价区间的考点。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "2006年和2007年上证综指一路飘红，最高达到6124点，那个时候市场上的主要投资于股票的基金业绩表现大部分都很好，和2008年受美国次贷金融危机和东南亚金融危机的影响，国内故事一路下挫，上证综指也不例外，一路下跌最低到1664点，那一年市场上主要投资于市场股票的基金大部分都亏损严重，将2007年和2008年的同类基金放在一起比较评价是缺乏意义的，这体现了基金业绩评价对以下哪个因素的考虑？（）",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "2007年股票市场总体上涨，2008年市场总体下跌。将2007年和2008年的同类股票基金业绩直接放在一起比较而不考虑市场环境，缺乏可比性。这体现基金业绩评价应考虑以下哪个因素？（）",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题把1997年东南亚金融危机混入2008年且含“国内故事”错字，删除无关历史细节，保留不同评价区间的考点。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "f2aaf869ffcf",
+    "reason": "原结论缺少正β及正无风险收益率条件；补足条件并给出代数证明。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "基金N和基金M有相同的贝塔系数，基金N的收益率是基金M的两倍，基金N的特雷诺比率（）。",
+      "explain": "特雷诺比率衡量的是基金在单位系统性风险下的超额收益率，其计算公式为：Tp=（Rp-Rf）/βp，式中：Tp—特雷诺比率；Rp——基金收益率；Rf—无风险收益率；β—系统风险。本题中贝塔系数相等，假设N、M的基金平均收益率分别为20%、10%，无风险收益率为5%，贝塔系数为2，则N=（20%-5%）/2=7.5%，M=（10%-5%）/2=2.5%。7.5%/2.5%=3＞2，所以答案为N的特雷诺比率大于基金M的两倍。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "基金N和基金M有相同且为正的贝塔系数，两者采用同一正的无风险收益率。基金M的收益率高于无风险收益率，基金N的收益率是基金M的两倍，则基金N的特雷诺比率（）。",
+      "explain": "选C。设M收益率为r、共同β>0、无风险收益率f>0，则TN=(2r−f)/β，2TM=2(r−f)/β，因此TN−2TM=f/β>0。题设r>f还保证TM为正。原解析任选数值只能举例，不能证明无条件结论。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原结论缺少正β及正无风险收益率条件；补足条件并给出代数证明。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "047883e7bb55",
+    "reason": "原公式缺失且卡玛分子存在不同口径；把本题口径写入题面并删除无关夏普数据。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某基金的年化收益率为11%，无风险收益率为4%，卡玛比率为0.6，夏普比率为0.4。该基金的最大回撤为（）。",
+      "explain": "解析：卡玛比率衡量的是基金单位最大回撤所获得的超额收益，其计算公式为：式中：Cp—卡玛比率；Rp——基金在区间内的收益率；Rf——区间内的无风险收益率；MD—基金在区间内的最大回撤，一般用绝对值。Rp和Rf一般使用年化值。将公式转换可得：最大回撤MD=（Rp-Rf）/Cp=（11%-4%）/0.6≈11.67%。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某基金的年化收益率为11%，无风险收益率为4%。本题将卡玛比率定义为“年化超额收益率÷最大回撤绝对值”，其值为0.6。该基金的最大回撤约为（）。",
+      "explain": "选B。按题设定义，最大回撤=(11%−4%)/0.6≈11.67%。卡玛比率也有以年化收益率而非超额收益率为分子的口径，计算前必须明确约定；本题无需夏普比率。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原公式缺失且卡玛分子存在不同口径；把本题口径写入题面并删除无关夏普数据。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "042f9f513b5a",
+    "reason": "原题把股票资产与沪深300指数权重混用，指数基准不是实际资产；明确两类实际投资策略及期初权重。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某基金股票部分收益率为7.52%，沪深300指数的收益率为1.12%，假设该基金股票资产权重为70%，沪深300指数资产权重为30%，则该基金的收益率为（）。",
+      "explain": "使用加权平均的方法来计算基金的总收益率。该基金股票部分的收益率为7.52%，而沪深300指数的收益率为1.12%。基金中股票资产的权重是70%，沪深300指数资产的权重是30%。计算公式如下：基金总收益率=（股票收益率×股票权重）＋（指数牧益率×指数权重）故基金的收益率=7.52%×70%＋1.12%×30%=5.6%。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某投资组合期初将70%的资金投入主动股票策略，30%投入沪深300指数基金。期间两部分收益率分别为7.52%和1.12%，无外部现金流且不再平衡，则该投资组合期间收益率为（）。",
+      "explain": "选D。以期初资金权重加权：组合收益率=70%×7.52%+30%×1.12%=5.6%。这里的30%明确是实际持有的指数基金资产，不能把业绩比较基准本身当作基金资产。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题把股票资产与沪深300指数权重混用，指数基准不是实际资产；明确两类实际投资策略及期初权重。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "4e9c47bbdb85",
+    "reason": "原题“非交易型开放式交易指数基金”词序乱码；按解析清楚表达两类豁免产品。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "对于不收取销售服务费的某开放式基金产品（非货币市场基金），非交易型开放式交易指数基金，某投资人持续持有期为5日，基金管理人应对投资人收取不低于（）的赎回费。"
+    },
+    "after": {
+      "q": "对于某开放式基金（不属于货币市场基金或交易型开放式指数基金），投资人持续持有期为5日。基金管理人应对该投资人收取不低于（）的赎回费。"
+    }
+  },
+  {
+    "id": "1fc702f34818",
+    "reason": "原正确选项与解析计算值错误，按原题费率和净值重算为9383.06份。 明确中间步骤不舍入。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "9389.67 份",
+        "9523.81 份",
+        "9852.22 份",
+        "10000.00 份"
+      ],
+      "explain": "关键公式：净申购金额=申购金额/（1+申购费率）；申购份额=净申购金额/申购日基金份额净值题干中的关键信息：申购金额=10000元，申购费率=1.5%（即0.015），申购日基金份额净值=1.05元因此，净申购金额=10000/（1+1.5%）≈9852.22元申购份额=9852.22/1.05≈9389.67份。",
+      "contentRevision": null,
+      "contentReview": null,
+      "q": "某投资者在2024年5月20日通过基金销售平台申购某开放式基金，该投资者实际支付申购金额10000元，已知该基金当日申购费率为1.5%，申购日基金份额净值为1.05元，且该基金不收取赎回费及其他费用。该投资者此次申购可获得的基金份额约为（）。"
+    },
+    "after": {
+      "options": [
+        "9383.06 份",
+        "9523.81 份",
+        "9852.22 份",
+        "10000.00 份"
+      ],
+      "explain": "选A。净申购金额=10000/(1+1.5%)≈9852.2167元；申购份额=10000/[(1+1.5%)×1.05]≈9383.06份。原解析把9852.22÷1.05算为9389.67，属于算术错误。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原正确选项与解析计算值错误，按原题费率和净值重算为9383.06份。 明确中间步骤不舍入。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      },
+      "q": "某投资者在2024年5月20日通过基金销售平台申购某开放式基金，该投资者实际支付申购金额10000元，已知该基金当日申购费率为1.5%，申购日基金份额净值为1.05元，且该基金不收取赎回费及其他费用。假设计算中间步骤不舍入，该投资者此次申购可获得的基金份额约为（）。"
+    }
+  },
+  {
+    "id": "594b065beb34",
+    "reason": "纠正“股原型ETF”OCR错字。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "options": [
+        "权证交易",
+        "B股",
+        "债券竞价交易",
+        "单市场股原型ETF"
+      ],
+      "explain": "【核心考点未过期，表述已更新，为保证试题完整性予以保留，仅供参考】选项D错误：单市场股原型ETF不实行回转交易。选项ABC正确：证券的回转交易是指投资者买入的证券，经确认成交后，在交收完成前全部或部分卖出。根据我国现行的有关交易制度规定，【债券竞价交易】和【权证交易】实行当日回转交易，即投资者可以在交易日的任何营业时间内反向卖出已买入但未完成交收的债券和权证；【B股】实行次交易日起回转交易。深圳证券交易所对专项资产管理计划收益权份额协议交易也实行当日回转交易。"
+    },
+    "after": {
+      "options": [
+        "权证交易",
+        "B股",
+        "债券竞价交易",
+        "单市场股票型ETF"
+      ],
+      "explain": "【核心考点未过期，表述已更新，为保证试题完整性予以保留，仅供参考】选项D错误：单市场股票型ETF不实行回转交易。选项ABC正确：证券的回转交易是指投资者买入的证券，经确认成交后，在交收完成前全部或部分卖出。根据我国现行的有关交易制度规定，【债券竞价交易】和【权证交易】实行当日回转交易，即投资者可以在交易日的任何营业时间内反向卖出已买入但未完成交收的债券和权证；【B股】实行次交易日起回转交易。深圳证券交易所对专项资产管理计划收益权份额协议交易也实行当日回转交易。"
+    }
+  },
+  {
+    "id": "2fb3a901bffc",
+    "reason": "原D将应付证券误为应收证券，与本题解析相反，纠正后保留C唯一错误选项。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "证券的足额以单笔交易为最小单位，足额则全部交收，不足额不分拆交收",
+        "证券登记结算机构对每笔证券交易均独立结算，同一结算参与人的应收应付资金不轧差",
+        "证券登记结算机构作为买卖双方的共同对手方，提供交收担保",
+        "买卖双方结算参与人任何一方应付资金或应收证券不足的，则交收失败"
+      ],
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "证券的足额以单笔交易为最小单位，足额则全部交收，不足额不分拆交收",
+        "证券登记结算机构对每笔证券交易均独立结算，同一结算参与人的应收应付资金不轧差",
+        "证券登记结算机构作为买卖双方的共同对手方，提供交收担保",
+        "买卖双方结算参与人任何一方应付资金或应付证券不足的，则交收失败"
+      ],
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原D将应付证券误为应收证券，与本题解析相反，纠正后保留C唯一错误选项。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "91bbfb730b81",
+    "reason": "原选项无单位且管理费、托管费采用不同精度，明确单位与取舍约定。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "q": "A基金当日资产净值为105亿元，前一日资产净值是100亿元，年管理费率1.5%，年托管费率0.25%，当年天数365天，则当天计提的基金管理费和基金托管费为（）。"
+    },
+    "after": {
+      "q": "A基金当日资产净值为105亿元，前一日资产净值是100亿元，年管理费率1.5%，年托管费率0.25%，当年天数365天，则当天计提的基金管理费（取整至万元）和基金托管费（保留两位小数，单位万元）为（）。"
+    }
+  },
+  {
+    "id": "85d222919d8c",
+    "reason": "原D说达到0.5%应报告本身正确，不能以法定起报点0.25%否定；将其明确设为错误的排他门槛。",
+    "sources": [
+      "https://www.csrc.gov.cn/csrc/c101896/c1039133/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "基金管理公司应当制定估值及份额净值计价错误的识别及应急方案",
+        "基金管理公司在基金估值过程中未能遵循相关法律法规规定或基金合同约定给基金财产造成损失的，对其行为依法承担赔偿责任",
+        "基金托管人在基金估值复核过程中未能遵循相关法律法规规定或基金合同约定给基金财产造成损失的，对其行为依法承担赔偿责任",
+        "当估值或资产计价错误达到或超过基金资产净值的0.5%时，公募基金管理人应及时向中国证监会报告"
+      ],
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "基金管理公司应当制定估值及份额净值计价错误的识别及应急方案",
+        "基金管理公司在基金估值过程中未能遵循相关法律法规规定或基金合同约定给基金财产造成损失的，对其行为依法承担赔偿责任",
+        "基金托管人在基金估值复核过程中未能遵循相关法律法规规定或基金合同约定给基金财产造成损失的，对其行为依法承担赔偿责任",
+        "只有当估值或资产净值计价错误达到或超过基金资产净值的0.5%时，基金管理人才需报告；低于0.5%均无需报告"
+      ],
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原D说达到0.5%应报告本身正确，不能以法定起报点0.25%否定；将其明确设为错误的排他门槛。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/csrc/c101896/c1039133/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "f59e49d76431",
+    "reason": "按同题解析清除多余“基”并纠正“同一投资品种”。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "options": [
+        "基同一基金管理人对管理的不同基金持有的具有相同特征的统一投资品种使用一致的估值原则、程序及技术",
+        "基金年度报告与中期报告披露口径统一",
+        "不同基金管理人采用相同估值技术",
+        "基金托管人与基金管理人估值程序相同"
+      ]
+    },
+    "after": {
+      "options": [
+        "同一基金管理人对管理的不同基金持有的具有相同特征的同一投资品种使用一致的估值原则、程序及技术",
+        "基金年度报告与中期报告披露口径统一",
+        "不同基金管理人采用相同估值技术",
+        "基金托管人与基金管理人估值程序相同"
+      ]
+    }
+  },
+  {
+    "id": "21456ed08248",
+    "reason": "已实现收益需扣费用等，原题只列收入；补足其余项目为零的计算假设。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "2025年，某基金投资收益1．3亿元，公允价值变动损益9000万元，利息收入2900万元，其他收入200万元，则该基金当年的已实现收益是（）。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "2025年，某基金投资收益1．3亿元，公允价值变动损益9000万元，利息收入2900万元，其他收入200万元，假设无其他损益、相关费用、减值损失及税项，则该基金当年的已实现收益是（）。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "已实现收益需扣费用等，原题只列收入；补足其余项目为零的计算假设。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "0560178e75b4",
+    "reason": "原题比较对象不清且解析错误排除节后赎回者的假期收益；依第十五条明确比较并改D为C。",
+    "sources": [
+      "https://www.csrc.gov.cn/heilongjiang/c105404/c1268904/content.shtml"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "投资者持有某货币市场基金，该基金每日进行收益分配，投资者国庆长假前最后一个交易日赎回与国庆长假后第一个交易日赎回相比，能获得（）的收益。",
+      "answer": 3,
+      "explain": "《货币市场基金监督管理办法》规定，当日申购的基金份额应当自下一个交易日起享有基金的分配权益，当日赎回的基金份额自下一个交易日起不享有基金的分配权益，但中国证监会认定的特殊货币市场基金品种除外。投资者在法定节假日前最后一个开放日的利润将与整个节假日期间的利润合并后进行分配。法定节假日结束后第一个开放日起的分配规则同日常情况下的分配规则一样。投资者于法定节假日前最后一个开放日申购或转换转入的基金份额不享有该日和整个节假日期间的利润，投资者于法定节假日前最后一个开放日赎回或转换转出的基金份额享有该日和整个节假日期间的利润。因此，投资者在国庆长假前最后一个交易日赎回基金份额，那么投资者将享有该日和整个国庆长假期间的收益。投资者在国庆长假后第一个交易日赎回基金份额，那么投资者将不享有国庆长假期间的收益，只享有从国庆长假后第一个交易日开始的收益。差异是国庆长假期间的收益。综上，该题选D，选项ABC错误。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某普通货币市场基金每日分配收益，按当日赎回份额自下一个交易日起不再享有分配权益的规则办理。投资者在国庆长假前最后一个开放日有效赎回全部份额，与在长假后第一个开放日有效赎回相比，少享有下列哪一段收益？（）",
+      "answer": 2,
+      "explain": "选C。节前最后一个开放日赎回，仍享有赎回当日及整个假期的收益，自节后第一个交易日起不再享有收益；节后第一个开放日赎回，还享有该日收益，自再下一个交易日起停止。两者都享有假期收益，节前赎回少的是节后第一个交易日收益。原解析把节后赎回说成不享有假期收益，逻辑错误。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题比较对象不清且解析错误排除节后赎回者的假期收益；依第十五条明确比较并改D为C。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.csrc.gov.cn/heilongjiang/c105404/c1268904/content.shtml"
+        ]
+      }
+    }
+  },
+  {
+    "id": "be2f0410c1e6",
+    "reason": "原罗马编号断裂且解析沿用旧千分之一税率，整理编号并说明减半政策不改变原答案。",
+    "sources": [
+      "https://www.mof.gov.cn/jrttts/202308/t20230828_3904235.htm"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "有以下几项投资交易活动:\nⅠ.香港投资者通过基金互认买入内地基金份额\nⅡ.香港投资者通过基金互认卖出内地基金份额\nⅢ.某公募基金卖出股票\nⅣ.某私募基金买入股票V.某机构投资者卖出基金V\nI.某个人投资者卖出股票按照目前的税收政策，不需要缴纳印花税的是（）。",
+      "options": [
+        "Ⅰ、Ⅱ、Ⅳ、V",
+        "Ⅰ、Ⅱ、IV、V、VI",
+        "Ⅰ、Ⅱ、Ⅲ、IV、V、",
+        "Ⅲ、VI"
+      ],
+      "explain": "【试题已过期，为保证试题完整性予以保留，仅供参考】我国证券交易印花税只对出让方按千分之一征收，对受让方不再征收。即III、VI都需要缴纳印花税，IV买入股票不需要缴纳印花税。机构投资者跟个人投资者买卖基金份额暂免征收印花税，V不需缴纳。对香港市场投资者通过基金互认买卖、继承、赠予内地基金份额，按照内地现行税制规定，暂不征收印花税，I、II不需缴纳。综上，该题选A。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "有以下投资交易活动：\nⅠ.香港投资者通过基金互认买入内地基金份额\nⅡ.香港投资者通过基金互认卖出内地基金份额\nⅢ.某公募基金卖出股票\nⅣ.某私募基金买入股票\nⅤ.某机构投资者卖出基金份额\nⅥ.某个人投资者卖出股票\n按照目前的税收政策，不需要缴纳证券交易印花税的是（）。",
+      "options": [
+        "Ⅰ、Ⅱ、Ⅳ、Ⅴ",
+        "Ⅰ、Ⅱ、Ⅳ、Ⅴ、Ⅵ",
+        "Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ",
+        "Ⅲ、Ⅵ"
+      ],
+      "explain": "选A。股票交易的印花税由出让方承担，买入方不缴，因此Ⅲ、Ⅵ不在免缴情形中，Ⅳ不缴。基金份额交易的暂免安排适用于Ⅰ、Ⅱ、Ⅴ。自2023年8月28日起，证券交易印花税实施减半征收；这一税率调整不改变本题对纳税方向和基金份额暂免范围的判断。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原罗马编号断裂且解析沿用旧千分之一税率，整理编号并说明减半政策不改变原答案。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.mof.gov.cn/jrttts/202308/t20230828_3904235.htm"
+        ]
+      }
+    }
+  },
+  {
+    "id": "662744047215",
+    "reason": "原选项“承诺损失”与本题法规解析“承担损失”不一致，恢复准确措辞。",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "options": [
+        "虚假记载、误导性陈述或重大遗漏",
+        "违规承诺收益或者承诺损失",
+        "对证券投资业绩进行预测",
+        "对基金已披露内容进行更正"
+      ]
+    },
+    "after": {
+      "options": [
+        "虚假记载、误导性陈述或重大遗漏",
+        "违规承诺收益或者承担损失",
+        "对证券投资业绩进行预测",
+        "对基金已披露内容进行更正"
+      ]
+    }
+  },
+  {
+    "id": "34b3c7af1be6",
+    "reason": "原D货币市场基金包括上市货币ETF，不能全部排除；按是否上市明确范围。",
+    "sources": [
+      "https://www.sse.com.cn/disclosure/fund/announcement/c/new/2025-12-12/511900_20251212_IOQE.pdf"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "options": [
+        "封闭式基金",
+        "上市开放式基金（LOF）",
+        "交易型开放式指数基金（ETF）",
+        "货币市场基金"
+      ],
+      "explain": "目前，披露上市交易公告书的基金品种主要有封闭式基金（A）、上市开放式基金（LOF）（B）、交易型开放式指数基金（ETF）（C）和基础设施基金。选项D不包括：货币市场基金通常不在证券交易所上市交易。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "options": [
+        "上市封闭式基金",
+        "上市开放式基金（LOF）",
+        "交易型开放式指数基金（ETF）",
+        "仅在场外申购赎回、不上市交易的货币市场基金"
+      ],
+      "explain": "选D。上市交易公告书针对获准上市交易的基金份额。上市封闭式基金、LOF和ETF均涉及上市交易；D已明确不上市。货币市场基金也可能采用交易型产品形态并上市，因此不能笼统把所有货币市场基金排除。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原D货币市场基金包括上市货币ETF，不能全部排除；按是否上市明确范围。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.sse.com.cn/disclosure/fund/announcement/c/new/2025-12-12/511900_20251212_IOQE.pdf"
+        ]
+      }
+    }
+  },
+  {
+    "id": "c697c6c914db",
+    "reason": "原称私募基金管理人却采用证券期货机构私募资管计划的2年/40万元门槛；明确产品制度和其余前提。",
+    "sources": [
+      "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+    ],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "某私募基金管理人在核查投资者资质时，遇到以下四位投资者，其中符合合格投资者标准的是（）。",
+      "explain": "合格投资者是指具备相应风险识别能力和风险承担能力，投资于单只资产管理产品不低于一定金额且符合下列条件的自然人和法人或者其他组织。①具有2年以上投资经历（1年不符合，A错误），且满足以下条件之一：家庭金融净资产不低于300万元（D错误），家庭金融资产不低于500万元，或者近3年本人年均收入不低于40万元（C正确）。②最近1年末净资产不低于1000万元的法人单位（800万不符合要求，B错误）。③金融管理部门视为合格投资者的其他情形。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某证券期货经营机构核查私募资产管理计划投资者资质。假设各投资者均满足拟投计划的最低投资金额及风险识别、承担能力要求，仅按下列已知资产、收入和投资经历条件，符合该类计划合格投资者标准的是（）。",
+      "explain": "选C。证券期货经营机构私募资管计划的自然人投资者，需有2年以上投资经历，并满足家庭金融净资产至少300万元、家庭金融资产至少500万元或近3年本人年均收入至少40万元之一。A只有1年6个月经历；B单位净资产800万元未达1000万元；C的3年经历及年均收入45万元达标；D给出的家庭金融净资产200万元未达门槛。题干限定此类计划，不能套用为所有私募投资基金的统一门槛。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原称私募基金管理人却采用证券期货机构私募资管计划的2年/40万元门槛；明确产品制度和其余前提。",
+        "reviewedAt": "2026-09-08",
+        "sources": [
+          "https://www.cfachina.org/governmentrules/departmentregulations/202301/t20230116_35181.html"
+        ]
+      }
+    }
+  },
+  {
+    "id": "1c3330065b55",
+    "reason": "欧式期权题选项只有I—III组合，题干未提供各时间点；主代理已核对原PDF第16—17页第51题，原件同样缺失陈述，无法还原唯一答案。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "欧式期权题选项只有I—III组合，题干未提供各时间点；主代理已核对原PDF第16—17页第51题，原件同样缺失陈述，无法还原唯一答案。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "407e9024ecf1",
+    "reason": "Ⅳ“超额收益率”与Ⅴ“跟踪偏离度”均指组合减基准的逐期收益差，原解析无理由排除Ⅳ而保留Ⅴ，组合答案不唯一。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "Ⅳ“超额收益率”与Ⅴ“跟踪偏离度”均指组合减基准的逐期收益差，原解析无理由排除Ⅳ而保留Ⅴ，组合答案不唯一。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "2d7078bc4fb1",
+    "reason": "限价指令导致未成交可能包含延迟成本及机会成本；原题未规定成本分解体系或后续是否完成交易，无法唯一排除D。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "限价指令导致未成交可能包含延迟成本及机会成本；原题未规定成本分解体系或后续是否完成交易，无法唯一排除D。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "5b8ba983eb0b",
+    "reason": "原题只给市场价格下降而未给基金经理限价授权、盘口卖价和可成交量；无法唯一推出交易员必须报17元，18元限价也可能成交于更优价格。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "原题只给市场价格下降而未给基金经理限价授权、盘口卖价和可成交量；无法唯一推出交易员必须报17元，18元限价也可能成交于更优价格。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "463494e48567",
+    "reason": "2016年8月5日15:30为周五收市后，下一日8月6日为周六，原解析把周六当赎回开放日；缺少下一实际开放日净值，无法据题面计算。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "2016年8月5日15:30为周五收市后，下一日8月6日为周六，原解析把周六当赎回开放日；缺少下一实际开放日净值，无法据题面计算。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "93ffef27621e",
+    "reason": "四个选项均为亚洲证券交易所，“主要”未定义规模、市场或时期，不能只因教材未列其他三个便唯一选择新加坡。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "四个选项均为亚洲证券交易所，“主要”未定义规模、市场或时期，不能只因教材未列其他三个便唯一选择新加坡。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "5aa5d936ef6d",
+    "reason": "保证金、当日无负债结算及风险准备金均承担风险控制作用；笼统问“用于应对市场风险”不能唯一定位风险准备金，缺少该制度的资金提取及应急补偿特征。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "pending",
+        "invalidatesPriorRecords": true,
+        "reason": "保证金、当日无负债结算及风险准备金均承担风险控制作用；笼统问“用于应对市场风险”不能唯一定位风险准备金，缺少该制度的资金提取及应急补偿特征。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  },
+  {
+    "id": "7605c7b23692",
+    "reason": "题目问QDII募集时可用计价货币，按募集认购的具体规则归类；第2章仅保留QDII概念与一般特征。 大纲13.1.a；tmp/ref/k2_jingjiang.txt:18293",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "基金的类型"
+    },
+    "after": {
+      "chapter": "基金的募集、交易与登记"
+    }
+  },
+  {
+    "id": "e6104ea6929d",
+    "reason": "题目问募集时计价货币的排除项，与同考点7605c7b23692统一到募集认购章。 大纲13.1.a；tmp/ref/k2_jingjiang.txt:18312",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "基金的类型"
+    },
+    "after": {
+      "chapter": "基金的募集、交易与登记"
+    }
+  },
+  {
+    "id": "5a0522ce30c6",
+    "reason": "直接问银行间债券结算业务类型及回购期所有权，主考点为结算业务；货币工具的一般定义仍可保留第5章。 大纲14.2.a；tmp/ref/k2_jingjiang.txt:20885",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "固定收益投资"
+    },
+    "after": {
+      "chapter": "基金的投资交易与结算"
+    }
+  },
+  {
+    "id": "eb98dfd93785",
+    "reason": "正确选择依赖佣金上限的具体收费规则，不是交易执行显性/隐性成本分类，按场内结算费用项目归第14章。 大纲14.1.b；tmp/ref/k2_jingjiang.txt:20049",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "投资交易管理"
+    },
+    "after": {
+      "chapter": "基金的投资交易与结算"
+    }
+  },
+  {
+    "id": "2f75a506ae2b",
+    "reason": "问实际买入股票是否缴纳特定税费，按第14章场内交易具体费用与征收方向归类；不问最佳执行或成本类别。 大纲14.1.b；tmp/ref/k2_jingjiang.txt:20097",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "投资交易管理"
+    },
+    "after": {
+      "chapter": "基金的投资交易与结算"
+    }
+  },
+  {
+    "id": "2fabd34da36d",
+    "reason": "题干明确问投资者收益目标，第18章直接定义绝对/相对收益目标；解析借用业绩基准解释不改变主考点。 大纲18.1.c；tmp/ref/k2_jingjiang.txt:24624",
+    "sources": [],
+    "invalidatesPriorRecords": false,
+    "before": {
+      "chapter": "投资管理流程"
+    },
+    "after": {
+      "chapter": "基金销售基础知识"
+    }
+  },
+  {
+    "id": "249143cf42ad",
+    "reason": "原题未限制债券基金的币种敞口，却排除汇率风险；明确境内人民币债券且无外币敞口，与原答案适用条件一致。",
+    "sources": [],
+    "invalidatesPriorRecords": true,
+    "before": {
+      "q": "债券基金主要具有的风险有（）。\nⅠ．汇率风险\nⅡ．利率风险\nⅢ．信用风险\nⅣ．提前赎回风险",
+      "explain": "本题旨在考查债券基金主要具有的风险。Ⅱ、Ⅲ、Ⅳ正确：债券基金的主要投资风险包括利率风险、信用风险、流动性风险、再投资风险、可转债的特定风险、债券回购风险和提前赎回风险等。Ⅰ错误：汇率风险主要是针对投资于海外市场的基金综上，该题选C。",
+      "contentRevision": null,
+      "contentReview": null
+    },
+    "after": {
+      "q": "某债券基金仅投资境内人民币计价债券，且无任何外币敞口。下列哪些属于该基金可能面临的主要风险？（）\nⅠ．汇率风险\nⅡ．利率风险\nⅢ．信用风险\nⅣ．提前赎回风险",
+      "explain": "选C（Ⅱ、Ⅲ、Ⅳ）。在题设无外币敞口的条件下，汇率变动不直接造成外币资产折算损益；利率变化、发行人信用状况及债券提前赎回仍可能影响组合。债券基金还可能面临流动性、再投资等风险，跨境或有外币敞口的债券基金也可能面临汇率风险。",
+      "contentRevision": 1,
+      "contentReview": {
+        "status": "verified",
+        "invalidatesPriorRecords": true,
+        "reason": "原题未限制债券基金的币种敞口，却排除汇率风险；明确境内人民币债券且无外币敞口，与原答案适用条件一致。",
+        "reviewedAt": "2026-09-08",
+        "sources": []
+      }
+    }
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "7605c7b23692",
+    "subject": "科目二",
+    "before": "基金的类型",
+    "after": "基金的募集、交易与登记",
+    "outlinePoint": "13.1.a",
+    "evidence": "tmp/ref/k2_jingjiang.txt:18293",
+    "reason": "题目问QDII募集时可用计价货币，按募集认购的具体规则归类；第2章仅保留QDII概念与一般特征。"
+  },
+  {
+    "id": "e6104ea6929d",
+    "subject": "科目二",
+    "before": "基金的类型",
+    "after": "基金的募集、交易与登记",
+    "outlinePoint": "13.1.a",
+    "evidence": "tmp/ref/k2_jingjiang.txt:18312",
+    "reason": "题目问募集时计价货币的排除项，与同考点7605c7b23692统一到募集认购章。"
+  },
+  {
+    "id": "5a0522ce30c6",
+    "subject": "科目二",
+    "before": "固定收益投资",
+    "after": "基金的投资交易与结算",
+    "outlinePoint": "14.2.a",
+    "evidence": "tmp/ref/k2_jingjiang.txt:20885",
+    "reason": "直接问银行间债券结算业务类型及回购期所有权，主考点为结算业务；货币工具的一般定义仍可保留第5章。"
+  },
+  {
+    "id": "eb98dfd93785",
+    "subject": "科目二",
+    "before": "投资交易管理",
+    "after": "基金的投资交易与结算",
+    "outlinePoint": "14.1.b",
+    "evidence": "tmp/ref/k2_jingjiang.txt:20049",
+    "reason": "正确选择依赖佣金上限的具体收费规则，不是交易执行显性/隐性成本分类，按场内结算费用项目归第14章。"
+  },
+  {
+    "id": "2f75a506ae2b",
+    "subject": "科目二",
+    "before": "投资交易管理",
+    "after": "基金的投资交易与结算",
+    "outlinePoint": "14.1.b",
+    "evidence": "tmp/ref/k2_jingjiang.txt:20097",
+    "reason": "问实际买入股票是否缴纳特定税费，按第14章场内交易具体费用与征收方向归类；不问最佳执行或成本类别。"
+  },
+  {
+    "id": "2fabd34da36d",
+    "subject": "科目二",
+    "before": "投资管理流程",
+    "after": "基金销售基础知识",
+    "outlinePoint": "18.1.c",
+    "evidence": "tmp/ref/k2_jingjiang.txt:24624",
+    "reason": "题干明确问投资者收益目标，第18章直接定义绝对/相对收益目标；解析借用业绩基准解释不改变主考点。"
+  }
+]

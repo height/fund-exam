@@ -1,6 +1,9 @@
+// 待核查题保留原文和历史，但不再进入练习或计分题池。
+export const isQuestionActive = q => q?.contentReview?.status !== 'pending'
+
 // 题面修订不意味着考生答错；旧版作答单独留存，不能混入新版掌握度。
 export function staleQuestion(q, revision = 0) {
-  return !!q?.materialReview?.invalidatesPriorRecords && revision < q.contentRevision
+  return !!(q?.materialReview?.invalidatesPriorRecords || q?.contentReview?.invalidatesPriorRecords) && revision < q.contentRevision
 }
 export function reconcileRecord(record, q) {
   if (!staleQuestion(q, record.contentRevision)) return record
@@ -8,11 +11,13 @@ export function reconcileRecord(record, q) {
     qid: record.qid, subject: record.subject, contentRevision: q.contentRevision,
     seen: 0, right: 0, wrong: 0, wrongFlag: false, lastTs: 0,
     superseded: [...(record.superseded || []), { ...record, superseded: undefined }],
-    correctionReason: '原题缺少材料，旧版作答已作废并留存备份；请按完整题面重做。',
+    correctionReason: q.contentReview
+      ? `题目复核：${q.contentReview.reason}。旧版作答已作废并留存备份；${isQuestionActive(q) ? '请按修订题面重做。' : '核实前暂停练习和计分。'}`
+      : '原题缺少材料，旧版作答已作废并留存备份；请按完整题面重做。',
   }
 }
 export function reconcileExam(exam, lookup) {
-  const invalid = exam.ids.filter(id => staleQuestion(lookup(id), exam.questionRevisions?.[id]))
+  const invalid = exam.ids.filter(id => !isQuestionActive(lookup(id)) || staleQuestion(lookup(id), exam.questionRevisions?.[id]))
   if (!invalid.length) return exam
   const ids = exam.ids.filter(id => !invalid.includes(id))
   const answers = Object.fromEntries(Object.entries(exam.answers).filter(([id]) => ids.includes(id)))
