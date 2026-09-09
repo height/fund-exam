@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, PASS, chapterStats, minutesFor } from '../lib/bank'
 import { useStore } from '../lib/store'
+import { CHAPTER_DETAILS } from '../data/chapters'
 
 /*
  * 章节练习：按官方教材目录列章，点一章直接练或直接考。
@@ -23,7 +24,7 @@ export default function Chapters({ go }) {
       <PageHeader
         variant="subpage"
         title="章节练习"
-        subtitle={`按教材目录推进 · 已做 ${done}/${total} 题`}
+        subtitle={`按新版教材目录推进 · 已做 ${done}/${total} 题`}
         onBack={() => go('home')}
         backLabel="首页"
       />
@@ -60,7 +61,7 @@ export default function Chapters({ go }) {
               <small className="muted">
                 {c.total
                   ? <>
-                      {c.total} 题
+                      {CHAPTER_DETAILS[subject][c.chapter].sections.length} 节 · {c.total} 题
                       {c.done ? ` · 做过 ${c.done}` : ' · 没做过'}
                       {mode === 'exam' && ` · 考 ${Math.min(CHAPTER_EXAM_N, c.total)} 题 ${minutesFor(Math.min(CHAPTER_EXAM_N, c.total))} 分钟`}
                     </>

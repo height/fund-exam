@@ -1,0 +1,747 @@
+[
+  {
+    "id": "7a56eddede56",
+    "subject": "科目一",
+    "before": "基金活动的法规要求",
+    "after": "基金法律法规体系和监管体系",
+    "section": "基金监管",
+    "sectionId": "3.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      38
+    ],
+    "reason": "问人民银行作为监管机关的反洗钱职责，对应基金监管；机构履行客户尽调等具体义务才归第五章。"
+  },
+  {
+    "id": "27af23cd7727",
+    "subject": "科目一",
+    "before": "基金市场参与主体及其从业人员的法规要求",
+    "after": "基金法律法规体系和监管体系",
+    "section": "基金监管",
+    "sectionId": "3.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      36,
+      37
+    ],
+    "reason": "问证监会行政监管措施的类型，对应监管职责与措施，并非管理人的准入或退出程序。"
+  },
+  {
+    "id": "aaa3403ced7a",
+    "subject": "科目一",
+    "before": "基金活动的法规要求",
+    "after": "基金管理人的合规管理、风险管理和内部控制",
+    "section": "风险管理",
+    "sectionId": "6.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      124
+    ],
+    "reason": "问洗钱和恐怖融资风险管理的目的，讲义明确列在第六章风险分类和管理措施。"
+  },
+  {
+    "id": "00f1746e7375",
+    "subject": "科目一",
+    "before": "基金管理人的合规管理、风险管理和内部控制",
+    "after": "基金市场参与主体及其从业人员的法规要求",
+    "section": "私募基金管理人应当遵守的法律规定",
+    "sectionId": "4.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      54
+    ],
+    "reason": "私募管理人外包年度风险评估在第四章私募基金管理人的治理中直接讲解。"
+  },
+  {
+    "id": "f39fed85ba8f",
+    "subject": "科目一",
+    "before": "基金管理人的合规管理、风险管理和内部控制",
+    "after": "基金市场参与主体及其从业人员的法规要求",
+    "section": "私募基金管理人应当遵守的法律规定",
+    "sectionId": "4.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      54
+    ],
+    "reason": "问私募管理人授权覆盖范围，对应其治理和业务控制要求；不是一般内控原则题。"
+  },
+  {
+    "id": "9c3740a10e80",
+    "subject": "科目一",
+    "before": "基金活动的法规要求",
+    "after": "金融市场与资产管理",
+    "section": "资产管理",
+    "sectionId": "1.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      11,
+      12
+    ],
+    "reason": "问标准化债权类资产的判定条件，属于资管行业产品资产分类，没有询问某项基金运作限制。"
+  },
+  {
+    "id": "11b70dd63b4c",
+    "subject": "科目一",
+    "before": "基金市场参与主体及其从业人员的法规要求",
+    "after": "基金活动的法规要求",
+    "section": "公募基金管理规范",
+    "sectionId": "5.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      82,
+      83
+    ],
+    "reason": "考份额发售前托管人在网站登载的披露文件和时点，对应第五章主要当事人披露义务。"
+  },
+  {
+    "id": "3ae8a003b256",
+    "subject": "科目一",
+    "before": "基金概述",
+    "after": "基金活动的法规要求",
+    "section": "私募资产管理计划管理规范",
+    "sectionId": "5.2",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      87
+    ],
+    "reason": "问单一私募资管计划不聘托管机构的合同条件，对应私募资管计划运作规范。"
+  },
+  {
+    "id": "4939c3723b5b",
+    "subject": "科目一",
+    "before": "金融市场与资产管理",
+    "after": "基金概述",
+    "section": "基金的概念",
+    "sectionId": "2.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      20,
+      21
+    ],
+    "reason": "明确比较银行理财与基金发行主体，定位基金与其他金融品种的比较。"
+  },
+  {
+    "id": "8e6216049fa1",
+    "subject": "科目一",
+    "before": "金融市场与资产管理",
+    "after": "基金概述",
+    "section": "基金的概念",
+    "sectionId": "2.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      20
+    ],
+    "reason": "直接与间接投资工具的区分在基金与股票、债券的差异中讲解；金融市场直接与间接融资是另一分类维度。"
+  },
+  {
+    "id": "5f09a8b9a46b",
+    "subject": "科目一",
+    "before": "金融市场与资产管理",
+    "after": "基金概述",
+    "section": "基金的概念",
+    "sectionId": "2.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      20
+    ],
+    "reason": "问股票体现的股东权利关系，按基金、股票、债券的法律性质比较定位，与同组品种比较题统一。"
+  },
+  {
+    "id": "1599b818bfc2",
+    "subject": "科目一",
+    "before": "基金市场参与主体及其从业人员的法规要求",
+    "after": "基金概述",
+    "section": "基金的概念",
+    "sectionId": "2.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      19,
+      20
+    ],
+    "reason": "破产清算情境考的是基金财产与管理人自有财产的独立，归基金特点；不考管理人退出流程。"
+  },
+  {
+    "id": "12cb44107791",
+    "subject": "科目一",
+    "before": "基金市场参与主体及其从业人员的法规要求",
+    "after": "基金活动的法规要求",
+    "section": "公募基金管理规范",
+    "sectionId": "5.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      75
+    ],
+    "reason": "选择依赖销售业务禁止代客下单的行为边界，按公募销售业务规则统一主章；第四章执业规范与第七章诚实守信也有交叉。"
+  },
+  {
+    "id": "4c027cf39dfd",
+    "subject": "科目一",
+    "before": "基金职业道德规范",
+    "after": "基金活动的法规要求",
+    "section": "公募基金管理规范",
+    "sectionId": "5.1",
+    "status": "corrected",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      75,
+      80
+    ],
+    "reason": "直接询问宣传推介和销售业务的禁止行为，统一到第五章销售与宣传规范；题目不要求辨认六类道德规范。"
+  },
+  {
+    "id": "1dbe8e47125e",
+    "subject": "科目二",
+    "before": "基金的估值、费用与会计核算",
+    "after": "基金的信息披露",
+    "section": "基金运作信息披露",
+    "sectionId": "17.4",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      161,
+      162
+    ],
+    "reason": "问货币基金影子定价偏离阈值触发的调整措施，讲义在第十七章偏离度公告专门成组列示；一般公允估值原则仍归第十五章。"
+  },
+  {
+    "id": "3833202bc0d6",
+    "subject": "科目二",
+    "before": "衍生工具",
+    "after": "基金的投资交易与结算",
+    "section": "基金参与其他市场投资的交易与结算",
+    "sectionId": "14.3",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      142,
+      143
+    ],
+    "reason": "全部选项聚焦中金所结算保证金制度及结算账户，归具体市场结算规则；期货的一般定义和功能仍归第六章。"
+  },
+  {
+    "id": "318e8fa02808",
+    "subject": "科目二",
+    "before": "权益投资",
+    "after": "衍生工具",
+    "section": "期权合约",
+    "sectionId": "6.4",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      58,
+      60
+    ],
+    "reason": "欧式认沽权证案例实际考期权买方行权时间与卖出权，正文对应期权合约；不能因标的是股票归入权益投资。"
+  },
+  {
+    "id": "1383288da4a6",
+    "subject": "科目二",
+    "before": "权益投资",
+    "after": "基金的投资交易与结算",
+    "section": "基金参与证券交易所二级市场的交易与结算",
+    "sectionId": "14.1",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      136,
+      137
+    ],
+    "reason": "计算除权参考价，讲义第十四章场内证券交易特别规定给出对应公式；股本行为的一般影响归第四章。"
+  },
+  {
+    "id": "fcab5174d251",
+    "subject": "科目二",
+    "before": "固定收益投资",
+    "after": "投资组合管理",
+    "section": "主动投资",
+    "sectionId": "9.5",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      86,
+      87
+    ],
+    "reason": "讲义将所得免疫和价格免疫放在债券投资组合管理的负债目标策略中；第五章讲单券条款、估值和利率风险。"
+  },
+  {
+    "id": "6e65a8d72ea3",
+    "subject": "科目二",
+    "before": "固定收益投资",
+    "after": "投资组合管理",
+    "section": "主动投资",
+    "sectionId": "9.5",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      86,
+      87
+    ],
+    "reason": "以负债需求为目标的债券免疫策略归主动债券投资组合管理，与免疫策略题组统一。"
+  },
+  {
+    "id": "fdf95710e59d",
+    "subject": "科目二",
+    "before": "固定收益投资",
+    "after": "投资组合管理",
+    "section": "主动投资",
+    "sectionId": "9.5",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      87
+    ],
+    "reason": "直接考所得免疫满足预期现金支付的目标，主章为投资组合管理，不是单券估值。"
+  },
+  {
+    "id": "6f3ffca71c20",
+    "subject": "科目二",
+    "before": "固定收益投资",
+    "after": "投资管理基础",
+    "section": "货币的时间价值与利率",
+    "sectionId": "3.3",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      29
+    ],
+    "reason": "远期利率反映未来利率预期及政策参考作用，正文定位第三章即期与远期利率；题目没有考债券收益率曲线形状。"
+  },
+  {
+    "id": "3328bde972c3",
+    "subject": "科目二",
+    "before": "固定收益投资",
+    "after": "投资风险管理",
+    "section": "不同类型基金的风险管理",
+    "sectionId": "11.3",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      107,
+      108
+    ],
+    "reason": "用债券基金持仓中企业债占比比较违约冲击，考不同类型基金信用风险暴露，归投资风险管理。"
+  },
+  {
+    "id": "26f4c241c996",
+    "subject": "科目二",
+    "before": "基金的募集、交易与登记",
+    "after": "基金销售基础知识",
+    "section": "基金销售机构、策略和业务规范",
+    "sectionId": "18.2",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      171
+    ],
+    "reason": "问怎样设计费用引导长期持有，属于销售价格策略，不是赎回办理流程或费用计算。"
+  },
+  {
+    "id": "042f9f513b5a",
+    "subject": "科目二",
+    "before": "基金业绩评价",
+    "after": "投资组合管理",
+    "section": "现代投资组合理论",
+    "sectionId": "9.1",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      71
+    ],
+    "reason": "修订后题面明确为两种实际资产的期初权重加权收益，属于组合收益率计算；不再是业绩基准比较或管理人评价。"
+  },
+  {
+    "id": "cc7f57ab3d02",
+    "subject": "科目二",
+    "before": "投资风险管理",
+    "after": "权益投资",
+    "section": "权益类证券",
+    "sectionId": "4.2",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      34,
+      35
+    ],
+    "reason": "答案由可转换债券的转换价格与转股权决定，基金风险只是情境；主考点是可转债基本条款。"
+  },
+  {
+    "id": "aee57125f42e",
+    "subject": "科目二",
+    "before": "证券投资基金概述",
+    "after": "基金的类型",
+    "section": "证券投资基金分类概述",
+    "sectionId": "2.1",
+    "status": "corrected",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      10,
+      14
+    ],
+    "reason": "比较开放式、封闭式和ETF的运作及交易模式，归基金分类；并非基金生命周期的一般环节。"
+  },
+  {
+    "id": "5f54daf00e96",
+    "subject": "科目二",
+    "before": "投资组合管理",
+    "after": "投资组合管理",
+    "section": "资本市场理论",
+    "sectionId": "9.2",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      77,
+      78
+    ],
+    "reason": "β系数在第九章与第十一章均有直接内容，题目以β敏感性选择组合，保留资本市场理论主章。"
+  },
+  {
+    "id": "f0e855ac6eb8",
+    "subject": "科目二",
+    "before": "投资组合管理",
+    "after": "投资组合管理",
+    "section": "资本市场理论",
+    "sectionId": "9.2",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      77,
+      78
+    ],
+    "reason": "β符号与大小对市场敏感性的含义在第九章有直接依据，不能因第十一章措辞更相似而迁移。"
+  },
+  {
+    "id": "79b42d5a4d3f",
+    "subject": "科目二",
+    "before": "投资管理基础",
+    "after": "投资管理基础",
+    "section": "常用描述性统计概念",
+    "sectionId": "3.4",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      30,
+      31
+    ],
+    "reason": "讲义第三章已讲相关系数与变量联动，题目只考统计量含义，没有组合权重或最优配置计算。"
+  },
+  {
+    "id": "d8a0a2635e73",
+    "subject": "科目二",
+    "before": "投资管理基础",
+    "after": "投资管理基础",
+    "section": "常用描述性统计概念",
+    "sectionId": "3.4",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      30,
+      31
+    ],
+    "reason": "只考相关系数绝对值与相关性强弱，保留描述统计基础；第九章是相关章节。"
+  },
+  {
+    "id": "1ce49fbc7f7f",
+    "subject": "科目二",
+    "before": "投资管理基础",
+    "after": "投资管理基础",
+    "section": "常用描述性统计概念",
+    "sectionId": "3.4",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      30,
+      31
+    ],
+    "reason": "只考相关系数符号，保留第三章统计基础。"
+  },
+  {
+    "id": "845d3bf3bf6d",
+    "subject": "科目二",
+    "before": "投资管理基础",
+    "after": "投资管理基础",
+    "section": "常用描述性统计概念",
+    "sectionId": "3.4",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      30,
+      31
+    ],
+    "reason": "只考相关系数取值与含义，保留第三章；零相关不等于独立。"
+  },
+  {
+    "id": "d261ba034037",
+    "subject": "科目二",
+    "before": "投资管理基础",
+    "after": "投资管理基础",
+    "section": "常用描述性统计概念",
+    "sectionId": "3.4",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      30,
+      31
+    ],
+    "reason": "只问哪个统计量描述不同随机变量联系，第三章有依据。"
+  },
+  {
+    "id": "2fabd34da36d",
+    "subject": "科目二",
+    "before": "基金销售基础知识",
+    "after": "基金销售基础知识",
+    "section": "基金投资者",
+    "sectionId": "18.1",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      168,
+      169
+    ],
+    "reason": "题干问投资者收益目标，不是基金业绩比较基准；解析借用基准措辞不改变主考点。"
+  },
+  {
+    "id": "7605c7b23692",
+    "subject": "科目二",
+    "before": "基金的募集、交易与登记",
+    "after": "基金的募集、交易与登记",
+    "section": "公募基金的募集与认购",
+    "sectionId": "13.1",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      123
+    ],
+    "reason": "QDII计价货币在第二章和第十三章均出现；题干明确限定募集，保留已统一的募集认购主章。"
+  },
+  {
+    "id": "e6104ea6929d",
+    "subject": "科目二",
+    "before": "基金的募集、交易与登记",
+    "after": "基金的募集、交易与登记",
+    "section": "公募基金的募集与认购",
+    "sectionId": "13.1",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      123
+    ],
+    "reason": "题干明确问募集时的计价货币，与同题组保持第十三章主章。"
+  },
+  {
+    "id": "047883e7bb55",
+    "subject": "科目二",
+    "before": "基金业绩评价",
+    "after": "基金业绩评价",
+    "section": "基金业绩评价指标",
+    "sectionId": "12.2",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      115
+    ],
+    "reason": "虽然反求最大回撤，必须使用卡玛比率定义，主考点仍是风险调整收益指标；讲义图中也采用超额收益分子口径。"
+  },
+  {
+    "id": "4db2c8b06e40",
+    "subject": "科目二",
+    "before": "基金业绩评价",
+    "after": "基金业绩评价",
+    "section": "基金业绩评价指标",
+    "sectionId": "12.2",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      115
+    ],
+    "reason": "问信息比率组成变量，风险指标是公式要素，主考点仍是基金业绩评价。"
+  },
+  {
+    "id": "4abf8c6dfaca",
+    "subject": "科目二",
+    "before": "基金的估值、费用与会计核算",
+    "after": "基金的估值、费用与会计核算",
+    "section": "基金财务会计报告分析",
+    "sectionId": "15.4",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      151,
+      152
+    ],
+    "reason": "题目问利用报告指标分析哪种能力，属于财务报告分析，不是利润来源分类或披露时点。"
+  },
+  {
+    "id": "0560178e75b4",
+    "subject": "科目二",
+    "before": "基金的利润分配与税收",
+    "after": "基金的利润分配与税收",
+    "section": "基金利润及利润分配",
+    "sectionId": "16.1",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      154
+    ],
+    "reason": "主考点是货币基金赎回前后的收益分配权益，申赎是情境而非流程考点。"
+  },
+  {
+    "id": "21183ad95978",
+    "subject": "科目二",
+    "before": "基金的利润分配与税收",
+    "after": "基金的利润分配与税收",
+    "section": "基金利润及利润分配",
+    "sectionId": "16.1",
+    "status": "retained",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      154
+    ],
+    "reason": "节假日题实际考申购份额何时享有利润分配权益，统一第十六章。"
+  },
+  {
+    "id": "72084e6c402f",
+    "subject": "科目一",
+    "before": "基金法律法规体系和监管体系",
+    "after": "基金法律法规体系和监管体系",
+    "section": "行业自律",
+    "sectionId": "3.3",
+    "status": "retained",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      39,
+      40
+    ],
+    "reason": "问协会会员类别，主体虽为销售机构，主考点仍是行业自律组织。"
+  },
+  {
+    "id": "ab06bdf27190",
+    "subject": "科目一",
+    "before": "基金职业道德规范",
+    "after": "基金职业道德规范",
+    "section": "保守秘密",
+    "sectionId": "7.7",
+    "status": "retained",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      142,
+      143
+    ],
+    "reason": "离职是情境，正确答案考持续保密义务，保留职业道德。"
+  },
+  {
+    "id": "459099887674",
+    "subject": "科目一",
+    "before": "基金活动的法规要求",
+    "after": "基金活动的法规要求",
+    "section": "公募基金管理规范",
+    "sectionId": "5.1",
+    "status": "retained",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      75
+    ],
+    "reason": "销售业务具体禁止行为统一第五章；第四章一般主体职责不能覆盖销售业务主考点。"
+  },
+  {
+    "id": "79978dde54e2",
+    "subject": "科目一",
+    "before": "基金活动的法规要求",
+    "after": "基金活动的法规要求",
+    "section": "公募基金管理规范",
+    "sectionId": "5.1",
+    "status": "retained",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      75,
+      80
+    ],
+    "reason": "直接问销售与宣传禁止行为，与同组业务规则保持一致。"
+  },
+  {
+    "id": "8a8152b1603f",
+    "subject": "科目一",
+    "before": "基金活动的法规要求",
+    "after": "基金活动的法规要求",
+    "section": "公募基金管理规范",
+    "sectionId": "5.1",
+    "status": "retained",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      75
+    ],
+    "reason": "销售回扣、费率与适当性属于具体销售业务规范，第七章不正当竞争有交叉但不替换主章。"
+  },
+  {
+    "id": "6393dff9bd6d",
+    "subject": "科目二",
+    "before": "基金的类型",
+    "after": "基金的类型",
+    "section": "货币市场基金",
+    "sectionId": "2.4",
+    "status": "pending",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      17,
+      18
+    ],
+    "reason": "讲义第二章涉及交易型货币基金，第十三章未完整给出题目四项交易规则；缺少逐项原文支持，暂保留原章并待核实具体产品及交易所口径。"
+  },
+  {
+    "id": "996e4ab7af59",
+    "subject": "科目一",
+    "before": "基金概述",
+    "after": "基金概述",
+    "section": "基金的概念",
+    "sectionId": "2.1",
+    "status": "pending",
+    "sourceFile": "科目一讲义.pdf",
+    "pages": [
+      17,
+      22
+    ],
+    "reason": "该题来自旧版考试，问保本策略安全垫；科目一新版讲义仅有品类与产品比较，未找到计算策略的直接依据。保留原题原章，标记版本范围待复核，不能凭关键词强迁科目。"
+  },
+  {
+    "id": "ed085523bdc1",
+    "subject": "科目二",
+    "before": "衍生工具",
+    "after": "衍生工具",
+    "section": "期货合约",
+    "sectionId": "6.3",
+    "status": "pending",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      56,
+      58
+    ],
+    "reason": "题干金融期货交易时间与第十四章实际交易规则交叉，讲义没有完整支持所有选项的时段说明，暂保留原章。"
+  },
+  {
+    "id": "f4e6bb3d724e",
+    "subject": "科目二",
+    "before": "基金销售基础知识",
+    "after": "基金销售基础知识",
+    "section": "投资者服务",
+    "sectionId": "18.3",
+    "status": "pending",
+    "sourceFile": "科目二讲义.pdf",
+    "pages": [
+      171,
+      172
+    ],
+    "reason": "题干表述在第十二章管理人评价中也有直接落点，同时属于投资者服务范畴；待核对原题考查目标，暂保留第十八章。"
+  }
+]

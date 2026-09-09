@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Icon, PageHeader, SubjectSeg } from '../components/ui'
-import { CH_OF, KNOWLEDGE } from '../data/knowledge'
+import { KNOWLEDGE } from '../data/knowledge'
 import { PASS, SUBJ_SHORT, chapterStats } from '../lib/bank'
 import { useStore } from '../lib/store'
 
@@ -24,7 +24,7 @@ function layout(chapters, open, accOf, rootLabel) {
   let row = 0
   function walk(n, depth, id, chapter) {
     const kids = n.c && open.has(id) ? n.c.map((k, i) => walk(k, depth + 1, `${id}.${i}`, chapter)) : []
-    const acc = depth === 1 ? accOf(CH_OF[n.t]) : null
+    const acc = depth === 1 ? accOf(n.chapter) : null
     const node = {
       n, depth, id, chapter, acc,
       hasKids: !!n.c, open: open.has(id),
@@ -40,7 +40,7 @@ function layout(chapters, open, accOf, rootLabel) {
     return node
   }
   const chNodes = chapters.map((ch, i) => {
-    const nd = walk(ch, 1, `${i}`, ch.t)
+    const nd = walk(ch, 1, `${i}`, ch.chapter)
     row += 0.3 // 章节之间留口气
     return nd
   })
@@ -72,6 +72,11 @@ function allIds(chapters) {
 }
 
 export default function KnowledgeMap({ go }) {
+  const { subject } = useStore()
+  return <SubjectKnowledgeMap key={subject} go={go} />
+}
+
+function SubjectKnowledgeMap({ go }) {
   const { records, subject } = useStore()
   const chapters = KNOWLEDGE[subject] || []
   // 默认只展开章节这一层：先看清骨架，再逐个点开啃
@@ -116,7 +121,7 @@ export default function KnowledgeMap({ go }) {
       <PageHeader
         variant="subpage"
         title="知识图谱"
-        subtitle="章节 → 主题 → 必背要点"
+        subtitle="新版教材 · 章节 → 节 → 考点"
         onBack={() => go('home')}
         backLabel="首页"
         action={(
@@ -127,7 +132,7 @@ export default function KnowledgeMap({ go }) {
       />
       <SubjectSeg />
 
-      <p className="muted map-hint">点节点展开，点要点看详情；正确率来自你的练习记录。</p>
+      <p className="muted map-hint">点节点展开，点考点查看要点；正确率来自本章练习记录。</p>
 
       <div className="map-wrap card" ref={wrapRef}>
         <svg width={width} height={height} role="tree" aria-label={`${subject}知识图谱`}
@@ -176,10 +181,10 @@ export default function KnowledgeMap({ go }) {
             <button className="btn-sm btn-ghost" onClick={() => setSel(null)} aria-label="关闭"><Icon name="x" /></button>
           </div>
           {sel.n.d && <p>{sel.n.d}</p>}
-          {CH_OF[sel.chapter] && (
+          {sel.chapter && (
             <button className="btn-sm"
-              onClick={() => go('practice', { scope: `ch:${CH_OF[sel.chapter]}`, order: 'seq' })}>
-              去练「{CH_OF[sel.chapter]}」›
+              onClick={() => go('practice', { scope: `ch:${sel.chapter}`, order: 'seq' })}>
+              去练「{sel.chapter}」›
             </button>
           )}
         </div>

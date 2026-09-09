@@ -1,0 +1,16 @@
+{
+  "科目一": {
+    "file": "科目一讲义.pdf",
+    "sha256": "9f80d10068e5517edeb1887bcf9da775ab0ef8711449209e19ba67654ca55805",
+    "pageCount": 151,
+    "bodyStartPage": 5,
+    "edition": "2025版教材章节；正文编排核对，忽略导学中的2017版历史对照"
+  },
+  "科目二": {
+    "file": "科目二讲义.pdf",
+    "sha256": "fe46a9d1427fa5cf23853d4779248609f4e726486a4bfdf96cfafb840f078561",
+    "pageCount": 172,
+    "bodyStartPage": 5,
+    "edition": "2025版教材章节；正文编排核对，忽略导学中的2017版历史对照"
+  }
+}

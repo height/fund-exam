@@ -12,6 +12,7 @@
 """
 import json
 import sys
+import subprocess
 from collections import Counter
 from pathlib import Path
 
@@ -48,6 +49,8 @@ def main():
             continue
         if ch not in order[q["subject"]]:
             errs.append(f"{q['id']} 的章名「{ch}」不属于{q['subject']}：{q['q'][:30]}")
+        if check_only and ch != q["chapter"]:
+            errs.append(f"{q['id']} 的章节索引与题库不一致")
 
     if errs:
         print(f"校验不通过，{len(errs)} 处问题，未写入：\n")
@@ -79,14 +82,9 @@ def main():
         print("\n--check：只校验，未写入")
         return 0
 
-    BANK.write_text(json.dumps(bank, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    CH_JS.write_text(
-        "/* 官方教材章序，由 tools/taxonomy.json 生成（tools/apply_chapters.py）。\n"
-        "   题库的 chapter 字段只会取这里的值；数组顺序就是章序，别手排。 */\n"
-        "export const CHAPTERS = "
-        + json.dumps({s: [c["name"] for c in tax[s]] for s in ("科目一", "科目二")},
-                     ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8")
+    # 与知识图谱共用生成器，避免旧工具覆盖节目录和来源元数据。
+    subprocess.run(["node", str(ROOT / "tools/build-lecture-knowledge.mjs")], check=True)
+    BANK.write_text(json.dumps(bank, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\n已写入 {BANK.relative_to(ROOT)} 与 {CH_JS.relative_to(ROOT)}")
     return 0
 
