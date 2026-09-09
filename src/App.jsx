@@ -48,7 +48,7 @@ export default function App() {
   // 免得手滑点到别的 tab 把一轮答题丢了
   const [quiz, setQuiz] = useState(false)
   // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
-  const bare = view === 'timeline' || view === 'fundops' || view === 'dupont'
+  const bare = view === 'map' || view === 'timeline' || view === 'fundops' || view === 'dupont'
   const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools'].includes(view)
     || (view === 'data' && ['ai', 'voice', 'storage'].includes(params.page))
     || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
@@ -104,7 +104,7 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#app">跳到主要内容</a>
-      <main id="app" className={reduceMotion ? '' : 'fade'} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
+      <main id="app" className={`${reduceMotion ? '' : 'fade'}${view === 'map' ? ' kg-page' : ''}`} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
         {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setQuiz={setQuiz} chapter={params.ch}

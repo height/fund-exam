@@ -7,19 +7,21 @@
     "build": "node tools/build-lecture-knowledge.mjs --check && node tools/apply-lecture-classification.mjs --check && node tools/validate-question-bank.mjs && vite build",
     "update:knowledge": "node tools/build-lecture-knowledge.mjs",
     "repair:chapters": "node tools/apply-lecture-classification.mjs && python3 tools/apply_chapters.py",
-    "test:knowledge": "node --test tests/lecture-knowledge.test.js",
+    "test:knowledge": "node --test tests/lecture-knowledge.test.js tests/knowledge-graph.test.js",
     "preview": "vite preview",
     "test:formula": "node --test tests/formula.test.js",
     "test:formula:browser": "python3 tools/test_formula_webkit.py",
     "repair:materials": "node tools/apply-question-materials.mjs",
     "repair:questions": "node tools/apply-question-materials.mjs && node tools/apply-question-reviews.mjs && node tools/validate-question-bank.mjs",
     "audit:questions": "node tools/audit-question-bank.mjs",
-    "test:quality": "node --test tests/question-quality.test.js && python3 -m unittest discover -s tests -p \"test_question_materials.py\""
+    "test:quality": "node --test tests/question-quality.test.js && python3 -m unittest discover -s tests -p \"test_question_materials.py\"",
+    "test:knowledge:browser": "python3 tools/test_knowledge.py"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@soundtouchjs/audio-worklet": "^2.1.1",
     "@speechmatics/web-pcm-player": "^1.1.0",
+    "@xyflow/react": "^12.11.6",
     "gsap": "^3.15.0",
     "posthog-js": "^1.422.5",
     "react": "^19.1.0",

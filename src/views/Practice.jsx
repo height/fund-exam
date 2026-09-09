@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Explain, Icon, Options, PageHeader, Speaker, SubjectSeg } from '../components/ui'
+import { Explain, Icon, Options, PageHeader, Speaker, SubjectSeg, ThemeToggle } from '../components/ui'
 import { qToSpeech } from '../lib/ai'
 import { track } from '../lib/analytics'
 import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
@@ -222,10 +222,11 @@ function Runner({ session: s, setSession, onQuit }) {
       <PageHeader
         variant="subpage"
         title="练习中"
+        className="practice-header"
         subtitle={`${q.chapter} · 本轮答对 ${s.right}/${s.done}`}
         onBack={quit}
         backLabel="退出"
-        action={<span className="page-head-stat num">{s.i + 1}/{s.qs.length}</span>}
+        action={<><span className="page-head-stat num">{s.i + 1}/{s.qs.length}</span><ThemeToggle iconOnly /></>}
         progress={((s.i + 1) / s.qs.length) * 100}
       />
 

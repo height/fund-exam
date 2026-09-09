@@ -206,6 +206,8 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid tran
 .page-head.is-subpage .page-head-action{grid-column:3;justify-self:end;display:flex;align-items:center}
 .page-head.is-subpage .page-head-action>span{white-space:nowrap}
 .page-head.is-subpage .page-head-stat{font-size:12px;color:var(--ink2)}
+.page-head.is-subpage.practice-header{grid-template-columns:100px minmax(0,1fr) 100px}
+.practice-header .page-head-action{gap:4px}
 .page-head.is-subpage .lesson-done{color:var(--ink2)}
 .page-head.is-subpage .lesson-done.on{color:var(--ok)}
 .page-head-progress{position:absolute;left:0;right:0;bottom:0;height:3px;
@@ -288,36 +290,6 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid tran
 .tile small{font-size:12px;color:var(--ink2)}
 .tile .n{font:700 15px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--bad)}
 .tile.wide{grid-column:1/-1}
-
-/* ---- 知识图谱 ---- */
-.map-hint{margin:0;font-size:12px}
-.map-wrap{padding:8px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-.map-wrap svg{display:block}
-.map-edge{fill:none;stroke:var(--rule);stroke-width:1.25}
-.map-node{cursor:pointer}
-.map-node rect{fill:var(--sheet2)}
-.map-node text{fill:var(--ink)}
-.map-caret{fill:none;stroke:var(--ink2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
-  transition:transform .18s var(--ease)}
-.map-node.d0 rect{fill:var(--accent)}
-.map-node.d0 text{fill:var(--on-accent);font-weight:700}
-.map-node.d1 rect{fill:var(--accent-soft)}
-.map-node.d1 text{fill:var(--accent-ink);font-weight:600}
-.map-node.d1 .map-caret{stroke:var(--accent-ink)}
-.map-node.leaf rect{fill:transparent}
-.map-node.leaf circle{fill:var(--rule)}
-.map-node.sel rect{fill:var(--accent-soft)}
-.map-node.sel text{fill:var(--accent-ink);font-weight:600}
-.map-node.sel circle{fill:var(--accent-ink)}
-.map-node:focus{outline:none}
-.map-node:focus-visible rect{stroke:var(--accent);stroke-width:2}
-.map-acc{fill:var(--ok);font-size:11px;font-weight:600}
-.map-acc.under{fill:var(--bad)}
-.map-detail{position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));
-  z-index:5;max-width:636px;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.18);
-  display:flex;flex-direction:column;gap:8px}
-.map-detail p{margin:0;font-size:14px;line-height:1.8}
-.map-detail .btn-sm{align-self:flex-start}
 
 /* ============ 数字必背 ============
    知识图谱画「关系」，数字题卡画「干扰」：三枚问号与横线就是翻面前的记忆占位，
