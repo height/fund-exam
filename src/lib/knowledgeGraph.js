@@ -18,7 +18,7 @@ export function indexKnowledge(chapters) {
 export function searchKnowledge(index, query) {
   const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean)
   if (!terms.length) return []
-  return index.entries.filter(n => terms.every(term => `${n.t} ${n.d || ''}`.toLocaleLowerCase().includes(term)))
+  return index.entries.filter(n => terms.every(term => `${n.t} ${n.d || ''} ${Object.values(n.review || {}).flat().join(' ')}`.toLocaleLowerCase().includes(term)))
     .sort((a, b) => Number(terms.every(t => b.t.toLocaleLowerCase().includes(t)))
       - Number(terms.every(t => a.t.toLocaleLowerCase().includes(t))) || a.chapterIndex - b.chapterIndex)
 }

@@ -2,13 +2,16 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Background, Handle, MiniMap, Panel, Position, ReactFlow, ReactFlowProvider,
   getViewportForBounds, useReactFlow, useViewport } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Icon, SubjectSeg, ThemeToggle } from '../components/ui'
+import { Icon, Speaker, SubjectSeg, ThemeToggle } from '../components/ui'
+import { mdToSpeech } from '../lib/ai'
+import { studyNoteSpeech } from '../lib/studyNotes'
 import { KNOWLEDGE } from '../data/knowledge'
 import { PASS, SUBJ_SHORT, chapterStats } from '../lib/bank'
 import { ancestorsOf, chapterLabel, indexKnowledge, layoutKnowledge,
   searchKnowledge, toggleBranch } from '../lib/knowledgeGraph'
 import { useStore } from '../lib/store'
 import '../knowledgeMap.css'
+import StudyNotes from '../components/StudyNotes'
 
 const motionDuration = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220
 const nodeTypes = { knowledge: memo(KnowledgeNode) }
@@ -47,7 +50,7 @@ function CanvasControls({ graph, request, containerRef, onFit }) {
   const { zoom } = useViewport()
   const fit = useCallback(() => {
     const element = containerRef.current
-    if (!element || !graph.nodes.length) return
+    if (!element?.clientWidth || !element.clientHeight || !graph.nodes.length) return
     const xs = graph.nodes.map(n => n.position.x), ys = graph.nodes.map(n => n.position.y)
     const bounds = { x: Math.min(...xs), y: Math.min(...ys),
       width: Math.max(...graph.nodes.map(n => n.position.x + n.width)) - Math.min(...xs),
@@ -60,13 +63,23 @@ function CanvasControls({ graph, request, containerRef, onFit }) {
   useEffect(() => {
     if (!initialized || !containerRef.current) return
     const element = containerRef.current
-    const target = graph.nodes.find(n => n.id === request.id)
-    if (target && request.center) {
-      const z = element.clientWidth < 600 ? .85 : 1
-      flow.setViewport({ x: element.clientWidth / 2 - (target.position.x + target.width / 2) * z,
-        y: element.clientHeight / 2 - (target.position.y + target.height / 2) * z, zoom: z },
-        { duration: motionDuration() })
-    } else fit()
+    let frame = 0
+    const position = () => {
+      if (!element.clientWidth || !element.clientHeight) return
+      const target = graph.nodes.find(n => n.id === request.id)
+      if (target && request.center) {
+        const z = element.clientWidth < 600 ? .85 : 1
+        flow.setViewport({ x: element.clientWidth / 2 - (target.position.x + target.width / 2) * z,
+          y: element.clientHeight / 2 - (target.position.y + target.height / 2) * z, zoom: z },
+          { duration: motionDuration() })
+      } else fit()
+    }
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(position)
+    })
+    observer.observe(element)
+    return () => { observer.disconnect(); cancelAnimationFrame(frame) }
   }, [initialized, graph, request, flow, fit, containerRef])
   return <Panel position="bottom-left" className="kg-canvas-tools" aria-label="画布操作">
     <button title="缩小" aria-label="缩小" disabled={zoom <= .121} onClick={() => flow.zoomOut({ duration: motionDuration() })}>−</button>
@@ -79,62 +92,43 @@ function CanvasControls({ graph, request, containerRef, onFit }) {
 
 export default function KnowledgeMap({ go }) {
   const { subject } = useStore()
-  const [full, setFull] = useState(false)
-  const [fullHint, setFullHint] = useState('')
-  const shellRef = useRef(null), fullButtonRef = useRef(null)
-  const closeFull = useCallback(() => {
-    setFull(false)
-    setFullHint('')
-    if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
-    requestAnimationFrame(() => fullButtonRef.current?.focus())
-  }, [])
-  async function toggleFull() {
-    if (full) return closeFull()
-    setFull(true)
-    if (shellRef.current?.requestFullscreen) {
-      try { await shellRef.current.requestFullscreen(); setFullHint('') }
-      catch { setFullHint('已铺满窗口，可按 Esc 退出') }
-    } else setFullHint('已铺满窗口，可点击右上角退出')
-  }
   useEffect(() => {
-    const shell = shellRef.current
-    const sync = () => { if (!document.fullscreenElement) { setFull(false); fullButtonRef.current?.focus() } }
-    document.addEventListener('fullscreenchange', sync)
+    const root = document.documentElement
+    const viewport = window.visualViewport
+    let frame = 0
+    root.setAttribute('data-knowledge-map', '')
+    const update = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        // Safari's visual viewport shrinks for the keyboard and moves when it
+        // reveals a focused field. Keep the workspace inside that visible area.
+        if (viewport && viewport.scale !== 1) return
+        root.style.setProperty('--kg-viewport-height', `${viewport?.height || window.innerHeight}px`)
+        root.style.setProperty('--kg-viewport-top', `${viewport?.offsetTop || 0}px`)
+      })
+    }
+    update()
+    viewport?.addEventListener('resize', update)
+    viewport?.addEventListener('scroll', update)
+    window.addEventListener('resize', update)
     return () => {
-      document.removeEventListener('fullscreenchange', sync)
-      if (document.fullscreenElement === shell) document.exitFullscreen?.().catch(() => {})
+      cancelAnimationFrame(frame)
+      viewport?.removeEventListener('resize', update)
+      viewport?.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+      root.removeAttribute('data-knowledge-map')
+      root.style.removeProperty('--kg-viewport-height')
+      root.style.removeProperty('--kg-viewport-top')
     }
   }, [])
-  useEffect(() => {
-    if (!full) return
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const onKey = e => {
-      if (e.key === 'Escape') { e.preventDefault(); closeFull() }
-      if (e.key === 'Tab') {
-        const items = [...shellRef.current.querySelectorAll('button:not(:disabled), input, select, a[href], [tabindex="0"]')]
-          .filter(el => el.getClientRects().length)
-        const first = items[0], last = items.at(-1)
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus() }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus() }
-      }
-    }
-    document.addEventListener('keydown', onKey)
-    return () => { document.body.style.overflow = previous; document.removeEventListener('keydown', onKey) }
-  }, [full, closeFull])
-  function navigate(...args) { closeFull(); go(...args) }
-  return <section ref={shellRef} className={`kg-workspace${full ? ' kg-fullscreen' : ''}`} aria-label="知识图谱学习工作台">
+  return <section className="kg-workspace" aria-label="知识图谱学习工作台">
     <header className="kg-header">
-      <button className="kg-icon-btn" aria-label="返回首页" onClick={() => navigate('home')}><Icon name="back" /></button>
+      <button className="kg-icon-btn" aria-label="返回首页" onClick={() => go('home')}><Icon name="back" /></button>
       <div className="kg-heading"><h1>知识图谱</h1><span>从章节脉络，读懂每个考点</span></div>
       <div className="kg-subject"><SubjectSeg /></div>
       <ThemeToggle />
-      <button ref={fullButtonRef} className="kg-full-btn" onClick={toggleFull} aria-label={full ? '退出全屏' : '全屏查看'} aria-pressed={full}>
-        <Icon name={full ? 'shrink' : 'expand'} size={17} /><span>{full ? '退出全屏' : '全屏'}</span>
-      </button>
     </header>
-    {fullHint && <span className="sr-only" role="status">{fullHint}</span>}
-    <ReactFlowProvider key={subject}><SubjectKnowledgeMap go={navigate} /></ReactFlowProvider>
+    <ReactFlowProvider key={subject}><SubjectKnowledgeMap go={go} /></ReactFlowProvider>
   </section>
 }
 
@@ -150,11 +144,16 @@ function SubjectKnowledgeMap({ go }) {
   const [request, setRequest] = useState({ id: 'subject' })
   const [announcement, setAnnouncement] = useState('')
   const [mini, setMini] = useState(false)
+  const [reading, setReading] = useState(false)
+  const noteScrollRef = useRef(null)
+  const viewRef = useRef(null)
   const canvasRef = useRef(null), searchRef = useRef(null), detailRef = useRef(null), lastFocus = useRef(null), activeChapterRef = useRef(null)
   useEffect(() => {
     activeChapterRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }, [chapterIndex, navOpen])
   const selected = index.byId.get(selectedId)
+  const points = useMemo(() => index.entries.filter(n => n.depth === 3), [index])
+  const pointIndex = points.findIndex(n => n.id === selectedId)
   const results = useMemo(() => searchKnowledge(index, query), [index, query])
   const statsMap = useMemo(() => Object.fromEntries(chapterStats(records, subject, true).map(c => [c.chapter, c])), [records, subject])
   const graph = useMemo(() => layoutKnowledge(index, chapterIndex, open, SUBJ_SHORT[subject]), [index, chapterIndex, open, subject])
@@ -179,6 +178,7 @@ function SubjectKnowledgeMap({ go }) {
     setRequest({ id, center: true })
   }, [])
   function reveal(entry) {
+    searchRef.current?.blur()
     lastFocus.current = searchRef.current
     setChapterIndex(entry.chapterIndex)
     setOpen(previous => new Set([...previous, ...ancestorsOf(index, entry.id), ...(entry.children.length ? [entry.id] : [])]))
@@ -189,20 +189,25 @@ function SubjectKnowledgeMap({ go }) {
   function closeDetail() {
     setRequest({ id: selectedId, center: true })
     setSelectedId(null)
+    setReading(false)
     requestAnimationFrame(() => {
-      if (lastFocus.current?.isConnected) lastFocus.current.focus()
-      else searchRef.current?.focus()
+      // Returning from a search result must not reopen the iOS keyboard.
+      const target = lastFocus.current?.isConnected && lastFocus.current !== searchRef.current
+        ? lastFocus.current : viewRef.current?.querySelector('[aria-selected="true"]')
+      target?.focus({ preventScroll: true })
     })
   }
   useEffect(() => {
     if (selectedId) detailRef.current?.focus({ preventScroll: true })
+    if (noteScrollRef.current) noteScrollRef.current.scrollTop = 0
+    if (!selectedId) setReading(false)
   }, [selectedId])
   useEffect(() => {
     const onKey = e => {
       if (e.key === '/' && !e.target.closest('input,textarea,[contenteditable="true"]')) {
         e.preventDefault(); searchRef.current?.focus(); setNavOpen(true)
       }
-      if (e.key === 'Escape') { setQuery(''); setNavOpen(false); setSelectedId(null) }
+      if (e.key === 'Escape') { setQuery(''); setNavOpen(false); setSelectedId(null); setReading(false) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -220,18 +225,19 @@ function SubjectKnowledgeMap({ go }) {
       <button className="kg-nav-toggle" aria-label="章节导航" aria-expanded={navOpen} onClick={() => setNavOpen(!navOpen)}>章节</button>
       <label className="kg-search"><Icon name="search" size={17} />
         <input ref={searchRef} value={query} placeholder="搜索章节、考点或关键词" aria-label="搜索知识图谱"
+          type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
           onFocus={() => { if (query.trim()) setNavOpen(true) }} onChange={e => { setQuery(e.target.value); setNavOpen(true) }}
           onKeyDown={e => { if (e.key === 'Enter' && results.length) reveal(results[0]) }} />
         {query ? <button aria-label="清空搜索" onClick={() => { setQuery(''); searchRef.current?.focus() }}><Icon name="x" size={14} /></button> : <kbd>/</kbd>}
       </label>
-      <div className="kg-view-switch" role="tablist" aria-label="图谱视图">
-        <button role="tab" aria-selected={mode === 'map'} onClick={() => { setMode('map'); setNavOpen(false) }}>脑图</button>
-        <button role="tab" aria-selected={mode === 'outline'} onClick={() => { setMode('outline'); setNavOpen(false) }}>大纲</button>
+      <div ref={viewRef} className="kg-view-switch" role="tablist" aria-label="图谱视图">
+        <button role="tab" aria-selected={mode === 'map'} onClick={() => { setMode('map'); setNavOpen(false); setReading(false) }}>脑图</button>
+        <button role="tab" aria-selected={mode === 'outline'} onClick={() => { setMode('outline'); setNavOpen(false); setReading(false) }}>大纲</button>
       </div>
     </div>
     <div className={`kg-body${selected ? ' has-detail' : ''}`}>
       {navOpen && <button className="kg-nav-scrim" aria-label="关闭章节导航" onClick={() => { setNavOpen(false); setQuery('') }} />}
-      <aside className={`kg-navigator${navOpen ? ' is-open' : ''}`} aria-label={query.trim() ? '搜索结果' : '章节目录'}>
+      <aside className={`kg-navigator${navOpen ? ' is-open' : ''}`} aria-label={query.trim() ? '搜索结果' : '章节目录'} inert={reading && selected && !navOpen ? true : undefined}>
         <div className="kg-nav-heading"><strong>{query.trim() ? '搜索结果' : '章节目录'}</strong>
           <span>{query.trim() ? `${results.length} 个匹配` : `${index.chapters.length} 章`}</span></div>
         {query.trim() ? <div className="kg-results" aria-live="polite">
@@ -258,7 +264,7 @@ function SubjectKnowledgeMap({ go }) {
           <p className="kg-nav-note">按新版教材章节组织<br />正确率来自本章练习记录</p>
         </>}
       </aside>
-      <section className="kg-study" aria-label="图谱内容">
+      <section className="kg-study" aria-label="图谱内容" inert={reading && selected ? true : undefined}>
         <div className="kg-context">
           <div><span className="kg-context-label">{subject}</span>
             <h2>{SUBJ_SHORT[subject]}</h2>
@@ -304,19 +310,26 @@ function SubjectKnowledgeMap({ go }) {
         <footer className="kg-status"><span>{mode === 'map' ? `显示 ${nodes.length} 个节点` : '大纲阅读'}<span className="kg-status-path"> / 章 → 节 → 考点</span></span>
           <span>点击考点阅读要点</span></footer>
       </section>
-      {selected && <aside className="kg-detail" role="complementary" aria-label="考点详情">
-        <div className="kg-detail-top"><span>{selected.depth === 3 ? '考点笔记' : selected.depth === 2 ? '本节内容' : '章节概览'}</span>
+      {selected && <aside className={`kg-detail${reading ? ' is-reading' : ''}`} role="complementary" aria-label="考点详情">
+        <div className="kg-detail-top"><div className="kg-note-tools"><span>{selected.depth === 3 ? '考点笔记' : selected.depth === 2 ? '本节内容' : '章节概览'}</span>
+          {selected.d && <Speaker key={selected.id} getText={() => mdToSpeech(studyNoteSpeech(selected))} label="朗读考点笔记" />}</div>
+          <button className="kg-note-practice" aria-label="练习本章题目" disabled={!stat?.total} onClick={() => go('practice', { scope: `ch:${selected.chapter}`, order: 'seq' })}>
+            {stat?.total ? `练习 ${stat.total} 题` : '暂无题目'} <span aria-hidden="true">›</span></button>
+          <button className="kg-reading-toggle" aria-label={reading ? '返回脑图' : '专注阅读'} title={reading ? '返回脑图' : '专注阅读'} aria-pressed={reading} onClick={() => setReading(!reading)}><Icon name={reading ? 'shrink' : 'expand'} size={16} /></button>
           <button className="kg-icon-btn" aria-label="关闭考点详情" onClick={closeDetail}><Icon name="x" size={18} /></button></div>
-        <div className="kg-detail-scroll">
+        {pointIndex >= 0 && <nav className="kg-point-nav" aria-label="连续复习">
+          <button disabled={pointIndex === 0} onClick={() => reveal(points[pointIndex - 1])}>上一考点</button>
+          <span>{pointIndex + 1} / {points.length} 组</span>
+          <button disabled={pointIndex === points.length - 1} onClick={() => reveal(points[pointIndex + 1])}>下一考点</button>
+        </nav>}
+        <div className="kg-detail-scroll" ref={noteScrollRef}>
           <p className="kg-detail-path">第 {selected.chapterIndex + 1} 章 / {selectedChapter.t}{selected.depth === 3 && <><br />{index.byId.get(selected.parent).t}</>}</p>
           <h2 ref={detailRef} tabIndex={-1}>{selected.t}</h2>
-          {selected.d ? <div className="kg-detail-copy"><span className="kg-note-label">学习要点</span><p>{selected.d}</p></div>
+          {selected.review ? <StudyNotes review={selected.review} />
+            : selected.d ? <div className="kg-detail-copy"><span className="kg-note-label">学习要点</span><p>{selected.d}</p></div>
             : <div className="kg-detail-children">{selected.children.map(id => <button key={id} onClick={() => reveal(index.byId.get(id))}>{index.byId.get(id).t}<span>›</span></button>)}</div>}
 
         </div>
-        <div className="kg-detail-action"><button className="btn-pri" aria-label="练习本章题目" disabled={!stat?.total} onClick={() => go('practice', { scope: `ch:${selected.chapter}`, order: 'seq' })}>
-          {stat?.total ? `练习本章 ${stat.total} 题` : '本章暂无可练题目'} <span aria-hidden="true">›</span></button>
-          <small>{stat?.done ? `已练 ${stat.done} 题${stat.done >= 3 ? `，正确率 ${stat.acc}%` : ''}` : '按本章范围练习'}</small></div>
       </aside>}
     </div>
     <span className="sr-only" role="status" aria-live="polite">{announcement}</span>

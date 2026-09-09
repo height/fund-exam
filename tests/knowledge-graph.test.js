@@ -1,7 +1,31 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { KNOWLEDGE } from '../src/data/knowledge.js'
+import { STUDY_PENS, studyNoteSpeech } from '../src/lib/studyNotes.js'
 import { ancestorsOf, indexKnowledge, layoutKnowledge, searchKnowledge, toggleBranch, knowledgeNodeSize, chapterLabel } from '../src/lib/knowledgeGraph.js'
+
+test('搜索覆盖新增三色笔记中的规则与例子', () => {
+  const legal = indexKnowledge(KNOWLEDGE.科目一)
+  assert.ok(searchKnowledge(legal, '2007年 基金公司会员部').some(p => p.t === '协会自律'))
+  const investing = indexKnowledge(KNOWLEDGE.科目二)
+  assert.ok(searchKnowledge(investing, 'S103').some(p => p.t === '期权分类与多空盈亏'))
+  assert.deepEqual(searchKnowledge(investing, '连续三期 固定').map(p => p.t), ['指数跟踪与跟踪误差'])
+})
+
+test('笔记朗读完整覆盖内容，按必背、易错、速记排序且不读按钮', () => {
+  assert.deepEqual(STUDY_PENS.map(p => p.key), ['core', 'trap', 'extra'])
+  for (const chapters of Object.values(KNOWLEDGE)) {
+    for (const point of chapters.flatMap(ch => ch.c.flatMap(sec => sec.c))) {
+      const speech = studyNoteSpeech(point)
+      assert.ok(speech.startsWith(point.t))
+      assert.ok(speech.indexOf('易混易错') < speech.indexOf('理解速记'))
+      assert.ok(speech.indexOf('核心必背') < speech.indexOf('易混易错'))
+      for (const text of Object.values(point.review).flat()) assert.ok(speech.includes(text), point.t)
+      assert.ok(speech.length < 2000, `${point.t}超过语音单次上限`)
+      assert.doesNotMatch(speech, /上一考点|下一考点|专注阅读|只看必背/)
+    }
+  }
+})
 
 for (const [subject, chapters] of Object.entries(KNOWLEDGE)) {
   const index = indexKnowledge(chapters)
