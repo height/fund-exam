@@ -221,9 +221,9 @@ function Runner({ session: s, setSession, onQuit }) {
     <>
       <PageHeader
         variant="subpage"
-        title="练习中"
+        title={q.chapter}
         className="practice-header"
-        subtitle={`${q.chapter} · 本轮答对 ${s.right}/${s.done}`}
+        subtitle={`本轮答对 ${s.right}/${s.done}`}
         onBack={quit}
         backLabel="退出"
         action={<><span className="page-head-stat num">{s.i + 1}/{s.qs.length}</span><ThemeToggle iconOnly /></>}
