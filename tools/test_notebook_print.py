@@ -22,6 +22,7 @@ def run():
                 assert payload['thinking']=={'type':'enabled'} and payload['reasoning_effort']=='high'
                 assert payload['response_format']=={'type':'json_object'}
                 prompt=payload['messages'][-1]['content']
+                assert 'PROMPT-QA-MARKER' in prompt
                 source=json.loads(prompt.splitlines()[-1]);calls.append(source)
                 result={'items':[{'sourceIds':[n['id']],'title':'AI速记 '+n['title'],'markdown':n['markdown'].replace('关键点','速记') + '\n\n<p><mark data-pen="key">核心结论</mark>；<mark data-pen="condition">适用条件</mark>；<mark data-pen="caution">注意例外</mark></p>'} for n in source['notes']]}
                 response='data: '+json.dumps({'choices':[{'delta':{'content':json.dumps(result,ensure_ascii=False)}}]},ensure_ascii=False)+'\n\ndata: [DONE]\n\n'
@@ -52,6 +53,15 @@ def run():
             assert len(context.pages)==1 and not calls
             assert page.get_by_role('combobox',name='Cheatsheet thinking depth').input_value()=='medium'
             page.get_by_role('combobox',name='Cheatsheet thinking depth').select_option('high')
+            page.locator('.cs-prompt-editor summary').click()
+            editor=page.get_by_role('textbox',name='小抄生成 Prompt')
+            default_prompt=editor.input_value()
+            assert 'FINAL-CONTENT-MARKER' not in default_prompt
+            assert '关键点 01-0' not in default_prompt
+            editor.fill(default_prompt+'\nPROMPT-QA-MARKER：表述保持准确。')
+            assert page.get_by_role('button',name='生成小抄',exact=True).is_disabled()
+            page.get_by_role('button',name='保存 Prompt',exact=True).click()
+            page.locator('.cs-prompt-editor summary').click()
             page.get_by_role('button',name='生成小抄',exact=True).click()
             button=page.get_by_role('button',name='查看 / 打印',exact=True)
             button.wait_for()
@@ -126,6 +136,8 @@ def run():
                 return page.evaluate("() => new Promise(resolve=>{const r=indexedDB.open('fund-quiz');r.onsuccess=()=>{const db=r.result,q=db.transaction('kv').objectStore('kv').get('notebook-cheatsheet:last');q.onsuccess=()=>{resolve(q.result.v);db.close()}}})")
             saved=cached();assert '<!doctype html>' in saved['html'] and len(saved['notes'])==45
             page.reload();button.wait_for()
+            assert 'PROMPT-QA-MARKER' in page.locator('.cs-prompt-editor textarea').input_value()
+            assert 'FINAL-CONTENT-MARKER' not in page.locator('.cs-prompt-editor textarea').input_value()
             page.get_by_role('region',name='上次生成的小抄').wait_for()
             with page.expect_popup() as reopened:button.click()
             reopened.value.wait_for_selector('.entry');assert reopened.value.locator('.entry').count()==45

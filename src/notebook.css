@@ -304,3 +304,29 @@
 .nb-browse-tabs>button[aria-selected=true] .nb-tab-count{color:var(--accent-ink);background:var(--accent-soft)}
 @media(max-width:700px){.nb-browse-tabs{width:100%;margin:8px 0 10px}}
 @media(prefers-reduced-motion:reduce){.nb-browse-tabs>button{transition:none}}
+
+/* Compact cheatsheet workspace: the saved document is the primary action. */
+.cs-workbench{max-width:620px;gap:22px;padding:4px 0 20px}
+.cs-document{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;padding:18px 18px 0;overflow:hidden}
+.cs-document-top,.cs-document-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.cs-format{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.cs-format i{width:2px;height:2px;border-radius:50%;background:currentColor;opacity:.6}
+.cs-cache-state{font-size:10px;color:var(--ink2)}
+.cs-document-title{display:flex;align-items:center;gap:12px;margin:22px 0 18px}
+.cs-file-icon{display:flex;align-items:center;justify-content:center;width:44px;height:52px;background:var(--accent-soft);color:var(--accent-ink);border-radius:6px 12px 6px 6px;flex-shrink:0}
+.cs-document-title h2,.cs-intro h2{font-size:21px;line-height:1.4;font-weight:500;margin:0;color:var(--ink)}
+.cs-document-title p{font-size:12px;color:var(--ink2);margin:5px 0 0}.cs-document-title strong{font-weight:500;color:var(--ink)}
+.cs-document-bottom{font-size:11px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.cs-workbench .cs-preview{border-radius:9px;min-height:44px;margin:14px 0;justify-content:space-between;padding:10px 14px;font-size:14px;font-weight:500}
+.cs-update-hint{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink2);margin:0 0 14px}.cs-update-hint>span{width:5px;height:5px;border-radius:50%;background:var(--accent-ink);flex-shrink:0}
+.cs-contents{border-top:1px solid var(--rule)}.cs-contents summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;font-size:12px;color:var(--ink2);cursor:pointer;list-style:none}.cs-contents summary::-webkit-details-marker{display:none}.cs-contents summary>span{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}.cs-contents[open] summary svg{transform:rotate(90deg)}
+.cs-contents ol{margin:0;padding:0 0 14px 24px;font-size:13px;line-height:1.6;color:var(--ink)}.cs-contents li{padding:5px 0 5px 2px}.cs-contents li::marker{font-size:10px;color:var(--ink2)}
+.cs-generation{padding:0 4px}.cs-generation-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.cs-generation-heading h2{display:flex;gap:7px;align-items:center;font-size:14px;font-weight:500;margin:0}.cs-generation-heading>span{font-size:11px;color:var(--ink2)}
+.cs-generation-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.cs-generation-controls label{display:flex;align-items:center;gap:10px;min-width:0;border:1px solid var(--rule);border-radius:9px;background:var(--sheet);padding:0 10px}.cs-generation-controls label>span{font-size:11px;color:var(--ink2)}.cs-generation-controls select{flex:1;min-width:0;border:0;border-radius:0;background:transparent;color:var(--ink);font-size:12px;padding:10px 0;min-height:42px}
+.cs-generation-controls>button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 14px;margin:0;border-radius:9px;font-size:12px;font-weight:500;white-space:nowrap}.cs-regenerate,.cs-cancel{background:var(--sheet);color:var(--ink);border:1px solid var(--rule)}
+.cs-generation-note,.cs-generation .cs-progress p,.cs-generation .cs-progress small{font-size:11px;line-height:1.5;color:var(--ink2);margin:9px 0 0}.cs-generation .cs-progress{padding:14px 0 0}.cs-generation .nb-error{font-size:12px;line-height:1.5;margin:10px 0}
+.cs-intro{padding:14px 4px 8px}.cs-intro h2{margin-top:16px}.cs-intro p,.cs-loading{font-size:13px;color:var(--ink2);line-height:1.6}
+@media(max-width:380px){.cs-document{padding:14px 14px 0}.cs-generation-controls{gap:6px}.cs-generation-controls>button{padding:8px 10px}.cs-generation-controls label{gap:6px;padding:0 8px}}
+.cs-workbench{width:100%;box-sizing:border-box}.cs-workbench .cs-regenerate,.cs-workbench .cs-cancel{background:var(--sheet);color:var(--ink);border:1px solid var(--rule)}
+
+.cs-prompt-editor{margin-top:12px;border-top:1px solid var(--rule);font-size:12px}.cs-prompt-editor summary{min-height:40px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;color:var(--ink2)}.cs-prompt-editor summary::-webkit-details-marker{display:none}.cs-prompt-editor summary>span{display:flex;align-items:center;gap:6px;font-size:11px}.cs-prompt-editor[open] summary svg{transform:rotate(90deg)}.cs-prompt-editor p{font-size:11px;line-height:1.6;color:var(--ink2);margin:0 0 8px}.cs-prompt-editor textarea{display:block;width:100%;min-height:230px;max-height:55dvh;resize:vertical;padding:10px 12px;border:1px solid var(--rule);border-radius:9px;background:var(--sheet);color:var(--ink);font-size:13px;line-height:1.7;box-sizing:border-box}.cs-prompt-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.cs-workbench .cs-prompt-actions button{font-size:12px;padding:7px 10px;min-height:36px;border:1px solid var(--rule);border-radius:7px;background:var(--sheet);color:var(--ink)}

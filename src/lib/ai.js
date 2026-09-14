@@ -166,11 +166,11 @@ export function askTerm(term, ctx, signal) {
     '用 Markdown，不超过150字，直接讲，不要客套。', signal)
 }
 
-export async function askCheatsheet(notes, signal, onProgress, effort = 'medium') {
+export async function askCheatsheet(notes, signal, onProgress, effort = 'medium', instructions) {
   const batches = cheatsheetBatches(notes)
   const output = []
   const run = async (batch, current, total, label) => {
-    return structuredReply({ prompt: cheatsheetPrompt(batch), signal, stream: streamChat,
+    return structuredReply({ prompt: cheatsheetPrompt(batch, instructions), signal, stream: streamChat,
       options: { think: effort !== 'off', effort }, parse: text => parseCheatsheet(text, batch),
       onProgress: (text, attempt) => onProgress?.({ current, total, chapter: label, received: text.length, retrying: !!attempt }),
     })
