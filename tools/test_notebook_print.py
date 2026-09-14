@@ -18,7 +18,10 @@ def run():
             def ai(route):
                 if mode['value']=='fail': route.fulfill(status=503,body='unavailable'); return
                 if mode['value']=='hold': held.append(route); return
-                prompt=route.request.post_data_json['messages'][-1]['content']
+                payload=route.request.post_data_json
+                assert payload['thinking']=={'type':'enabled'} and payload['reasoning_effort']=='high'
+                assert payload['response_format']=={'type':'json_object'}
+                prompt=payload['messages'][-1]['content']
                 source=json.loads(prompt.splitlines()[-1]);calls.append(source)
                 result={'items':[{'sourceIds':[n['id']],'title':'AI速记 '+n['title'],'markdown':n['markdown'].replace('关键点','速记') + '\n\n<p><mark data-pen="key">核心结论</mark>；<mark data-pen="condition">适用条件</mark>；<mark data-pen="caution">注意例外</mark></p>'} for n in source['notes']]}
                 response='data: '+json.dumps({'choices':[{'delta':{'content':json.dumps(result,ensure_ascii=False)}}]},ensure_ascii=False)+'\n\ndata: [DONE]\n\n'
@@ -30,7 +33,7 @@ def run():
             assert button.is_enabled()
             for i in range(45):
                 note={'id':f'print-{i}','status':'ready','subject':'科目一','chapter':'基金活动的法规要求','title':f'考点 {i+1:02d} · 条件与例外','points':['完整关键条件，不删除例外。'],'markdown': '\n\n'.join([f'关键点 {i+1:02d}-{j}：保留适用条件、法定期限与边界。==例外需要单独核对==，不能忽略单位和比较基准。' for j in range(6)]),'excerpt':'测试原文','context':'测试依据','createdAt':1,'updatedAt':1,'evidence':[]}
-                if i==0:note['markdown']+='\n\n| 条件 | 结论 |\n|---|---|\n| 同一时点 | 不同口径不能比较 |\n\n$$E = mc^2$$\n\n```svg\n<svg viewBox="0 0 200 40"><rect width="200" height="40" fill="#eee"/><text x="10" y="25">图示完整保留</text></svg>\n```'
+                if i==0:note['markdown']+='\n\n| 条件 | 结论 |\n|---|---|\n| 同一时点 | 不同口径不能比较 |\n\n$$E = mc^2$$\n\n```svg\n<svg viewBox="0 0 200 40"><rect width="200" height="40" fill="#eee"/>\n\n    <text x="10" y="25">图示完整保留</text></svg>\n```'
                 if i==44:note['markdown']+='\n\nFINAL-CONTENT-MARKER'
                 seed(page,note)
             seed(page,{**note,'id':'review-only','status':'review','title':'SHOULD-NOT-PRINT'})
@@ -47,6 +50,8 @@ def run():
                     page.locator('.page-head').screenshot(path=str(OUT/f'{engine}-print-button-{width}-{theme}.png'))
             button.click();page.wait_for_function("location.hash === '#/cheatsheet'")
             assert len(context.pages)==1 and not calls
+            assert page.get_by_role('combobox',name='Cheatsheet thinking depth').input_value()=='medium'
+            page.get_by_role('combobox',name='Cheatsheet thinking depth').select_option('high')
             page.get_by_role('button',name='生成小抄',exact=True).click()
             button=page.get_by_role('button',name='查看 / 打印',exact=True)
             button.wait_for()
@@ -54,6 +59,8 @@ def run():
             page.screenshot(path=str(OUT/f'{engine}-cheatsheet-feature-page.png'))
             with page.expect_popup() as opened:button.click()
             preview=opened.value;preview.wait_for_selector('.entry');preview.on('pageerror',lambda e:errors.append(str(e)))
+            assert preview.locator('.paper .sheet-watermark').text_content().strip()=='考基宝'
+            assert preview.locator('.paper .sheet-watermark img').get_attribute('src').startswith('data:image/png;base64,')
             assert preview.locator('.entry').count()==45
             assert preview.locator('.entry').evaluate_all('els=>els.every(e=>e.getClientRects().length===1)'), 'A knowledge block split across columns'
             assert '科目一' in preview.locator('.sheet-title h1').inner_text()
@@ -65,6 +72,7 @@ def run():
             assert 'AI速记' not in preview.locator('.paper').inner_text()
             assert preview.locator('.sheet-columns').evaluate('e=>getComputedStyle(e).columnCount')=='2'
             assert 'SHOULD-NOT-PRINT' not in preview.locator('.paper').inner_text()
+            assert preview.locator('.paper svg text').text_content()=='图示完整保留'
             assert preview.locator('math').count()==1 and preview.locator('.paper svg').count()==1
             assert preview.locator('math').evaluate("e=>![...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())")
             assert preview.locator('.paper').bounding_box()['width']<=390

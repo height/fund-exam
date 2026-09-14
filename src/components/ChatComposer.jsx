@@ -1,10 +1,12 @@
+import { getThinkingLevel, setThinkingLevel, THINKING_LEVELS } from '../lib/noteThinking'
 import StreamingText from './StreamingText'
 import ChatLoading from './ChatLoading'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 // Adapted from the supplied ChatComposer: same panel, tabs, reply sections and composer.
 // Production messages replace the example's scripted timers and demo sales data.
-export default function ChatComposer({ messages, streamed = '', received = 0, draft, onDraft, onSend, busy, disabled, onStop, error, captures, hasKey, onSettings, compact = false, placeholder = '说说想怎么改…' }) {
+export default function ChatComposer({ retrying = false, messages, streamed = '', received = 0, draft, onDraft, onSend, busy, disabled, onStop, error, captures, hasKey, onSettings, compact = false, placeholder = '说说想怎么改…' }) {
+  const [thinking, setThinking] = useState(() => getThinkingLevel())
   const [tab, setTab] = useState('对话')
   const [notice, setNotice] = useState('')
   const input = useRef(null)
@@ -42,7 +44,7 @@ export default function ChatComposer({ messages, streamed = '', received = 0, dr
   const send = () => { if (canSend) { following.current = true; setTab('对话'); onSend() } }
   const composer = (
     <div className="provided-composer-wrap">
-      <div className="note-quick-prompts" aria-label="快捷输入">{[
+      <div className="note-quick-prompts" aria-label="快捷输入"><select className="note-thinking-toggle" aria-label="Thinking depth" value={thinking} disabled={busy || disabled} onChange={e => { setThinking(e.target.value); setThinkingLevel(e.target.value) }}>{THINKING_LEVELS.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select>{[
         ['解释概念', '用通俗语言解释这段内容，保留关键术语和适用条件。'],
         ['提炼要点', '提炼这段内容的核心要点，保留条件与例外，去掉重复。'],
         ['图解说明', '用简洁图示辅助说明这段内容的关系，不适合画图的部分保留文字。'],
@@ -61,8 +63,8 @@ export default function ChatComposer({ messages, streamed = '', received = 0, dr
     <div className="provided-chat-thread" ref={thread} onScroll={e => { const el = e.currentTarget; following.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48 }} role={tab === '对话' ? 'log' : undefined} aria-label={tab === '对话' ? '编辑对话' : '摘录依据'} aria-live="polite">
       {tab === '对话' ? <>
         {!messages.length && <p className="provided-chat-empty">说说想怎么改，也可以先问一个问题。</p>}
-        {messages.map((m, i) => m.role === 'user' ? <div className="provided-user-row" key={i}><div className="provided-user-bubble">{m.text}</div></div> : <div className="provided-reply" key={i}><div className="provided-reply-label"><span>笔记助手</span>{m.elapsed != null && <small>{m.elapsed.toFixed(1)}s</small>}</div><p>{m.text}</p>{m.interrupted && <small className="chat-stream-interrupted">回复未完成 · 未应用修改</small>}</div>)}
-        {busy && <div className="provided-reply chat-stream-reply"><ChatLoading received={received} />{streamed && <StreamingText text={streamed} />}</div>}
+        {messages.map((m, i) => m.role === 'user' ? <div className="provided-user-row" key={i}><div className="provided-user-bubble">{m.text}</div></div> : <div className="provided-reply" key={i}><div className="provided-reply-label"><span>笔记助手</span>{m.elapsed != null && <small>{m.elapsed.toFixed(1)}s</small>}</div><p>{m.text}</p>{m.interrupted && <div className="chat-stream-interrupted"><strong>{m.failure?.label || '本轮回复未成功'}</strong><p>{m.failure?.detail || '未收到完整有效的笔记结果，可重新发送。'}</p><small>本轮未生成新的修改预览，已有笔记保持不变。</small></div>}</div>)}
+        {busy && <div className="provided-reply chat-stream-reply"><ChatLoading received={received} mode={thinking === 'off' ? '' : thinking.toUpperCase()} retrying={retrying} />{streamed && <StreamingText text={streamed} />}</div>}
       </> : captures.map(c => <details key={c.id} className="provided-source"><summary>{c.sourceTitle || '学习摘录'} · {new Date(c.at).toLocaleString('zh-CN')}</summary><p>{c.excerpt}</p><details><summary>上下文</summary><p>{c.context}</p></details></details>)}
     </div>
     {error && <p className="provided-chat-error" role="alert">{error}</p>}

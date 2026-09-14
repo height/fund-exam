@@ -1,3 +1,5 @@
+import { noteReplyFailure } from '../lib/noteReplyFailure'
+import { getThinkingLevel } from '../lib/noteThinking'
 import { useEffect, useRef, useState } from 'react'
 import { askNotebookEdit, getKey } from '../lib/ai'
 import { capturesOf, relatedNotes } from '../lib/notebook'
@@ -17,6 +19,7 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
   const [messages, setMessages] = useState([])
   const [proposal, setProposal] = useState(null)
   const [received, setReceived] = useState(0)
+  const [retrying, setRetrying] = useState(false)
   const [streamed, setStreamed] = useState('')
   const [busy, setBusy] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -31,27 +34,30 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
     if (!text.trim() || busy || saving || running) return
     if (!getKey()) { setError('请先在 AI 设置中配置模型'); return }
     const next = [...messages, { role: 'user', text: text.trim() }]
-    setMessages(next); setInput(''); setBusy(true); setReceived(0); setStreamed(''); setError('')
+    setMessages(next); setInput(''); setBusy(true); setRetrying(false); setReceived(0); setStreamed(''); setError('')
     let partial = ''
     const started = performance.now()
     const ctl = new AbortController(); controller.current = ctl
-    const timer = setTimeout(() => ctl.abort(), 90000)
+    const effort = getThinkingLevel()
+    const think = effort !== 'off'
+    let timedOut = false
+    const timer = setTimeout(() => { timedOut = true; ctl.abort() }, think ? 600000 : 180000)
     const stopped = () => {
       clearTimeout(timer)
       if (controller.current !== ctl) return
-      controller.current = null; setBusy(false); setInput(text); setError('已停止生成，可以继续对话。')
-      if (partial) setMessages(m => [...m, { role: 'assistant', text: partial, interrupted: true }])
+      controller.current = null; setBusy(false); setInput(text); setError(timedOut ? '等待模型超时，输入已保留，可重试。' : '已停止生成，可以继续对话。')
+      if (partial) setMessages(m => [...m, { role: 'assistant', text: partial, interrupted: true, failure: noteReplyFailure(null, { stopped: true, timedOut }) }])
     }
     ctl.signal.addEventListener('abort', stopped, { once: true })
     try {
       const base = proposal?.base || note
       const mergeTarget = target || proposal?.target
       const current = { ...base, ...(proposal?.result || {}), selectionExcerpt: captures.find(c => c.id === captureId)?.excerpt || note.excerpt }
-      const result = await askNotebookEdit(current, next, mergeTarget, ctl.signal, (count, reply) => { if (controller.current === ctl) { partial = reply; setReceived(count); setStreamed(reply) } })
+      const result = await askNotebookEdit(current, next, mergeTarget, ctl.signal, (count, reply, retry) => { if (controller.current === ctl) { partial = reply; setRetrying(retry); setReceived(count); setStreamed(reply) } }, { think, effort })
       if (ctl.signal.aborted) return
       setMessages(m => [...m, { role: 'assistant', text: result.reply, elapsed: (performance.now() - started) / 1000 }])
       if (result.note) { setProposal({ base, target: mergeTarget, result: result.note }); setTab('draft') }
-    } catch (e) { if (controller.current === ctl) { setError(e.message); setInput(text); if (partial) setMessages(m => [...m, { role: 'assistant', text: partial, interrupted: true }]) } }
+    } catch (e) { if (controller.current === ctl) { setError(e.message); setInput(text); if (partial) setMessages(m => [...m, { role: 'assistant', text: partial, interrupted: true, failure: noteReplyFailure(e) }]) } }
     finally { clearTimeout(timer); ctl.signal.removeEventListener('abort', stopped); if (controller.current === ctl) { controller.current = null; setBusy(false) } }
   }
   useEffect(() => {
@@ -106,7 +112,7 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
     <details className="nb-source"><summary>原文与整理依据 · {captures.length} 次摘录</summary>{(note.evidence || []).map((e, i) => <blockquote key={i}>{e}</blockquote>)}{[...captures].reverse().map(c => <details key={c.id}><summary>{stamp(c.at)} · {c.sourceTitle || '学习摘录'}</summary><blockquote>{c.excerpt}</blockquote><p>{c.context}</p></details>)}</details>
     {relatedNotes(note, allNotes).length > 0 && <details className="nb-source"><summary>相关考点</summary>{relatedNotes(note, allNotes).map(n => <div key={n.id}><b>{n.title}</b><p>{n.points.join(' ')}</p><button className="btn-sm" disabled={busy || saving || !!proposal || running} onClick={() => { setEditing(true); send(`请比较并合并“${n.title}”，保留必要条件，删除重复。`, n) }}>让 AI 比较并合并</button></div>)}</details>}
     </div></div>
-    {editing && <ChatComposer streamed={streamed} received={received} messages={messages} draft={input} onDraft={setInput} onSend={() => { onResume?.(); send() }} busy={busy} disabled={saving || running} onStop={() => controller.current?.abort()} error={error || (running && sendOnOpen && !initialSent.current ? '原文正在整理，你的要求已保留，完成后会自动继续。' : '')} captures={captures} hasKey={!!getKey()} onSettings={() => go('data', { page: 'ai' })} />}
+    {editing && <ChatComposer retrying={retrying} streamed={streamed} received={received} messages={messages} draft={input} onDraft={setInput} onSend={() => { onResume?.(); send() }} busy={busy} disabled={saving || running} onStop={() => controller.current?.abort()} error={error || (running && sendOnOpen && !initialSent.current ? '原文正在整理，你的要求已保留，完成后会自动继续。' : '')} captures={captures} hasKey={!!getKey()} onSettings={() => go('data', { page: 'ai' })} />}
 
 
 

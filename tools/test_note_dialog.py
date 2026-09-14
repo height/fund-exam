@@ -13,7 +13,10 @@ def run():
             page = context.new_page(); errors = []; requests = []; waiting = []; mode = {'value': 'edit'}
             page.on('pageerror', lambda e: errors.append(str(e)))
             def ai(route):
-                content = route.request.post_data_json['messages'][-1]['content']
+                payload = route.request.post_data_json
+                assert payload['response_format']=={'type':'json_object'}
+                assert payload['thinking']=={'type':'enabled'} and payload['reasoning_effort']=='low'
+                content = payload['messages'][-1]['content']
                 materials = [json.loads(line) for line in content.splitlines() if line.startswith('{')]
                 source = materials[0]; requests.append(materials)
                 if mode['value']=='hold': waiting.append(route); return
@@ -51,6 +54,8 @@ def run():
             assert notes(page)==[]
             select(page, '.stem', mobile, True); page.get_by_role('button',name='记笔记',exact=True).click()
             receipt=page.get_by_role('region',name='摘录反馈')
+            assert receipt.get_by_role('combobox',name='Thinking depth').input_value()=='medium'
+            receipt.get_by_role('combobox',name='Thinking depth').select_option('low')
             receipt.get_by_role('button',name='图解说明',exact=True).click()
             assert '图示' in receipt.get_by_role('textbox',name='告诉 AI 怎么调整').input_value()
             assert requests==[] and notes(page)==[]
@@ -97,7 +102,7 @@ def run():
             original=notes(page)[0]
             modal=page.get_by_role('dialog',name='编辑笔记',exact=True);modal.wait_for()
             assert page.url == url and page.locator('#root').evaluate('e=>e.inert')
-            assert modal.locator('input,select').count() == 0
+            assert modal.locator('input,select:not(.note-thinking-toggle)').count() == 0
             chat = page.get_by_role('textbox',name='告诉 AI 怎么调整')
             if mobile:
                 for width, height in [(320,568),(390,400),(390,844)]:
@@ -167,7 +172,7 @@ def run():
             page.evaluate('text=>window.pushNoteChunk(text)', '{"reply":"这是一段未完成的回复')
             page.locator('.chat-stream-text').wait_for()
             page.get_by_role('button',name='停止生成').click()
-            page.get_by_text('回复未完成 · 未应用修改',exact=True).wait_for()
+            page.get_by_text('已停止生成',exact=True).wait_for()
             assert page.get_by_text('这是一段未完成的回复',exact=True).is_visible()
             assert notes(page)[0]==original and not page.locator('.nb-proposal').count()
             page.evaluate('() => { window.fetch=window.originalNoteFetch }')

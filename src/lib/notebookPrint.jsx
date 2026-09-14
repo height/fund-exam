@@ -1,3 +1,4 @@
+import brandLogo from '../assets/kaojibao-logo.png?inline'
 import { renderToStaticMarkup } from 'react-dom/server'
 import NoteMarkdown from '../components/NoteMarkdown'
 import { groupNotes } from './notebook'
@@ -25,7 +26,9 @@ export function notebookPrintHTML(notes, { sourceCount = notes.length, generated
           <NoteMarkdown note={note} />
         </article>)}</div>
       <footer className="sheet-end">{sourceCount} 条笔记提炼为 {ready.length} 个考点 · 条件 / 例外 / 公式</footer>
+    <div className="sheet-watermark" aria-label="考基宝"><img src={brandLogo} alt="" /><span>考基宝</span></div>
     </main></div></div>
+    <div className="sheet-watermark print-watermark" aria-hidden="true"><img src={brandLogo} alt="" /><span>考基宝</span></div>
   </>)
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>基金从业复习小抄</title><style>${styles}</style></head><body>${body}<script>${controls}</script></body></html>`
 }

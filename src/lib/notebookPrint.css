@@ -54,3 +54,12 @@ math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{m
 
 /* A knowledge block travels together across columns/pages; oversized blocks may fragment. */
 .entry{break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid}
+
+/* Preserve diagram geometry instead of squeezing a wide SVG into a height cap. */
+.nb-markdown svg{width:auto;height:auto;max-width:100%;max-height:none;display:block;margin:.7mm auto}.nb-markdown img{width:auto;height:auto;max-width:100%;object-fit:contain}
+
+.nb-markdown svg{background:#fff;color:#171717}
+
+.sheet-watermark{display:flex;align-items:center;justify-content:flex-end;gap:1.5mm;margin-top:2mm;color:#88909a;font-size:9pt;line-height:1;break-inside:avoid;pointer-events:none}.sheet-watermark img{display:block;width:5mm;height:5mm;max-height:none;margin:0;object-fit:contain;opacity:.55;border-radius:1.2mm}.sheet-watermark span{font-weight:500;letter-spacing:.06em}
+.print-watermark{display:none}
+@media print{.paper .sheet-watermark{display:none}.print-watermark{display:flex;position:fixed;right:0;bottom:0;margin:0}}

@@ -1,3 +1,5 @@
+import { validNoteConversation } from './noteReplyFailure'
+import { structuredReply } from './structuredReply'
 import { PCMPlayer } from '@speechmatics/web-pcm-player'
 import { SoundTouchNode } from '@soundtouchjs/audio-worklet'
 import soundTouchProcessorUrl from '@soundtouchjs/audio-worklet/processor?url'
@@ -79,7 +81,7 @@ export async function pingAI(cfg) {
 }
 
 /** 流式对话。401 时顺手清掉坏 Key，让 UI 重新要一个。think=false 关掉推理，秒出正文 */
-async function* streamChat(userContent, signal, { think = true } = {}) {
+async function* streamChat(userContent, signal, { think = true, effort = 'medium', structured = false } = {}) {
   const cfg = getCfg()
   const res = await fetch(cfg.url, {
     method: 'POST',
@@ -89,12 +91,13 @@ async function* streamChat(userContent, signal, { think = true } = {}) {
       model: cfg.model,
       thinking: { type: think ? 'enabled' : 'disabled' },
       // 讲考点用不着深思熟虑，medium 起答快、够用
-      ...(think && { reasoning_effort: 'medium' }),
+      ...(think && { reasoning_effort: effort }),
+      ...(structured && { response_format: { type: 'json_object' }, max_tokens: think ? 65536 : 32768 }),
       stream: true,
       messages: [
         {
           role: 'system',
-          content:
+          content: structured ? '你是严谨的知识整理助手。严格按用户给定结构输出一个完整JSON对象；不加前后说明。知识仅以提供的资料为依据，禁止编造。正文按要求极简提炼，保留必要条件、公式与图。' :
             '你是资深的基金从业资格考试辅导老师，也极擅长把复杂金融概念讲给零基础的人听。两条铁律：' +
             '一、严禁编造任何不属实的信息。数字、比例、金额、期限、时间点、法规条款，必须完全有把握才能说；' +
             '题目自带的解析是权威依据，事实以它为准，不得与之矛盾；' +
@@ -114,7 +117,10 @@ async function* streamChat(userContent, signal, { think = true } = {}) {
     }),
   })
   if (res.status === 401) { setKey(''); throw new Error('Key 无效，已清除，请重新填一个') }
-  if (!res.ok) throw new Error(`请求失败（${res.status}），稍后再试`)
+  if (!res.ok) {
+    const detail = (await res.json().catch(() => null))?.error?.message
+    throw new Error(`请求失败（${res.status}）${detail ? `：${detail}` : '，稍后再试'}`)
+  }
 
   yield* readChatResponse(res)
 }
@@ -160,18 +166,14 @@ export function askTerm(term, ctx, signal) {
     '用 Markdown，不超过150字，直接讲，不要客套。', signal)
 }
 
-export async function askCheatsheet(notes, signal, onProgress) {
+export async function askCheatsheet(notes, signal, onProgress, effort = 'medium') {
   const batches = cheatsheetBatches(notes)
   const output = []
   const run = async (batch, current, total, label) => {
-    let text = ''
-    onProgress?.({ current, total, chapter: label, received: 0 })
-    for await (const chunk of streamChat(cheatsheetPrompt(batch), signal, { think: false })) {
-      if (signal.aborted) throw new DOMException('已取消', 'AbortError')
-      text += chunk
-      onProgress?.({ current, total, chapter: label, received: text.length })
-    }
-    return parseCheatsheet(text, batch)
+    return structuredReply({ prompt: cheatsheetPrompt(batch), signal, stream: streamChat,
+      options: { think: effort !== 'off', effort }, parse: text => parseCheatsheet(text, batch),
+      onProgress: (text, attempt) => onProgress?.({ current, total, chapter: label, received: text.length, retrying: !!attempt }),
+    })
   }
   for (const subject of new Set(batches.map(b => b.subject))) {
     const parts = batches.filter(b => b.subject === subject)
@@ -192,12 +194,10 @@ export async function askCheatsheet(notes, signal, onProgress) {
 }
 
 export async function askNotebook(note, signal) {
-  let text = ''
-  for await (const chunk of streamChat(notePrompt(note), signal, { think: false })) text += chunk
-  return parseNoteResult(text, note)
+  return structuredReply({ prompt: notePrompt(note), signal, stream: streamChat, options: { think: false }, parse: text => parseNoteResult(text, note) })
 }
 
-export async function askNotebookEdit(note, messages, target, signal, onProgress) {
+export async function askNotebookEdit(note, messages, target, signal, onProgress, { think = true, effort = 'medium' } = {}) {
   const source = { ...note, chapterLocked: false,
     evidenceContext: [note.evidenceContext ?? note.context, ...(target ? [target.evidenceContext ?? target.context] : [])].join('\n') }
   const prompt = notePrompt(source) + '\n' + [
@@ -208,13 +208,16 @@ export async function askNotebookEdit(note, messages, target, signal, onProgress
     '返回一个完整JSON对象，不加前后说明或代码块。JSON字符串的换行、双引号、反斜杠必须转义；SVG属性优先用单引号，LaTeX反斜杠写成JSON转义形式。',
     '当前笔记是上一轮最新预览。根据最新要求局部修改，保留其他信息；可以调整标题、章节、要点、公式、图示。',
     '允许按用户要求纠正章节。没有来源支持的新知识不能写成定论；保留needsReview。不要声称已经保存。',
-    JSON.stringify({ conversation: messages.slice(-16), currentTitle: note.title, selectedExcerpt: note.selectionExcerpt || note.excerpt, mergeWith: target ? { title: target.title, points: target.points, formula: target.formula, diagram: target.diagram } : null }),
+    JSON.stringify({ conversation: validNoteConversation(messages).slice(-16), currentTitle: note.title, selectedExcerpt: note.selectionExcerpt || note.excerpt, mergeWith: target ? { title: target.title, points: target.points, formula: target.formula, diagram: target.diagram } : null }),
   ].join('\n')
-  let text = ''
-  for await (const chunk of streamChat(prompt, signal, { think: false })) { text += chunk; onProgress?.(text.length, streamingReply(text)) }
-  const value = parseAIJSON(text)
-  if (typeof value?.reply !== 'string' || !value.reply.trim()) throw new Error('AI 未返回有效回复，请重试')
-  return { reply: value.reply, note: value.note ? parseNoteResult(JSON.stringify(value.note), source) : null }
+  return structuredReply({ prompt, signal, stream: streamChat, options: { think, effort },
+    onProgress: (text, attempt) => onProgress?.(text.length, streamingReply(text), !!attempt),
+    parse: text => {
+      const value = parseAIJSON(text)
+      if (typeof value?.reply !== 'string' || !value.reply.trim() || !Object.hasOwn(value, 'note')) throw new Error('AI 未返回完整回复，本次修改未应用')
+      return { reply: value.reply, note: value.note ? parseNoteResult(JSON.stringify(value.note), source) : null }
+    },
+  })
 }
 
 /**

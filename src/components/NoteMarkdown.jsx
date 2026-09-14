@@ -1,3 +1,4 @@
+import { renderSVGMarkdown } from '../lib/svgMarkdown'
 import { useMemo } from 'react'
 import MarkdownIt from 'markdown-it'
 import mark from 'markdown-it-mark'
@@ -13,7 +14,7 @@ md.renderer.rules.fence = (tokens, i, options, env, self) => tokens[i].info.trim
   ? tokens[i].content : fence(tokens, i, options, env, self)
 
 function render(text) {
-  const clean = DOMPurify.sanitize(md.render(text), {
+  const clean = DOMPurify.sanitize(renderSVGMarkdown(text, value => md.render(value)), {
     USE_PROFILES: { html: true, svg: true, svgFilters: true, mathMl: true },
     FORBID_TAGS: ['style', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'textarea', 'select', 'foreignObject', 'animate', 'animateMotion', 'animateTransform', 'set'],
     FORBID_ATTR: ['style', 'srcset'],

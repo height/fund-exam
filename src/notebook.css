@@ -262,3 +262,27 @@
 .nb-print-action>button:last-child{display:grid;place-items:center;flex-shrink:0;width:32px;min-width:32px;height:36px;min-height:36px;padding:0;border:0;background:transparent;color:var(--ink2)}
 .nb-saved-sheet{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--ink2);margin:0 0 6px}.nb-saved-sheet button{padding:4px 7px;background:transparent;font-size:11px;color:var(--accent-ink);white-space:nowrap}
 .cs-page{max-width:660px;margin:0 auto;display:grid;gap:12px}.cs-panel{padding:18px;background:var(--sheet);border:1px solid var(--rule);border-radius:14px}.cs-heading{display:flex;align-items:center;gap:8px;color:var(--ink)}.cs-heading h2{font-size:16px;line-height:1.4;margin:0}.cs-heading>span{margin-left:auto;font-size:11px;color:var(--ink2)}.cs-panel p{font-size:13px;margin:10px 0;line-height:1.6}.cs-facts{display:flex;flex-wrap:wrap;gap:8px 16px;padding:12px 0;border-block:1px solid var(--rule);font-size:12px}.cs-facts b{font-size:18px;font-variant-numeric:tabular-nums;margin-right:3px}.cs-panel .cs-hint,.cs-panel small,.cs-panel time{color:var(--ink2);font-size:12px}.cs-generate{margin-top:4px;font-size:14px;padding:10px 16px}.cs-progress{padding-top:10px}.cs-progress small{display:block;margin-top:8px}.cs-topics{padding-left:18px;font-size:13px;line-height:1.8;margin:12px 0}.cs-preview{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:14px 0 8px;font-size:14px}.cs-result>small{display:block}.cs-result time{font-variant-numeric:tabular-nums}
+
+.note-thinking-toggle{white-space:nowrap;font-size:12px;padding:5px 8px;border:1px solid var(--rule);border-radius:8px;background:transparent;color:var(--ink2)}.note-quick-prompts .note-thinking-toggle[aria-checked=true]{color:var(--accent-ink);background:var(--accent-soft)}
+
+/* A neutral backing keeps generated diagrams legible in both themes. */
+.nb-markdown svg{background:#fff;color:#171717}
+
+.chat-stream-interrupted>strong{font-size:11px;font-weight:600}.chat-stream-interrupted>p{font-size:11px;margin:3px 0;line-height:1.5}.chat-stream-interrupted>small{font-size:11px;color:var(--ink2)}
+
+.note-quick-prompts select.note-thinking-toggle{flex-shrink:0;width:auto;min-height:32px;padding:4px 8px;font:inherit;font-size:12px;color:var(--ink);background:var(--sheet2);border:1px solid var(--rule);border-radius:8px}.cs-facts select{font:inherit;color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:5px}
+
+/* Keep the underlying page visible above the expanded note sheet. */
+.note-modal-backdrop.overlay:not(.is-collapsed) .note-modal{height:min(720px,calc(100dvh - 80px));max-height:calc(100dvh - 80px)}
+@media(max-width:700px){
+ .note-modal-backdrop.overlay:not(.is-collapsed){padding:clamp(24px,7dvh,56px) 6px 6px;align-items:stretch}
+ .note-modal-backdrop.overlay:not(.is-collapsed) .note-modal{height:100%;max-height:100%;border-radius:18px}
+}
+.notebook-page .nb-note-list .nb-note{padding:10px 12px}.notebook-page .nb-note-list .nb-note h3{margin:0}.notebook-page .nb-note-list .nb-note-title{min-height:32px;text-align:left}
+/* Extend the semantic title button across the whole notebook row. */
+.notebook-page .nb-note-list .nb-note{position:relative;cursor:pointer}
+.notebook-page .nb-note-list .nb-note-title::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.notebook-page .nb-note-list .nb-note:has(.nb-note-title:focus-visible){outline:2px solid var(--accent-ink);outline-offset:-2px}
+.notebook-page .nb-note-list .nb-note:hover{background:var(--sheet2)}
+
+.notebook-page .nb-note-list .nb-note{padding-right:38px}.nb-row-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;color:var(--ink2);pointer-events:none}

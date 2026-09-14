@@ -4,7 +4,6 @@ import { CHAPTERS } from '../data/chapters'
 import { capturesOf, groupNotes } from '../lib/notebook'
 import { noteRunning, useNotebook } from '../lib/notebookStorage'
 import { openNote } from '../lib/noteModal'
-import NoteMarkdown from '../components/NoteMarkdown'
 import '../notebook.css'
 
 const day = value => new Date(value).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -65,12 +64,8 @@ export default function Notebook({ go, noteId, editRequested }) {
                 <button className="nb-index-entry" onClick={() => openNote(note.id)}><time dateTime={new Date(capture.at).toISOString()}>{new Date(capture.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })}</time><span><b>{note.title}</b><small>{note.subject} · {note.chapter}{note.status !== 'ready' && ` · ${stateLabel(note)}`}</small></span><Icon name="right" /></button>
               </div>)}</div> : groupNotes(filtered).map(g => <section className="nb-chapter" key={`${g.subject}:${g.chapter}`}><header><span>{g.subject}</span><h2>{g.label}</h2></header><div className="nb-note-list">
                 {g.notes.map(note => <article className="nb-note" key={note.id} id={`note-${note.id}`}>
+                  <span className="nb-row-arrow" aria-hidden="true"><Icon name="chevronRight" size={16} /></span>
                   <div className="nb-note-heading"><h3><button className="nb-note-title" onClick={() => openNote(note.id)}>{note.title}</button></h3>{note.status !== 'ready' && <span className="nb-state">{stateLabel(note)}</span>}</div>
-                  <div className="nb-essence nb-desktop-body"><NoteMarkdown note={note} /></div>
-                  <button className="nb-mobile-preview" aria-label={`查看${note.title}的完整笔记`} onClick={() => openNote(note.id)}><span>{note.points.join(' ') || note.excerpt}</span></button>
-                  <div className="nb-mobile-meta">{new Date(note.updatedAt).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' })} · {capturesOf(note).length} 次摘录{(note.formula || /\$/.test(note.markdown || '')) && ' · 公式'}{(note.diagram || /<svg|```svg/.test(note.markdown || '')) && ' · 图示'}</div>
-                  {note.status !== 'ready' && <p className="muted">{note.reviewReason || note.error || '原文已保留，正在整理。'}</p>}
-                  <div className="nb-note-actions"><button className="btn-sm btn-ghost" onClick={() => openNote(note.id)}>查看详情 <Icon name="right" /></button><button className="btn-sm" disabled={noteRunning(note.id)} onClick={() => openNote(note.id, 'edit')}>{note.status === 'ready' ? '编辑笔记' : '核对与调整'}</button></div>
                 </article>)}
               </div></section>)}
           </div>

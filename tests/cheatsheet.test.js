@@ -26,3 +26,14 @@ test('related notes across chapters share a generation request; large inputs ret
  assert.equal(cheatsheetBatches(large).length, 2)
  assert.deepEqual(cheatsheetBatches(large).flatMap(b=>b.notes.map(n=>n.id)), ['a','b'])
 })
+
+test('omitted source formula, image and SVG survive text distillation without duplication', () => {
+ const source={...note('visual'),markdown:'说明 $x^2$。\n\n![图](https://example.com/a.png)\n\n<svg viewBox="0 0 100 50"><path d="M0 0L100 50"/></svg>'}
+ const batch=cheatsheetBatches([source])[0]
+ const parse=markdown=>parseCheatsheet(JSON.stringify({items:[{sourceIds:['visual'],title:'要点',markdown}]}),batch)[0].markdown
+ const result=parse('极简结论')
+ assert.ok(result.includes('x^2'))
+ assert.ok(result.includes('https://example.com/a.png'))
+ assert.ok(result.includes('<svg'))
+ assert.equal(parse(result),result)
+})
