@@ -44,3 +44,8 @@ math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{m
 .nb-markdown mark strong{color:inherit}.nb-markdown th{color:#244d7b;background:#f0f4f9}
 .pen-legend{display:inline-flex;gap:1.5mm;font-size:6pt;white-space:nowrap}.pen-legend b{font-weight:500}.pen-legend b:nth-child(1){color:var(--pen-key)}.pen-legend b:nth-child(2){color:var(--pen-condition)}.pen-legend b:nth-child(3){color:var(--pen-caution)}
 .chapter>h2,.entry h3{break-inside:avoid;-webkit-column-break-inside:avoid;break-after:avoid;-webkit-column-break-after:avoid}
+
+/* Keep the A4 typesetting intact on phones; scale only its visual surface. */
+.paper-frame{position:relative;margin:0 auto;flex-shrink:0}
+.paper{margin:0;transform-origin:top left;-webkit-text-size-adjust:none;text-size-adjust:none}
+@media print{.paper-frame{width:auto!important;height:auto!important;margin:0}.paper{transform:none!important}}

@@ -4,8 +4,19 @@
   const columns = document.querySelector('#columns')
   const print = document.querySelector('#print')
   const help = document.querySelector('#print-help')
-  const fit = () => { paper.style.zoom = Math.min(1, (innerWidth - 24) / (210 * 96 / 25.4)) }
+  const frame = document.querySelector('.paper-frame')
+  const preview = document.querySelector('.preview')
+  const scale = document.querySelector('#scale')
+  const fit = () => {
+    const available = preview.clientWidth - 24
+    const ratio = scale.value === 'fit' ? Math.min(1, available / paper.offsetWidth) : Number(scale.value)
+    paper.style.transform = `scale(${ratio})`
+    frame.style.width = `${paper.offsetWidth * ratio}px`
+    frame.style.height = `${paper.offsetHeight * ratio}px`
+  }
   fit(); addEventListener('resize', fit)
+  new ResizeObserver(fit).observe(paper)
+  scale.addEventListener('change', fit)
   columns.addEventListener('change', () => {
     document.documentElement.style.setProperty('--columns', columns.value)
     for (const option of columns.options) option.defaultSelected = option.value === columns.value

@@ -55,6 +55,9 @@ def run():
             with page.expect_popup() as opened:button.click()
             preview=opened.value;preview.wait_for_selector('.entry');preview.on('pageerror',lambda e:errors.append(str(e)))
             assert preview.locator('.entry').count()==45
+            assert '科目一' in preview.locator('.sheet-title h1').inner_text()
+            assert preview.locator('.sheet-columns > .chapter').count()==0
+            assert '科目一' not in preview.locator('.sheet-columns').inner_text()
             assert len(calls)==6
             colors=[preview.locator('mark[data-pen='+pen+']').first.evaluate('e=>getComputedStyle(e).color') for pen in ['key','condition','caution']]
             assert len(set(colors))==3,colors
@@ -64,6 +67,14 @@ def run():
             assert preview.locator('math').count()==1 and preview.locator('.paper svg').count()==1
             assert preview.locator('math').evaluate("e=>![...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())")
             assert preview.locator('.paper').bounding_box()['width']<=390
+            layout = preview.locator('.paper').evaluate('e=>({width:e.offsetWidth,height:e.offsetHeight})')
+            assert 793 <= layout['width'] <= 794
+            for factor in ['1', '1.5']:
+                preview.locator('#scale').select_option(factor)
+                assert preview.locator('.paper').evaluate('e=>({width:e.offsetWidth,height:e.offsetHeight})') == layout
+                assert abs(preview.locator('.paper').bounding_box()['width'] - layout['width'] * float(factor)) < 2
+            preview.locator('#scale').select_option('fit')
+            assert preview.locator('.paper').bounding_box()['width'] <= 390
             assert preview.locator('script[src],link[rel=stylesheet]').count()==0
             preview.screenshot(path=str(OUT/f'{engine}-print-mobile.png'))
             with preview.expect_download() as exported:preview.get_by_role('button',name='下载 HTML').click()
