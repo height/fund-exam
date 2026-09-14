@@ -1,18 +1,23 @@
-import { groupNotes } from './notebook.js'
+import { UNFILED } from './notebook.js'
 import { parseAIJSON } from './aiResponse.js'
 
 export function cheatsheetBatches(notes) {
   const batches = []
-  for (const group of groupNotes(notes.filter(n => n.status === 'ready'))) {
+  const subjects = new Map()
+  for (const note of notes.filter(n => n.status === 'ready')) {
+    if (!subjects.has(note.subject)) subjects.set(note.subject, [])
+    subjects.get(note.subject).push(note)
+  }
+  for (const [subject, notes] of subjects) {
     let batch = [], size = 0
-    for (const note of group.notes) {
-      const source = { id: note.id, title: note.title, markdown: note.markdown || note.points.join('\n'),
+    for (const note of notes) {
+      const source = { id: note.id, title: note.title, chapter: note.chapter, markdown: note.markdown || note.points.join('\n'),
         ...(!note.markdown && { formula: note.formula, diagram: note.diagram }) }
       const length = JSON.stringify(source).length
-      if (batch.length && (size + length > 16000 || batch.length >= 8)) { batches.push({ ...group, notes: batch }); batch = []; size = 0 }
+      if (batch.length && size + length > 48000) { batches.push({ subject, chapter: UNFILED, notes: batch }); batch = []; size = 0 }
       batch.push(source); size += length
     }
-    if (batch.length) batches.push({ ...group, notes: batch })
+    if (batch.length) batches.push({ subject, chapter: UNFILED, notes: batch })
   }
   return batches
 }
@@ -23,6 +28,8 @@ export function cheatsheetPrompt(batch) {
     '只输出JSON：{"items":[{"sourceIds":["原笔记id"],"title":"短标题","markdown":"精炼的Markdown正文"}]}。',
     '标题直接写知识点名称，不添加“AI速记”“AI精炼”“速记要点”等前缀，正文不重复这类标签。',
     '科目信息由页面统一放在页头。每条标题和正文不要重复科目几、第几章、章节名称等归属标签，只呈现知识点及内容。',
+    '先通读全部资料，按知识关系重新组织整份小抄，而不是逐题逐条摘要。笔记数量不等于知识块数量；跨章节的同义概念、相互补充的条件和易混概念放在同一个完整知识块中。不同主题不强行合并。输出顺序按概念关系安排，与输入顺序无关。',
+    '每个items条目是一个完整知识块：标题、定义、表格、公式与例外必须放在同一条markdown里，不拆成多个条目。不重复正文中的标题。',
     '同一考点或重复定义尽量合并，sourceIds列出所有对应笔记。每条原笔记至少被一个条目覆盖，不能漏掉独立考点。',
     '优先用关键词、分号短句、对照表、公式表达。删除套话、重复标题、做题选项字母、非必要案例年月和演示数字，不复述题目。',
     '参考密集手写复习页的组织：每条以短结论起头；分类用紧凑表格，数量关系用公式，流程用小型静态SVG。能用一行表达就不要分成多段，文字与图互补而不重复。可以将原文明确给出的关系绘成SVG，图中每个标签和箭头必须有资料支持。',

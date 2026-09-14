@@ -50,15 +50,16 @@ def run():
             page.get_by_role('button',name='生成小抄',exact=True).click()
             button=page.get_by_role('button',name='查看 / 打印',exact=True)
             button.wait_for()
-            assert len(context.pages)==1 and len(calls)==6
+            assert len(context.pages)==1 and len(calls)==1
             page.screenshot(path=str(OUT/f'{engine}-cheatsheet-feature-page.png'))
             with page.expect_popup() as opened:button.click()
             preview=opened.value;preview.wait_for_selector('.entry');preview.on('pageerror',lambda e:errors.append(str(e)))
             assert preview.locator('.entry').count()==45
+            assert preview.locator('.entry').evaluate_all('els=>els.every(e=>e.getClientRects().length===1)'), 'A knowledge block split across columns'
             assert '科目一' in preview.locator('.sheet-title h1').inner_text()
             assert preview.locator('.sheet-columns > .chapter').count()==0
             assert '科目一' not in preview.locator('.sheet-columns').inner_text()
-            assert len(calls)==6
+            assert len(calls)==1
             colors=[preview.locator('mark[data-pen='+pen+']').first.evaluate('e=>getComputedStyle(e).color') for pen in ['key','condition','caution']]
             assert len(set(colors))==3,colors
             assert 'AI速记' not in preview.locator('.paper').inner_text()
@@ -120,7 +121,10 @@ def run():
             page.get_by_role('region',name='上次生成的小抄').wait_for()
             with page.expect_popup() as reopened:button.click()
             reopened.value.wait_for_selector('.entry');assert reopened.value.locator('.entry').count()==45
-            assert len(calls)==6
+            with reopened.value.expect_event('close'):
+                reopened.value.get_by_role('link',name='返回小抄生成页').click()
+            assert '#/cheatsheet' in page.url
+            assert len(calls)==1
             # A failed AI request must preserve the last successful HTML.
 
             mode['value']='fail'

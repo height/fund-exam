@@ -163,16 +163,30 @@ export function askTerm(term, ctx, signal) {
 export async function askCheatsheet(notes, signal, onProgress) {
   const batches = cheatsheetBatches(notes)
   const output = []
-  for (let i = 0; i < batches.length; i++) {
+  const run = async (batch, current, total, label) => {
     let text = ''
-    const batch = batches[i]
-    onProgress?.({ current: i + 1, total: batches.length, chapter: batch.chapter, received: 0 })
+    onProgress?.({ current, total, chapter: label, received: 0 })
     for await (const chunk of streamChat(cheatsheetPrompt(batch), signal, { think: false })) {
       if (signal.aborted) throw new DOMException('已取消', 'AbortError')
       text += chunk
-      onProgress?.({ current: i + 1, total: batches.length, chapter: batch.chapter, received: text.length })
+      onProgress?.({ current, total, chapter: label, received: text.length })
     }
-    output.push(...parseCheatsheet(text, batch))
+    return parseCheatsheet(text, batch)
+  }
+  for (const subject of new Set(batches.map(b => b.subject))) {
+    const parts = batches.filter(b => b.subject === subject)
+    const drafts = []
+    for (let i = 0; i < parts.length; i++) {
+      drafts.push(...await run(parts[i], i + 1, parts.length + (parts.length > 1 ? 1 : 0),
+        `${subject} · ${parts.length > 1 ? '整理资料' : '整体编排'}`))
+    }
+    if (parts.length === 1) { output.push(...drafts); continue }
+    // Large inputs are condensed first, then unified across batch boundaries.
+    const sources = new Map(drafts.map(n => [n.id, n.sourceIds]))
+    const combined = { subject, chapter: '待归类', notes: drafts.map(n => ({ id: n.id, title: n.title, markdown: n.markdown })) }
+    if (JSON.stringify(combined).length > 100000) throw new Error('资料过多，整体编排超出本次容量；上次小抄仍保留，请减少收录内容后重试')
+    const merged = await run(combined, parts.length + 1, parts.length + 1, `${subject} · 合并关联考点、整体编排`)
+    output.push(...merged.map(n => ({ ...n, sourceIds: [...new Set(n.sourceIds.flatMap(id => sources.get(id)))] })))
   }
   return output
 }

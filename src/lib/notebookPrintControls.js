@@ -1,5 +1,12 @@
 // Included verbatim in the standalone export; no app runtime or API required.
 (() => {
+  document.querySelector('#back')?.addEventListener('click', event => {
+    if (!window.__cheatsheetPopup) return
+    event.preventDefault()
+    window.close()
+    // Browsers which refuse closing a tab still have a working return route.
+    setTimeout(() => { location.href = event.currentTarget?.href || document.querySelector('#back').href }, 150)
+  })
   const paper = document.querySelector('.paper')
   const columns = document.querySelector('#columns')
   const print = document.querySelector('#print')

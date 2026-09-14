@@ -4,7 +4,7 @@ import { groupNotes } from './notebook'
 import styles from './notebookPrint.css?raw'
 import controls from './notebookPrintControls.js?raw'
 
-export function notebookPrintHTML(notes, { sourceCount = notes.length, generatedAt = Date.now() } = {}) {
+export function notebookPrintHTML(notes, { sourceCount = notes.length, generatedAt = Date.now(), returnUrl = '' } = {}) {
   const ready = notes.filter(note => note.status === 'ready')
   if (!ready.length) throw new Error('还没有可生成小抄的章节精华')
   const groups = groupNotes(ready)
@@ -12,7 +12,7 @@ export function notebookPrintHTML(notes, { sourceCount = notes.length, generated
   const date = new Date(generatedAt).toLocaleDateString('zh-CN')
   let index = 0
   const body = renderToStaticMarkup(<>
-    <header className="print-toolbar"><div><strong>复习小抄</strong><span>{sourceCount} 条笔记 → {ready.length} 个考点</span></div>
+    <header className="print-toolbar"><div>{/^(https?|file):\/\//.test(returnUrl) && <a id="back" href={returnUrl} aria-label="返回小抄生成页">← 返回</a>}<strong>复习小抄</strong><span>{sourceCount} 条笔记 → {ready.length} 个考点</span></div>
       <label>排版 <select id="columns" defaultValue="2"><option value="2">双栏 · 图文</option><option value="3">三栏 · 极简密排</option></select></label>
       <label>预览 <select id="scale" defaultValue="fit"><option value="fit">适应屏幕</option><option value="1">100%</option><option value="1.5">150%</option></select></label>
       <button id="download">下载 HTML</button><button id="print">打印 / 另存 PDF</button>

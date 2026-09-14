@@ -36,7 +36,7 @@ export default function Cheatsheet({ go }) {
       const condensed = await askCheatsheet(ready, ctl.signal, p => { if (!ctl.signal.aborted) setProgress(p) })
       if (ctl.signal.aborted) return
       const createdAt = Date.now()
-      const html = notebookPrintHTML(condensed, { sourceCount: ready.length, generatedAt: createdAt })
+      const html = notebookPrintHTML(condensed, { sourceCount: ready.length, generatedAt: createdAt, returnUrl: window.location.href })
       try { setResult(await saveCheatsheet(html, condensed, ready)) }
       catch {
         setResult({ html, notes: condensed, sourceCount: ready.length, createdAt, fingerprint: cheatsheetFingerprint(ready), unsaved: true })
@@ -52,8 +52,8 @@ export default function Cheatsheet({ go }) {
     setOpening(true)
     try {
       const { notebookPrintHTML } = await import('../lib/notebookPrint')
-      const html = notebookPrintHTML(result.notes, { sourceCount: result.sourceCount, generatedAt: result.createdAt })
-      preview.document.open(); preview.document.write(html); preview.document.close(); preview.opener = null
+      const html = notebookPrintHTML(result.notes, { sourceCount: result.sourceCount, generatedAt: result.createdAt, returnUrl: window.location.href })
+      preview.document.open(); preview.document.write(html); preview.document.close(); preview.__cheatsheetPopup = true; preview.opener = null
     } catch (e) { preview.close(); setError(`打开失败：${e.message}`) }
     finally { setOpening(false) }
   }
@@ -62,11 +62,11 @@ export default function Cheatsheet({ go }) {
     <div className="cs-page">
       <section className="cs-panel">
         <div className="cs-heading"><Icon name="sparkle" size={20} /><h2>把笔记整理成一份小抄</h2></div>
-        <p>合并重复，提炼考点，保留条件、例外和公式。</p>
+        <p>通读全部笔记，按知识关系合并编排，保留条件、例外和公式。</p>
         <div className="cs-facts"><span><b>{ready.length}</b> 条精华</span><span><b>{chapterCount}</b> 个章节</span><span>A4 · 双栏 · 三色笔</span></div>
         <p className="cs-hint">收录全部已整理笔记，待核对内容不参与。生成完成后，再打开预览打印。</p>
         {loading || cacheLoading ? <p role="status">正在读取笔记与上次结果…</p> : busy ? <div className="cs-progress">
-          <ChatLoading received={progress?.received || 0} context="按章节提炼已保存的笔记，合并重复内容。" completion="全部完成并校验后保存小抄。" />
+          <ChatLoading received={progress?.received || 0} context="整体编排已保存的笔记，合并关联知识与重复内容。" completion="全部完成并校验后保存小抄。" />
           <p role="status">{progress ? `${progress.current} / ${progress.total} · ${progress.chapter}` : '正在准备…'}</p>
           <button className="btn-sm" onClick={() => controller.current?.abort()}>取消生成</button>
           <small>离开此页将取消本次生成，上次结果会保留。</small>

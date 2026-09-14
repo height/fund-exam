@@ -49,3 +49,8 @@ math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{m
 .paper-frame{position:relative;margin:0 auto;flex-shrink:0}
 .paper{margin:0;transform-origin:top left;-webkit-text-size-adjust:none;text-size-adjust:none}
 @media print{.paper-frame{width:auto!important;height:auto!important;margin:0}.paper{transform:none!important}}
+
+#back{display:inline-flex;align-items:center;min-height:36px;padding:4px 8px;border:1px solid #d6d7da;border-radius:6px;text-decoration:none;white-space:nowrap;color:#252528}#back:focus-visible{outline:2px solid #345fa1;outline-offset:2px}
+
+/* A knowledge block travels together across columns/pages; oversized blocks may fragment. */
+.entry{break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid}
