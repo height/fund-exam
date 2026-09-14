@@ -1,3 +1,4 @@
+import { knowledgeDistillationRules } from './knowledgeDistillation.js'
 import { CHAPTERS } from '../data/chapters.js'
 import { validFormula, validDiagram, visualFingerprint } from './notebookVisuals.js'
 import { parseAIJSON } from './aiResponse.js'
@@ -11,12 +12,13 @@ const hasChapter = note => CHAPTERS[note.subject]?.includes(note.chapter)
 
 export function notePrompt(note) {
   return [
-    '整理一条能帮助下次答对同类题的复习笔记。先判断复杂度和适合的表达形式，再决定篇幅。只输出JSON。',
+    '整理一条能帮助下次答对同类题的极简复习笔记，只蒸馏核心知识。只输出JSON。',
     '结构：{"subject":"科目一或科目二","chapter":"目录完整章名或待归类","title":"考点标题","points":["要点"],"markdown":"完整Markdown正文","evidence":["支撑对应要点的原文连续引用"],"needsReview":false,"reviewReason":"","detailReason":"","formula":null,"diagram":null}。',
     'markdown是唯一展示正文，使用通用Markdown：标题、列表、表格、引用、加粗、==高亮==、$行内LaTeX$、$$块级LaTeX$$、图片![说明](来源已有URL)、svg代码围栏或内联SVG。按需选择形式，不堆砌装饰。points保留纯文本要点供检索和逐条evidence核对，内容须与markdown一致。不得虚构图片URL。SVG只用静态图形、viewBox、文字和title，不含脚本、事件、外部资源、foreignObject或style；用fill/stroke等属性。已有公式或图若仍需要应完整转入markdown，新输出formula和diagram设null，避免重复。',
     '三色笔仅作少量阅读标记：核心结论用<mark data-pen="key">短语</mark>，条件与记忆锚点用<mark data-pen="condition">短语</mark>，易错或例外用<mark data-pen="caution">短语</mark>。每条通常0到3处，不要求三色齐全，不标整段、整表或重复标题，不以颜色代替明确的文字说明。普通==高亮==视为条件标记。',
-    '目标是最少但完整的信息，不追求绝对短。简单概念优先一句20到50字；复杂规则、适用条件、例外或必要推导可以保留多段，不能为了字数牺牲含义。复杂时detailReason简述为何需要完整保留。标题简明，不重复正文。',
-    '删去重复定义、套话、无助于迁移的案例年月和选项字母；保留法定期限、阈值、单位、否定词、边界、比较基准、适用条件和例外。演算若是理解难点则保留必要步骤，不一律删除。',
+    ...knowledgeDistillationRules,
+    '复杂知识确需保留较多内容时，detailReason简述不可再删的原因。',
+    '删去重复定义、套话、无助于迁移的案例年月和选项字母；保留法定期限、阈值、单位、否定词、边界、比较基准、适用条件和例外。只保留决定方法的关键步骤，不复写演算过程。',
     '不要把错误选项记录成正确知识。不能从单个案例自行推导普遍规律。多个不可分的条件属于同一个知识点，可以一起保留。多个无关考点且意图不明时，needsReview为true，说明需要用户明确的重点。',
     '表达形式：文字已清楚就只用文字；数量关系适合公式；流程或对比适合辅助图。只在明显更易理解时生成，不必每条配图，不重复堆叠相同信息。',
     'formula可选：{"expression":"用Unicode数学符号、括号、/、上标表达的公式，不用LaTex或HTML","symbols":[{"symbol":"符号","meaning":"含义与单位"}],"condition":"来源中的适用条件","evidence":"来源连续原文"}。只整理已有公式，不发明公式或数值。',
