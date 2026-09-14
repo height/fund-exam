@@ -286,3 +286,10 @@
 .notebook-page .nb-note-list .nb-note:hover{background:var(--sheet2)}
 
 .notebook-page .nb-note-list .nb-note{padding-right:38px}.nb-row-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;color:var(--ink2);pointer-events:none}
+
+.nb-index-entry .i-chevronRight{color:var(--ink2);flex-shrink:0}.nb-index-entry>span{display:flex;align-items:center;gap:8px;min-width:0}.nb-index-entry>span>b{flex:1}.nb-index-entry:hover{background:var(--sheet2)}
+.notebook-page .nb-note-title,.notebook-page .nb-note-heading h3,.notebook-page .nb-index-entry b,.nb-workspace .nb-note-heading h3,#note-panel-draft .nb-proposal h3{font-weight:400}
+.notebook-page .nb-index-entry{display:flex;justify-content:flex-start;align-items:center;text-align:left;gap:12px}
+.notebook-page .nb-index-entry>time{flex:0 0 44px;text-align:left;font-variant-numeric:tabular-nums}
+.notebook-page .nb-index-entry>span{flex:1 1 0;min-width:0;text-align:left}
+.notebook-page .nb-index-entry>svg{flex:0 0 16px;margin-left:auto}

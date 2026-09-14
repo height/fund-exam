@@ -61,7 +61,7 @@ export default function Notebook({ go, noteId, editRequested }) {
               {query || chapter !== 'all' || subject !== 'all' ? <button onClick={resetFilters}>清除筛选</button> : mode !== 'inbox' && <button onClick={() => changeMode('inbox')}>查看待处理</button>}</div>
               : mode === 'index' ? <div className="nb-timeline">{index.map(({ note, capture }, i) => <div key={`${note.id}:${capture.id}`}>
                 {(i === 0 || day(capture.at) !== day(index[i - 1].capture.at)) && <h2>{day(capture.at)}</h2>}
-                <button className="nb-index-entry" onClick={() => openNote(note.id)}><time dateTime={new Date(capture.at).toISOString()}>{new Date(capture.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })}</time><span><b>{note.title}</b><small>{note.subject} · {note.chapter}{note.status !== 'ready' && ` · ${stateLabel(note)}`}</small></span><Icon name="right" /></button>
+                <button className="nb-index-entry" onClick={() => openNote(note.id)}><time dateTime={new Date(capture.at).toISOString()}>{new Date(capture.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })}</time><span><b>{note.title}</b>{note.status !== 'ready' && <span className="nb-state">{stateLabel(note)}</span>}</span><Icon name="chevronRight" size={16} /></button>
               </div>)}</div> : groupNotes(filtered).map(g => <section className="nb-chapter" key={`${g.subject}:${g.chapter}`}><header><span>{g.subject}</span><h2>{g.label}</h2></header><div className="nb-note-list">
                 {g.notes.map(note => <article className="nb-note" key={note.id} id={`note-${note.id}`}>
                   <span className="nb-row-arrow" aria-hidden="true"><Icon name="chevronRight" size={16} /></span>
