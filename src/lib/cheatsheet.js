@@ -1,4 +1,5 @@
 import { groupNotes } from './notebook.js'
+import { parseAIJSON } from './aiResponse.js'
 
 export function cheatsheetBatches(notes) {
   const batches = []
@@ -35,7 +36,7 @@ export function cheatsheetPrompt(batch) {
 
 export function parseCheatsheet(text, batch) {
   let result
-  try { result = JSON.parse(text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')) }
+  try { result = parseAIJSON(text) }
   catch { throw new Error('AI 小抄返回不完整，请重试') }
   const ids = new Set(batch.notes.map(n => n.id)), covered = new Set()
   if (!Array.isArray(result.items) || !result.items.length || result.items.length > batch.notes.length * 4) throw new Error('AI 未返回有效的小抄内容')

@@ -1,5 +1,6 @@
 import { CHAPTERS } from '../data/chapters.js'
 import { validFormula, validDiagram, visualFingerprint } from './notebookVisuals.js'
+import { parseAIJSON } from './aiResponse.js'
 
 export const NOTE_PREFIX = 'notebook:'
 export const UNFILED = '待归类'
@@ -34,7 +35,7 @@ export function notePrompt(note) {
 export function parseNoteResult(text, source) {
   const note = typeof source === 'string' ? { subject: source, context: '' } : source
   let value
-  try { value = JSON.parse(text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')) }
+  try { value = parseAIJSON(text) }
   catch { throw new Error('AI 返回的笔记格式不完整，请重试') }
   const title = clean(value?.title)
   const markdown = clean(value?.markdown)

@@ -29,6 +29,9 @@ def run():
                         result = {'reply': '已调整标题，保留完整条件，并提供公式和图示预览。', 'note': note}
                 else: result = note
                 response = 'data: ' + json.dumps({'choices':[{'delta':{'content':json.dumps(result, ensure_ascii=False)}}]}, ensure_ascii=False) + '\n\ndata: [DONE]\n\n'
+                if mode['value']=='question':
+                    wrapped='答复如下：\n```json\n'+json.dumps(result,ensure_ascii=False)[:-1]+',}\n```'
+                    response=': keepalive\r\nevent: message\r\ndata: '+json.dumps({'choices':[{'delta':{'content':wrapped},'finish_reason':'stop'}]},ensure_ascii=False)
                 route.fulfill(status=200,content_type='text/event-stream',body=response)
             context.route('https://notebook.test/chat/completions', ai)
             page.goto(APP); page.wait_for_selector('.notebook-home')
