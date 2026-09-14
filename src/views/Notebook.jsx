@@ -17,8 +17,6 @@ export default function Notebook({ go, noteId, editRequested }) {
   const [chapter, setChapter] = useState('all')
   const [query, setQuery] = useState('')
   const [outlineOpen, setOutlineOpen] = useState(false)
-  const [printing, setPrinting] = useState(false)
-  const [printError, setPrintError] = useState('')
   const routed = useRef('')
   const ready = notes.filter(n => n.status === 'ready')
   const pending = notes.length - ready.length
@@ -37,24 +35,9 @@ export default function Notebook({ go, noteId, editRequested }) {
   const changeMode = next => { setMode(next); setChapter('all') }
   const selectChapter = value => { setChapter(value); setOutlineOpen(false) }
   const resetFilters = () => { setQuery(''); setSubject('all'); setChapter('all') }
-  const printNotes = async () => {
-    const preview = window.open('', '_blank')
-    if (!preview) { setPrintError('预览窗口被拦截，请允许此网站打开新窗口后重试'); return }
-    preview.document.title = '正在生成 A4 小抄'
-    preview.document.body.textContent = '正在排版全部章节精华…'
-    setPrinting(true); setPrintError('')
-    try {
-      const { notebookPrintHTML } = await import('../lib/notebookPrint')
-      const html = notebookPrintHTML(ready)
-      preview.document.open(); preview.document.write(html); preview.document.close()
-      preview.opener = null
-    } catch (e) { preview.close(); setPrintError(`生成失败：${e.message}`) }
-    finally { setPrinting(false) }
-  }
 
   return <>
-    <PageHeader variant="subpage" title="我的笔记本" onBack={() => go('home')} backLabel="首页" action={<div className="nb-print-action"><button className="btn-sm" aria-label="生成 A4 小抄" title={`生成全部 ${ready.length} 条精华的 A4 小抄`} disabled={loading || !ready.length || printing} onClick={printNotes}>{printing ? '排版中…' : '小抄'}</button><ThemeToggle iconOnly /></div>} />
-    {printError && <p className="nb-error" role="alert">{printError}</p>}
+    <PageHeader variant="subpage" title="我的笔记本" onBack={() => go('home')} backLabel="首页" action={<div className="nb-print-action"><button className="nb-print-button" aria-label="小抄生成页面" onClick={() => go('cheatsheet')}><Icon name="sparkle" size={15} /><span>小抄</span></button><ThemeToggle iconOnly /></div>} />
     <div className="nb-summary"><div><b>{ready.length}</b><span>条精华</span><small>记住关键，也保留必要的复杂</small></div>
       {pending > 0 && <button className="nb-inbox-link" onClick={() => changeMode('inbox')}>{pending} 条待处理 <Icon name="right" /></button>}</div>
     <div className="nb-controls"><label className="nb-search"><Icon name="search" /><input type="search" aria-label="搜索笔记" placeholder="搜索考点或原文" value={query} onChange={e => setQuery(e.target.value)} /></label>

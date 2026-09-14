@@ -20,6 +20,7 @@ import Timeline from './views/Timeline'
 import Tools from './views/Tools'
 import Wrong from './views/Wrong'
 import Notebook from './views/Notebook'
+import Cheatsheet from './views/Cheatsheet'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
@@ -31,7 +32,7 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
-const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'dupont', 'notebook']
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'dupont', 'notebook', 'cheatsheet']
 
 // 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
 function parseHash() {
@@ -51,7 +52,7 @@ export default function App() {
   const [quiz, setQuiz] = useState(false)
   // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
   const bare = view === 'map' || view === 'timeline' || view === 'fundops' || view === 'dupont'
-  const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'notebook'].includes(view)
+  const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'notebook', 'cheatsheet'].includes(view)
     || (view === 'data' && ['ai', 'voice', 'storage', 'countdown'].includes(params.page))
     || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
   useEffect(() => {
@@ -108,6 +109,7 @@ export default function App() {
       <a className="skip" href="#app">跳到主要内容</a>
       <main id="app" className={`${reduceMotion ? '' : 'fade'}${view === 'map' ? ' kg-page' : view === 'notebook' ? ' notebook-page' : ''}`} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
+        {view === 'cheatsheet' && <Cheatsheet go={go} />}
         {view === 'notebook' && <Notebook go={go} noteId={params.note} editRequested={params.edit === '1'} />}
         {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setQuiz={setQuiz} chapter={params.ch}

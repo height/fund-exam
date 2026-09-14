@@ -4,6 +4,7 @@ import soundTouchProcessorUrl from '@soundtouchjs/audio-worklet/processor?url'
 import { claimIOSPlayback } from './iosAudio'
 import { notePrompt, parseNoteResult } from './notebook'
 import { streamingReply } from './streamingReply'
+import { cheatsheetBatches, cheatsheetPrompt, parseCheatsheet } from './cheatsheet'
 
 /**
  * AI 解析，走 OpenAI 兼容的 chat/completions 接口，浏览器 fetch 直连，不引 SDK。
@@ -171,6 +172,23 @@ export function askTerm(term, ctx, signal) {
     '再给一个帮助记忆的类比或对比——贴切才用，硬凑不如直接把这个概念的逻辑讲清；' +
     '有常考数字、易混概念或法条信号词就顺带点一句。' +
     '用 Markdown，不超过150字，直接讲，不要客套。', signal)
+}
+
+export async function askCheatsheet(notes, signal, onProgress) {
+  const batches = cheatsheetBatches(notes)
+  const output = []
+  for (let i = 0; i < batches.length; i++) {
+    let text = ''
+    const batch = batches[i]
+    onProgress?.({ current: i + 1, total: batches.length, chapter: batch.chapter, received: 0 })
+    for await (const chunk of streamChat(cheatsheetPrompt(batch), signal, { think: false })) {
+      if (signal.aborted) throw new DOMException('已取消', 'AbortError')
+      text += chunk
+      onProgress?.({ current: i + 1, total: batches.length, chapter: batch.chapter, received: text.length })
+    }
+    output.push(...parseCheatsheet(text, batch))
+  }
+  return output
 }
 
 export async function askNotebook(note, signal) {
