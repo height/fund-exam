@@ -41,8 +41,12 @@ export default function Notebook({ go, noteId, editRequested }) {
       {pending > 0 && <button className="nb-inbox-link" onClick={() => changeMode('inbox')}>{pending} 条待处理 <Icon name="right" /></button>}</div>
     <div className="nb-controls"><label className="nb-search"><Icon name="search" /><input type="search" aria-label="搜索笔记" placeholder="搜索考点或原文" value={query} onChange={e => setQuery(e.target.value)} /></label>
       <select aria-label="筛选笔记科目" value={subject} onChange={e => { setSubject(e.target.value); setChapter('all') }}><option value="all">全部科目</option>{Object.keys(CHAPTERS).map(s => <option key={s}>{s}</option>)}</select><select className="nb-mobile-chapters" aria-label="筛选笔记章节" value={chapter} onChange={e => selectChapter(e.target.value)}><option value="all">全部章节</option>{groups.map(g => <option key={`${g.subject}:${g.chapter}`} value={`${g.subject}:${g.chapter}`}>{g.subject} · {g.label}（{g.notes.length}）</option>)}</select></div>
-    <div className="seg nb-tabs" role="tablist" aria-label="笔记浏览方式">{[['outline', '章节精华'], ['inbox', `待处理${pending ? ` ${pending}` : ''}`], ['index', '时间索引']].map(([value, label]) =>
-      <button key={value} role="tab" aria-selected={mode === value} className={mode === value ? 'on' : ''} onClick={() => changeMode(value)}>{label}{value === 'outline' && <span className="nb-mobile-count" aria-hidden="true">{ready.length}</span>}</button>)}</div>
+    <div className="nb-browse-tabs" role="tablist" aria-label="笔记浏览方式">{[['outline', '章节精华', ready.length], ['inbox', '待处理', pending], ['index', '时间索引', null]].map(([value, label, count], i) =>
+      <button key={value} id={`nb-tab-${value}`} role="tab" aria-selected={mode === value} aria-controls="nb-browse-panel" tabIndex={mode === value ? 0 : -1} onClick={() => changeMode(value)} onKeyDown={e => {
+        const modes = ['outline', 'inbox', 'index']
+        const next = e.key === 'ArrowRight' ? (i + 1) % 3 : e.key === 'ArrowLeft' ? (i + 2) % 3 : e.key === 'Home' ? 0 : e.key === 'End' ? 2 : null
+        if (next !== null) { e.preventDefault(); changeMode(modes[next]); document.getElementById(`nb-tab-${modes[next]}`)?.focus() }
+      }}><span>{label}</span>{count !== null && <span className="nb-tab-count">{count}</span>}</button>)}</div>
     {error ? <div className="nb-empty" role="alert">笔记读取失败：{error}<button onClick={() => location.reload()}>重新加载</button></div>
       : loading ? <p role="status">正在打开笔记本…</p> : !notes.length ? <section className="nb-empty"><Icon name="list" size={32} /><h2>从一个想记住的考点开始</h2><p>长按选中文字，点“记笔记”后说说想怎么记。AI 整理后，确认才会加入笔记本。</p><button className="btn-pri" onClick={() => go('map')}>去知识图谱摘录 <Icon name="right" /></button></section>
         : <div className="nb-layout">
@@ -53,7 +57,7 @@ export default function Notebook({ go, noteId, editRequested }) {
                 return <button key={key} className={chapter === key ? 'on' : ''} aria-pressed={chapter === key} onClick={() => selectChapter(key)}>{g.label}<span>{g.notes.length}</span></button>
               })}</div>)}
             </nav></aside>
-          <div className="nb-content" role="tabpanel" aria-label={mode === 'outline' ? '章节精华' : mode === 'inbox' ? '待处理' : '时间索引'}>
+          <div id="nb-browse-panel" className="nb-content" role="tabpanel" aria-labelledby={`nb-tab-${mode}`} aria-label={mode === 'outline' ? '章节精华' : mode === 'inbox' ? '待处理' : '时间索引'}>
             <div className="nb-result-count"><span role="status">{mode === 'index' ? `${index.length} 次摘录` : `${filtered.length} 条${mode === 'inbox' ? '待处理' : '精华'}`}</span>{chapter !== 'all' && <button onClick={() => setChapter('all')}>清除章节筛选</button>}</div>
             {mode === 'inbox' && filtered.length > 0 && <p className="nb-inbox-hint">这里保留尚未整理或需要核对的摘录。确认重点与依据后，再收进精华。</p>}
             {!filtered.length ? <div className="nb-empty"><h2>{query || chapter !== 'all' || subject !== 'all' ? '没有匹配的笔记' : mode === 'inbox' ? '没有待处理的摘录' : '精华正在积累'}</h2>
