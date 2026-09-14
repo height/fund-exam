@@ -9,6 +9,17 @@ import '../notebook.css'
 const day = value => new Date(value).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
 const stateLabel = note => note.status === 'review' ? '待核对' : noteRunning(note.id) ? '整理中' : '待整理'
 
+function NoteRow({ note, capture }) {
+  return <button type="button" className="nb-note" id={capture ? undefined : `note-${note.id}`} onClick={() => openNote(note.id)}>
+    <span className="nb-row-arrow" aria-hidden="true"><Icon name="chevronRight" size={16} /></span>
+    <span className="nb-note-heading">
+      {capture && <time className="nb-row-time" dateTime={new Date(capture.at).toISOString()}>{new Date(capture.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })}</time>}
+      <span className="nb-note-title">{note.title}</span>
+      {note.status !== 'ready' && <span className="nb-state">{stateLabel(note)}</span>}
+    </span>
+  </button>
+}
+
 export default function Notebook({ go, noteId, editRequested }) {
   const { notes, loading, error } = useNotebook()
   const [mode, setMode] = useState('outline')
@@ -63,14 +74,11 @@ export default function Notebook({ go, noteId, editRequested }) {
             {!filtered.length ? <div className="nb-empty"><h2>{query || chapter !== 'all' || subject !== 'all' ? '没有匹配的笔记' : mode === 'inbox' ? '没有待处理的摘录' : '精华正在积累'}</h2>
               <p>{query || chapter !== 'all' || subject !== 'all' ? '试试其他关键词或章节。' : mode === 'inbox' ? '继续学习，遇到重要的内容再记下。' : '摘录已保留，可先到待处理查看整理进度。'}</p>
               {query || chapter !== 'all' || subject !== 'all' ? <button onClick={resetFilters}>清除筛选</button> : mode !== 'inbox' && <button onClick={() => changeMode('inbox')}>查看待处理</button>}</div>
-              : mode === 'index' ? <div className="nb-timeline">{index.map(({ note, capture }, i) => <div key={`${note.id}:${capture.id}`}>
-                {(i === 0 || day(capture.at) !== day(index[i - 1].capture.at)) && <h2>{day(capture.at)}</h2>}
-                <button className="nb-index-entry" onClick={() => openNote(note.id)}><time dateTime={new Date(capture.at).toISOString()}>{new Date(capture.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })}</time><span><b>{note.title}</b>{note.status !== 'ready' && <span className="nb-state">{stateLabel(note)}</span>}</span><Icon name="chevronRight" size={16} /></button>
-              </div>)}</div> : groupNotes(filtered).map(g => <section className="nb-chapter" key={`${g.subject}:${g.chapter}`}><header><span>{g.subject}</span><h2>{g.label}</h2></header><div className="nb-note-list">
-                {g.notes.map(note => <article className="nb-note" key={note.id} id={`note-${note.id}`}>
-                  <span className="nb-row-arrow" aria-hidden="true"><Icon name="chevronRight" size={16} /></span>
-                  <div className="nb-note-heading"><h3><button className="nb-note-title" onClick={() => openNote(note.id)}>{note.title}</button></h3>{note.status !== 'ready' && <span className="nb-state">{stateLabel(note)}</span>}</div>
-                </article>)}
+              : mode === 'index' ? <div className="nb-timeline">{Object.entries(index.reduce((groups, entry) => { const date = day(entry.capture.at); (groups[date] ||= []).push(entry); return groups }, {})).map(([date, entries]) => <section key={date}>
+                <h2>{date}</h2>
+                <div className="nb-note-list">{entries.map(({ note, capture }) => <NoteRow key={`${note.id}:${capture.id}`} note={note} capture={capture} />)}</div>
+              </section>)}</div> : groupNotes(filtered).map(g => <section className="nb-chapter" key={`${g.subject}:${g.chapter}`}><header><span>{g.subject}</span><h2>{g.label}</h2></header><div className="nb-note-list">
+                {g.notes.map(note => <NoteRow key={note.id} note={note} />)}
               </div></section>)}
           </div>
         </div>}

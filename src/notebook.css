@@ -279,10 +279,15 @@
  .note-modal-backdrop.overlay:not(.is-collapsed) .note-modal{height:100%;max-height:100%;border-radius:18px}
 }
 .notebook-page .nb-note-list .nb-note{padding:10px 12px}.notebook-page .nb-note-list .nb-note h3{margin:0}.notebook-page .nb-note-list .nb-note-title{min-height:32px;text-align:left}
-/* Extend the semantic title button across the whole notebook row. */
-.notebook-page .nb-note-list .nb-note{position:relative;cursor:pointer}
-.notebook-page .nb-note-list .nb-note-title::after{content:"";position:absolute;inset:0;border-radius:inherit}
-.notebook-page .nb-note-list .nb-note:has(.nb-note-title:focus-visible){outline:2px solid var(--accent-ink);outline-offset:-2px}
+/* The entire row is a native button, including its padding and trailing arrow. */
+.notebook-page .nb-note-list .nb-note{position:relative;display:block;width:100%;cursor:pointer;text-align:left;background:transparent;border:0;border-radius:0;box-sizing:border-box}
+.notebook-page .nb-note-list{border:0}
+.notebook-page .nb-note-list .nb-note+.nb-note{border-top:1px solid color-mix(in srgb,var(--rule) 40%,transparent)}
+.notebook-page .nb-index-entry{border:0;border-bottom:1px solid color-mix(in srgb,var(--rule) 40%,transparent)}
+.notebook-page .nb-note-list .nb-note-heading{align-items:center}
+.notebook-page .nb-note-list .nb-note-title{display:flex;align-items:center;flex:1;min-width:0;font-size:15px;line-height:1.5}
+.notebook-page .nb-note-list .nb-note:focus-visible{outline:2px solid var(--accent-ink);outline-offset:-2px}
+.notebook-page .nb-note-list .nb-note:active{transform:none}
 .notebook-page .nb-note-list .nb-note:hover{background:var(--sheet2)}
 
 .notebook-page .nb-note-list .nb-note{padding-right:38px}.nb-row-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;color:var(--ink2);pointer-events:none}
@@ -330,3 +335,5 @@
 .cs-workbench{width:100%;box-sizing:border-box}.cs-workbench .cs-regenerate,.cs-workbench .cs-cancel{background:var(--sheet);color:var(--ink);border:1px solid var(--rule)}
 
 .cs-prompt-editor{margin-top:12px;border-top:1px solid var(--rule);font-size:12px}.cs-prompt-editor summary{min-height:40px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;color:var(--ink2)}.cs-prompt-editor summary::-webkit-details-marker{display:none}.cs-prompt-editor summary>span{display:flex;align-items:center;gap:6px;font-size:11px}.cs-prompt-editor[open] summary svg{transform:rotate(90deg)}.cs-prompt-editor p{font-size:11px;line-height:1.6;color:var(--ink2);margin:0 0 8px}.cs-prompt-editor textarea{display:block;width:100%;min-height:230px;max-height:55dvh;resize:vertical;padding:10px 12px;border:1px solid var(--rule);border-radius:9px;background:var(--sheet);color:var(--ink);font-size:13px;line-height:1.7;box-sizing:border-box}.cs-prompt-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.cs-workbench .cs-prompt-actions button{font-size:12px;padding:7px 10px;min-height:36px;border:1px solid var(--rule);border-radius:7px;background:var(--sheet);color:var(--ink)}
+
+.nb-row-time{flex:0 0 42px;color:var(--ink2);font-size:12px;font-variant-numeric:tabular-nums;text-align:left}
