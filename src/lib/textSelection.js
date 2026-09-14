@@ -275,7 +275,7 @@ export function selectionContext(root) {
 }
 
 /**
- * 取词操作最高 164×32：优先放在选区上方，避免压住正在阅读的词；
+ * 取词操作条 224×40：优先放在选区上方，避免压住正在阅读的词；
  * 顶部空间不足时才借行尾/行首，最后压到下方。桌面原生划选和触屏自绘选区共用这套几何。
  */
 export function selectionTipPosition(rects) {
@@ -283,8 +283,8 @@ export function selectionTipPosition(rects) {
   const first = rects[0]
   const last = rects[rects.length - 1]
   // 文案会随术语变宽；按最大宽度判断左右空间，保证长词省略后也不出屏。
-  const width = 164
-  const height = 32
+  const width = 224
+  const height = 40
   // 工具条仍在选区上方，但贴近到 3px：视觉上不再悬得过高，也不会压住高亮。
   const gap = 3
   const inset = 8

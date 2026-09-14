@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Calculator from './components/Calculator'
 import SelectionTip from './components/SelectionTip'
+import NoteModal from './components/NoteModal'
 import { Dialog, Icon } from './components/ui'
 import { track, trackPageview } from './lib/analytics'
 import { SUBJECTS, stats } from './lib/bank'
@@ -18,6 +19,7 @@ import Practice from './views/Practice'
 import Timeline from './views/Timeline'
 import Tools from './views/Tools'
 import Wrong from './views/Wrong'
+import Notebook from './views/Notebook'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
@@ -29,7 +31,7 @@ const NAV = [
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
-const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'dupont']
+const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'dupont', 'notebook']
 
 // 路由就是 hash：#/practice?scope=all&order=seq。刷新回到原页，后退前进白送
 function parseHash() {
@@ -49,8 +51,8 @@ export default function App() {
   const [quiz, setQuiz] = useState(false)
   // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
   const bare = view === 'map' || view === 'timeline' || view === 'fundops' || view === 'dupont'
-  const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools'].includes(view)
-    || (view === 'data' && ['ai', 'voice', 'storage'].includes(params.page))
+  const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'notebook'].includes(view)
+    || (view === 'data' && ['ai', 'voice', 'storage', 'countdown'].includes(params.page))
     || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
   useEffect(() => {
     document.documentElement.toggleAttribute('data-quiz', quiz)
@@ -104,8 +106,9 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#app">跳到主要内容</a>
-      <main id="app" className={`${reduceMotion ? '' : 'fade'}${view === 'map' ? ' kg-page' : ''}`} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
+      <main id="app" className={`${reduceMotion ? '' : 'fade'}${view === 'map' ? ' kg-page' : view === 'notebook' ? ' notebook-page' : ''}`} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
+        {view === 'notebook' && <Notebook go={go} noteId={params.note} editRequested={params.edit === '1'} />}
         {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setQuiz={setQuiz} chapter={params.ch}
           scope={params.scope} review={params.review} />}
@@ -146,6 +149,7 @@ export default function App() {
       )}
       {needsCalc && <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />}
 
+      <NoteModal go={go} />
       <Dialog />
       <SelectionTip go={go} />
       <div className={`toast ${toastMsg ? 'on' : ''}`} role="status" aria-live="polite">{toastMsg}</div>

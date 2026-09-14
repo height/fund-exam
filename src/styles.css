@@ -267,6 +267,21 @@ select{font:inherit;color:inherit;background:var(--sheet2);border:1px solid tran
 .today{display:flex;justify-content:space-between;gap:12px;padding:0 4px;
   font-size:12px;color:var(--ink2);flex-wrap:wrap}
 .today b{font:600 13px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--ink);margin:0 4px}
+/* 考期是首页的辅助信息：紧凑日程行，数字沿用主色，不占据战绩的视觉层级。 */
+.exam-countdown{min-width:0}
+.exam-countdown-display{display:flex;align-items:center;gap:12px;width:100%;min-height:78px;
+  padding:15px 16px;border:0;border-radius:var(--r-l);background:var(--sheet);text-align:left}
+.exam-countdown-copy{display:flex;flex:1;flex-direction:column;gap:5px;min-width:0}
+.exam-countdown-label{font-size:14px;font-weight:600;line-height:1.35;color:var(--ink)}
+.exam-countdown-copy time{font:400 12px/1.3 var(--f-num);color:var(--ink2);font-variant-numeric:tabular-nums}
+.exam-countdown-value{display:flex;align-items:baseline;gap:5px;flex-shrink:0;color:var(--accent-ink)}
+.exam-countdown-days{font:650 34px/1 var(--f-body);font-variant-numeric:tabular-nums;letter-spacing:-.045em}
+.exam-countdown-value>span{font-size:12px;font-weight:500;color:var(--ink2)}
+.exam-countdown-status{font-size:13px;font-weight:500;color:var(--accent-ink);white-space:nowrap}
+.exam-countdown-chevron{flex-shrink:0;margin-left:2px;color:var(--ink2);font:400 22px/1 var(--f-body);opacity:.65}
+.exam-countdown-display.is-long .exam-countdown-days{font-size:23px}
+@media (max-width:360px){.exam-countdown-display{gap:9px;padding-inline:14px}}
+@media (hover:hover){.exam-countdown-display:hover:not(:disabled){background:var(--sheet);box-shadow:inset 0 0 0 1px var(--rule)}}
 
 /* 两个刷题入口并排。渐变都从同一支主色里调，一个偏亮一个偏深——
    要的是两块能分辨的色板，不是往页面里塞第二个品牌色 */
@@ -616,7 +631,7 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 .sel-handle:active:not(:disabled){transform:translate(-50%,-10px)}
 .sel-tip{position:fixed;transform:translateX(-50%);z-index:var(--z-toast);
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  width:max-content;max-width:min(164px,calc(100vw - 16px));height:32px;
+  width:224px;max-width:calc(100vw - 16px);height:40px;
   background:color-mix(in srgb,var(--sheet) 94%,var(--accent));
   color:var(--accent-ink);border:1px solid color-mix(in srgb,var(--accent) 24%,var(--rule));
   border-radius:8px;padding:0 8px;font-size:12px;font-weight:600;white-space:nowrap;
@@ -1080,3 +1095,25 @@ button.tl-date.hidden{padding:2px 10px;border-radius:99px;background:var(--sheet
 .question-material .md-table th,.question-material .md-table td{white-space:normal;min-width:64px}
 .question-material .md-table table{table-layout:auto;font-size:14px}
 .question-material small{font-size:12px}
+
+/* 选区工具条的操作共享选区快照，指针按下时保留选中文字。 */
+.sel-tip{padding:0;gap:0;overflow:hidden}
+.sel-tip button{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:38px;padding:0 10px;background:none;border:0;border-radius:0;font-size:12px;color:inherit;white-space:nowrap;flex:1;touch-action:manipulation}
+.sel-tip button+button{border-left:1px solid var(--rule)}
+/* 单次摘录回执：短句反馈、可撤销，不展开全文或阻止继续操作。 */
+.note-receipt{position:fixed;z-index:31;left:12px;right:12px;bottom:calc(78px + env(safe-area-inset-bottom) + var(--calc-h));max-width:560px;margin:0 auto;
+  display:flex;align-items:center;gap:12px;background:var(--sheet);color:var(--ink);border:1px solid var(--rule);border-radius:var(--r-l);padding:12px 14px;box-shadow:0 8px 32px #0003}
+.note-receipt-copy{min-width:0;flex:1}.note-receipt b{display:block;font-size:13px;font-weight:600;line-height:1.5}
+.note-receipt small{display:block;font-size:11px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px}
+.note-receipt-actions{display:flex;align-items:center;gap:2px;flex-shrink:0}.note-receipt button{background:none;border:0;color:var(--accent-ink);padding:8px 6px;font-size:12px;min-height:36px;white-space:nowrap}
+.note-receipt button:last-child{color:var(--ink2)}
+@media(max-width:380px){.note-receipt{gap:6px;padding:10px}.note-receipt button{padding:8px 4px}}
+@media(prefers-reduced-motion:no-preference){.note-receipt{animation:fade .16s var(--ease)}}
+.notebook-home{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:18px;background:var(--sheet);border:0;border-radius:var(--r-l);box-shadow:var(--shadow)}
+.notebook-home-icon{display:grid;place-items:center;width:40px;height:44px;background:var(--accent-soft);color:var(--accent-ink);border-radius:var(--r-s);flex-shrink:0}
+.notebook-home>span:nth-child(2){flex:1;min-width:0}
+.notebook-home b{display:block;font-size:16px}
+.notebook-home small{display:block;font-size:12px;color:var(--ink2);margin-top:3px}
+.notebook-home>.icon{color:var(--ink2);flex-shrink:0}
+
+.fc-note-scope{display:contents}

@@ -12,6 +12,10 @@ import {
   wordAtPoint,
 } from '../lib/textSelection'
 import { Icon, Speaker } from './ui'
+import { useStore } from '../lib/store'
+import { captureNote } from '../lib/notebookCapture'
+import { MAX_EXCERPT } from '../lib/notebook'
+import NoteFeedback, { useNoteCapture } from './NoteFeedback'
 
 /**
  * 划词解释：选中任意文字浮出「解释」按钮，点开是流式 AI 气泡。
@@ -21,11 +25,13 @@ import { Icon, Speaker } from './ui'
 let uid = 0
 const HOLD_MS = 420
 const MOVE_CANCEL = 10
-const MAX_TERM = 60
+const MAX_TERM = MAX_EXCERPT
 
 const clamp = (n, min, max) => Math.max(min, Math.min(n, max))
 
 export default function SelectionTip({ go }) {
+  const { subject, toast } = useStore()
+  const notebookCapture = useNoteCapture()
   const [nativeTip, setNativeTip] = useState(null) // 桌面端系统划选
   const [custom, setCustom] = useState(null) // 触屏端自绘选区
   const [layout, setLayout] = useState(0) // 滚动/旋转后重算浮层位置
@@ -66,9 +72,11 @@ export default function SelectionTip({ go }) {
           return
         }
         const term = sel && !sel.isCollapsed ? sel.toString().trim().replace(/\s+/g, ' ') : ''
-        if (!term || term.length > 60 ||
+        if (!term || term.length > MAX_TERM ||
             /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName)) return setNativeTip(null)
         const range = sel.getRangeAt(0)
+        const root = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement
+        if (!root?.closest('#app,.bubble-body')) return setNativeTip(null)
         const rects = [...range.getClientRects()].filter(r => r.width > 0 && r.height > 0)
         const tip = selectionTipPosition(rects.length ? rects : [range.getBoundingClientRect()])
         // 带上所在句子当上下文，同一个词在不同题里意思可能不一样
@@ -76,7 +84,7 @@ export default function SelectionTip({ go }) {
           ?.closest('p,li,td,.stem,.opt,.bubble-body')?.innerText.slice(0, 160) || ''
         setNativeTip({
           x: tip.x, y: tip.y, side: tip.side,
-          term, ctx, source: 'native',
+          term, copyText: sel.toString(), ctx, root, source: 'native',
         })
       }, 250)
     }
@@ -297,16 +305,46 @@ export default function SelectionTip({ go }) {
   // layout 被读取是为了让滚动后触发上面的几何重算。
   void layout
   const customTip = custom && geometry?.tip
-    ? { ...geometry.tip, term: custom.term, ctx: custom.ctx, source: 'custom' }
+    ? { ...geometry.tip, term: custom.term, ctx: custom.ctx, root: custom.root, source: 'custom' }
     : null
   const tip = customTip || nativeTip
+  useEffect(() => {
+    const clear = () => setNativeTip(null)
+    window.addEventListener('hashchange', clear)
+    return () => window.removeEventListener('hashchange', clear)
+  }, [])
 
   // pointerdown 抢在浏览器清空选区之前，term 已经存在 tip 里了
   const open = () => {
-    setStack(s => [...s, { id: ++uid, term: tip.term, ctx: tip.ctx }])
+    setStack(s => [...s, { id: ++uid, term: tip.term, ctx: tip.ctx, origin: captureNote(tip.root, tip.term, subject) }])
     setNativeTip(null)
     if (tip.source === 'custom') clearCustom()
     else getSelection()?.removeAllRanges()
+  }
+
+  const collect = () => {
+    const draft = captureNote(tip.root, tip.term, subject)
+    setNativeTip(null)
+    clearCustom()
+    getSelection()?.removeAllRanges()
+    notebookCapture.capture(draft)
+  }
+
+  const copy = async () => {
+    const text = tip.copyText ?? tip.term
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text)
+      else {
+        const field = document.createElement('textarea')
+        field.value = text
+        field.style.cssText = 'position:fixed;left:-9999px;top:0;font-size:16px'
+        document.body.appendChild(field)
+        try { field.select(); if (!document.execCommand('copy')) throw new Error('copy failed') }
+        finally { field.remove() }
+      }
+      setNativeTip(null); clearCustom(); getSelection()?.removeAllRanges()
+      toast('已复制')
+    } catch { toast('复制失败，请重试或使用系统复制') }
   }
 
   return (
@@ -329,14 +367,14 @@ export default function SelectionTip({ go }) {
         <span className="sr-only" role="status" aria-live="polite">已选择 {custom.term}</span>
       </>}
       {tip && (
-        <button className="sel-tip" data-side={tip.side} style={{ left: tip.x, top: tip.y }}
-          data-term={tip.term} aria-label={`解释“${tip.term}”`}
-          onPointerDown={e => { e.preventDefault(); open() }}>
-          <Icon name="sparkle" />
-          <span className="sel-tip-copy"><span>解释 “</span>
-            <span className="sel-tip-term">{tip.term}</span><span>”</span></span>
-        </button>
+        <div className="sel-tip" role="toolbar" aria-label="选中文字操作" data-side={tip.side}
+          data-term={tip.term} style={{ left: tip.x, top: tip.y }} onPointerDown={e => e.preventDefault()}>
+          <button aria-label={`解释“${tip.term}”`} onClick={open}><Icon name="sparkle" />解释</button>
+          <button onClick={collect}><Icon name="list" />记笔记</button>
+          <button onClick={copy}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></svg>复制</button>
+        </div>
       )}
+      <NoteFeedback {...notebookCapture} go={go} />
       {stack.map((b, i) => (
         <Bubble key={b.id} {...b} lift={i} depth={stack.length - 1 - i} go={go}
           onClose={() => setStack(s => s.filter(x => x.id !== b.id))} />
@@ -345,7 +383,7 @@ export default function SelectionTip({ go }) {
   )
 }
 
-function Bubble({ term, ctx, lift, depth, go, onClose }) {
+function Bubble({ term, ctx, origin, lift, depth, go, onClose }) {
   const [state, setState] = useState('loading')
   const [text, setText] = useState('')
   const [err, setErr] = useState('')
@@ -374,6 +412,7 @@ function Bubble({ term, ctx, lift, depth, go, onClose }) {
 
   return (
     <div className="bubble card" role="dialog" aria-label={`解释 ${term}`}
+      data-note-subject={origin?.subject} data-note-chapter={origin?.chapter} data-note-title={origin?.sourceTitle} data-note-qid={origin?.sourceQid}
       style={{ zIndex: 21 + lift, transform: `translateY(${-9 * depth}px)` }}>
       <div className="row between">
         <b className="bubble-term">{term}</b>

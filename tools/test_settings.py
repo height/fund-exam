@@ -65,7 +65,7 @@ def run():
             page = ctx.new_page()
             page.on('pageerror', lambda e: errors.append(str(e)))
             page.goto(base + '#/data')
-            expect(page.locator('.settings-link')).to_have_count(3)
+            expect(page.locator('.settings-link')).to_have_count(4)
             expect(page.locator('.settings input')).to_have_count(0)
             page.get_by_role('button', name='浅色', exact=True).click()
             page.screenshot(path='/tmp/settings-overview.png')
@@ -207,7 +207,7 @@ def run():
                     for theme in ['浅色', '深色']:
                         page.goto(base+'#/data')
                         page.get_by_role('button', name=theme, exact=True).click()
-                        for section in ['AI 解析', '语音朗读', '数据与备份']:
+                        for section in ['考试倒计时', 'AI 解析', '语音朗读', '数据与备份']:
                             open_section(page, section)
                             assert not page.evaluate('document.documentElement.scrollWidth > innerWidth'), (engine, width, section)
                             sizes = page.locator('.settings input:not([type=file]),.settings select').evaluate_all('els=>els.map(e=>parseFloat(getComputedStyle(e).fontSize))')

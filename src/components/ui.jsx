@@ -188,7 +188,7 @@ export function ThemeToggle({ iconOnly = false }) {
  */
 export function Options({ q, picked, reveal, selected, onPick }) {
   return (
-    <div className="opts">
+    <div className="opts" data-note-qid={q.id}>
       {q.options.map((o, i) => {
         let cls = 'opt'
         if (reveal) {

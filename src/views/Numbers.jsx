@@ -135,7 +135,7 @@ function CardDeck({ go, review }) {
         </div>
       ) : (
         <>
-          <article className={`number-card ${revealed ? 'revealed' : ''}`}>
+          <article className={`number-card ${revealed ? 'revealed' : ''}`} data-note-subject={q.subject} data-note-chapter={q.chapter} data-note-qid={q.id}>
             <div className="number-card-meta">
               <span className="chip">{NUMBER_TYPE_LABEL[numberType(q)]}</span>
               <span className="muted">{q.chapter}</span>

@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { qById } from './bank'
 import { reconcileRecord, reconcileExam } from './questionQuality'
 import { idb, kvGet, kvSet, openDB } from './db'
+import { examDateStamp } from './examCountdown'
 
 const Ctx = createContext(null)
 export const useStore = () => useContext(Ctx)
@@ -16,6 +17,7 @@ export function StoreProvider({ children }) {
   const [subject, setSubjectState] = useState('科目一')
   const [autoNext, setAutoNextState] = useState(true)
   const [theme, setThemeState] = useState('auto')
+  const [examDate, setExamDateState] = useState('')
   const [toastMsg, setToastMsg] = useState('')
   const [dialog, setDialog] = useState(null)
   const [systemDark, setSystemDark] = useState(() => matchMedia('(prefers-color-scheme:dark)').matches)
@@ -39,6 +41,8 @@ export function StoreProvider({ children }) {
       setSubjectState(await kvGet('subject', '科目一'))
       setAutoNextState(await kvGet('autoNext', true))
       setThemeState(await kvGet('theme', 'auto'))
+      const savedExamDate = await kvGet('examDate', '')
+      setExamDateState(examDateStamp(savedExamDate) === null ? '' : savedExamDate)
       setReady(true)
     })()
   }, [])
@@ -75,6 +79,11 @@ export function StoreProvider({ children }) {
   const setSubject = useCallback(s => { setSubjectState(s); kvSet('subject', s) }, [])
   const setAutoNext = useCallback(v => { setAutoNextState(v); kvSet('autoNext', v) }, [])
   const setTheme = useCallback(t => { setThemeState(t); kvSet('theme', t) }, [])
+  const setExamDate = useCallback(async value => {
+    if (value !== '' && examDateStamp(value) === null) throw new Error('请选择有效的考试日期')
+    await kvSet('examDate', value)
+    setExamDateState(value)
+  }, [])
 
   /** 记一次作答，返回是否答对。答对即移出错题本 */
   const recordAnswer = useCallback(async (q, pickedIdx) => {
@@ -107,6 +116,7 @@ export function StoreProvider({ children }) {
   const value = {
     ready, records, setRecords, subject, setSubject, autoNext, setAutoNext,
     theme, setTheme, isDark, toast, toastMsg, recordAnswer, patchRecord, ask, dialog,
+    examDate, setExamDate,
   }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

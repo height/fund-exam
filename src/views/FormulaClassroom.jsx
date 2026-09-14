@@ -116,7 +116,7 @@ function Lesson({ unit, progress, send, go, now }) {
   const openBridge = id => { if (q && !isLesson) event(q.id, 'hint'); setBridge(id) }
   const sourceTopic = formulaTopic(COURSE_TOPIC[unit.id])
   const position = isLesson ? cursor.step : 4
-  return <>
+  return <div className="fc-note-scope" data-note-subject="科目二" data-note-chapter={sourceTopic.chapterTitle} data-note-title={unit.title}>
     <section className="fc-course-context"><h2>{unit.title} · 分步带练</h2><div><p>第{sourceTopic.chapter}章 {sourceTopic.chapterTitle} · {sourceTopic.section} · 大纲 {sourceTopic.code}</p><button onClick={() => go('formula', { topic: sourceTopic.id, chapter: sourceTopic.chapter })}>查看公式与术语 →</button></div><p><b>本节目标：</b>{unit.objectives.join('；')}。</p><ol className="fc-course-map" aria-label="带练进度">{['理解情境', '分步计算一', '分步计算二', '归纳公式', '独立测评'].map((label, index) => <li key={label} aria-current={position === index ? 'step' : undefined}><span>{index + 1}</span>{index === 4 && cursor.phase === 'review' ? '隔日复查' : label}</li>)}</ol></section>
     <div className="fc-lesson-top"><div><span className="fc-kicker">{isLesson ? `带着做 · 第 ${cursor.step + 1} / ${unit.steps.length} 步` : cursor.phase === 'review' ? '隔日复查 · 换一道新题' : '撤掉提示 · 自己试一遍'}</span><h1 ref={heading} tabIndex="-1">{isLesson ? step.title : q ? DIMENSION_NAMES[q.dimension] : exhausted ? '这组新题已经练完' : e.status === '待复习' ? '隔了一天，再独立试一次' : '把这一节的关系带走'}</h1></div><span className="fc-status">{e.status}</span></div>
     {!isLesson && <div className="fc-capabilities" aria-label="独立完成的证据">{DIMENSIONS.map(d => <span key={d} className={e.passed[d] !== undefined ? 'done' : ''}>{e.passed[d] !== undefined ? '✓ ' : ''}{DIMENSION_NAMES[d]}</span>)}</div>}
@@ -150,7 +150,7 @@ function Lesson({ unit, progress, send, go, now }) {
       <details><summary>需要补一个数学基础</summary><div className="fc-foundation">{BRIDGES.filter(b => unit.prerequisites.includes(b.id)).map(b => <button key={b.id} onClick={() => openBridge(b.id)}>{b.title}</button>)}</div></details>
       {q && !isLesson && <button className="fc-text-button" onClick={() => { event(q.id, 'hint'); patch({ phase: 'lesson', step: 0, qid: null, input: '' }) }}>回示范补一下，再换新题</button>}
     </div>
-  </>
+  </div>
 }
 
 function Question({ q, unit, data, input, onInput, onEvent, onNext, guided = false, onBridge }) {

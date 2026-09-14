@@ -122,11 +122,8 @@ def run():
         point = hold(page, ".today>span", ident=11)
         assert page.locator(".sel-tip").get_attribute("data-term") == expected, \
             "WebKit 首页长按命中了相邻词"
-        assert page.locator(".sel-tip-copy").text_content() == f'解释 “{expected}”', \
-            "解释按钮没有显示当前选中词"
-        assert page.locator(".sel-tip-term").inner_text() == expected
-        assert page.eval_on_selector(".sel-tip-term", "e=>e.scrollWidth<=e.clientWidth"), \
-            "短词不应出现省略"
+        assert page.locator('.sel-tip button').first.get_attribute('aria-label') == f'解释“{expected}”'
+        assert page.get_by_role('button',name='加入笔记本',exact=True).is_visible()
         assert page.locator(".sel-handle").count() == 2, "WebKit 没画双端手柄"
         assert_custom_selection_visible(page)
         assert_handles_aligned(page)
@@ -145,7 +142,7 @@ def run():
         point = hold(page, ".hero-verdict b", ident=13)
         assert page.locator(".sel-tip").get_attribute("data-term") == expected, \
             "WebKit 错误 caret 干扰了几何取词"
-        assert page.locator(".sel-tip-copy").text_content() == f'解释 “{expected}”'
+        assert page.locator('.sel-tip button').first.get_attribute('aria-label') == f'解释“{expected}”'
         assert_custom_selection_visible(page)
         assert page.evaluate("getSelection().isCollapsed"), "WebKit 主标题取词退回了系统 Selection"
         touch(page, ".hero-verdict b", "touchend", point, 13)
@@ -165,7 +162,7 @@ def run():
         term = page.locator(".sel-tip").get_attribute("data-term")
         assert term and page.locator(".sel-handle").count() == 2
         touch(page, ".stem", "touchend", point, 12)
-        page.locator(".sel-tip").tap()
+        page.locator(".sel-tip button").first.tap()
         page.wait_for_selector(".bubble")
         assert page.locator(".bubble-term").inner_text() == term
         assert not errors, f"WebKit 页面报错：{errors}"

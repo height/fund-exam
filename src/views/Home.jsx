@@ -4,11 +4,49 @@ import { BANK, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '
 import { idb } from '../lib/db'
 import { numberQuestions } from '../lib/numbers'
 import { useStore } from '../lib/store'
+import { examCountdownDays } from '../lib/examCountdown'
+import { useNotebook } from '../lib/notebookStorage'
 
 // 样本太少时正确率是噪声：做 2 题对 2 题不等于 100%。攒够这个数再把它当主指标
 const MIN_SAMPLE = 10
 
 const day = iso => new Date(iso).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
+
+function ExamCountdown({ date, go }) {
+  const [days, setDays] = useState(() => examCountdownDays(date))
+  useEffect(() => {
+    let timer
+    const refresh = () => {
+      clearTimeout(timer)
+      const now = new Date()
+      setDays(examCountdownDays(date, now))
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+      timer = setTimeout(refresh, midnight - now)
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [date])
+  if (days === null) return null
+  return <section className="exam-countdown" aria-label="考试倒计时">
+    <button className={`exam-countdown-display${days >= 10000 ? ' is-long' : ''}`}
+      onClick={() => go('data', { page: 'countdown' })} title="点击设置考试倒计时">
+      <span className="exam-countdown-copy">
+        <span className="exam-countdown-label">{days > 0 ? '距离考试' : days === 0 ? '今天考试，祝你顺利' : '考试日期已过'}</span>
+        <time dateTime={date}>{date.replaceAll('-', '.')}</time>
+      </span>
+      {days > 0 ? <span className="exam-countdown-value">
+        <strong className="exam-countdown-days">{days}</strong><span>天</span>
+      </span> : <span className="exam-countdown-status">{days === 0 ? '今天' : '修改日期'}</span>}
+      <span className="exam-countdown-chevron" aria-hidden="true">›</span>
+    </button>
+  </section>
+}
 
 /**
  * 及格线刻度：这门考试 100 题答对 60 题及格，所以正确率和 60% 画在同一条尺上。
@@ -25,7 +63,8 @@ function Gauge({ value, mini }) {
 }
 
 export default function Home({ go }) {
-  const { records, subject } = useStore()
+  const { records, subject, examDate } = useStore()
+  const notebook = useNotebook()
   const [exams, setExams] = useState([])
 
   useEffect(() => {
@@ -53,6 +92,7 @@ export default function Home({ go }) {
         action={<ThemeToggle />}
       />
       <SubjectSeg />
+      {examDate && <ExamCountdown date={examDate} go={go} />}
       {Object.values(records).some(r => r.superseded?.length) && <div className="card" role="status">
         <b>题面勘误已同步</b>
         <span className="muted">题目复核发现材料缺失或内容问题，受影响的旧版作答已作废，不再影响错题本和正确率。旧记录仍保存在导出备份中；已修订题可重新练习，待核实题已暂停使用。</span>
@@ -103,6 +143,12 @@ export default function Home({ go }) {
           <small>打乱抽一小轮</small>
         </button>
       </div>
+
+      <button className="notebook-home" onClick={() => go('notebook')}>
+        <span className="notebook-home-icon"><Icon name="list" /></span>
+        <span><b>我的笔记本</b><small>{notebook.error ? '打开查看笔记' : notebook.notes.length ? `${notebook.notes.filter(n => n.status === 'ready').length} 条精华${notebook.notes.some(n => n.status !== 'ready') ? ' · 有摘录待处理' : ' · 按章节快速回顾'}` : '随手摘录，留住核心考点'}</small></span>
+        <Icon name="right" />
+      </button>
 
       <div className="grid2">
         <button className="tile" onClick={() => go('formula')}>

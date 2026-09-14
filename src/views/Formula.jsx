@@ -59,7 +59,7 @@ function Topic({ topic: t, stage, go, chapter, query, progress, now }) {
   const next = index >= 0 ? list[index + 1] : null
   const options = [...t.test[2]]
   options.splice(t.id % 3, 0, t.test[1])
-  return <article className="fl-detail">
+  return <article className="fl-detail" data-note-subject="科目二" data-note-chapter={t.chapterTitle} data-note-title={t.title}>
     <div className="fl-breadcrumb"><button onClick={() => go('formula', { chapter, ...(query ? { q: query } : {}) })}>公式目录</button><span>/</span><button onClick={() => go('formula', { chapter: t.chapter })}>第{t.chapter}章 {t.chapterTitle}</button><span>/ 第{t.code.split('.')[1]}节 {t.section}</span></div>
     <header className="fl-topic-heading"><div><span className="fc-kicker">大纲 {t.code} · 知识点要求：{t.level}</span><h1 ref={heading} tabIndex={-1}>{t.title}</h1></div><span>{current + 1} / 3</span></header>
     <nav className="fl-stages" aria-label="本组公式学习步骤">{stages.map((label, i) => <button key={label} aria-current={current === i ? 'step' : undefined} onClick={() => changeStage(i)}><span>{i + 1}</span>{label}</button>)}</nav>

@@ -10,6 +10,7 @@ import { THEMES, useStore } from '../lib/store'
 import { FORMULA_LESSONS, FORMULA_MASTERY_KEY } from '../data/formulaLessons'
 import { FORMULA_PROGRESS_KEY, emptyProgress, mergeProgress } from '../lib/formulaProgress'
 import { loadFormulaProgress, saveFormulaProgress } from '../lib/formulaStorage'
+import { importNotes, notesFromBackup } from '../lib/notebookStorage'
 
 function getFormulaMastery() {
   try {
@@ -60,10 +61,42 @@ function SettingsSelect({ label, inline = false, children, ...props }) {
   </div>
 }
 
-const PAGES = { ai: 'AI 解析', voice: '语音朗读', storage: '数据与备份' }
+const PAGES = { ai: 'AI 解析', voice: '语音朗读', storage: '数据与备份', countdown: '考试倒计时' }
+
+function CountdownSettings() {
+  const { examDate, setExamDate, toast } = useStore()
+  const [draft, setDraft] = useState(examDate)
+  const [saving, setSaving] = useState(false)
+
+  async function save(value) {
+    setSaving(true)
+    try {
+      await setExamDate(value)
+      setDraft(value)
+      toast(value ? '考试日期已保存' : '考试倒计时已清除')
+    } catch (err) {
+      toast(`保存失败：${err.message}`)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return <form className="settings-section" onSubmit={e => { e.preventDefault(); save(draft) }}>
+    <label className="ai-field">考试日期
+      <input type="date" required max="9999-12-31" value={draft} disabled={saving}
+        aria-describedby="exam-date-note" onChange={e => setDraft(e.target.value)} />
+    </label>
+    <p className="settings-note" id="exam-date-note">保存后在首页显示倒计时，清除后不再显示。</p>
+    <div className="settings-actions">
+      <button type="submit" className="btn-pri" disabled={saving || !draft || draft === examDate}>保存</button>
+      <button type="button" className="btn-ghost" disabled={saving || (!examDate && !draft)}
+        onClick={() => save('')}>清除</button>
+    </div>
+  </form>
+}
 
 export default function Data({ go, page }) {
-  const { records, setRecords, theme, setTheme, toast, ask } = useStore()
+  const { records, setRecords, theme, setTheme, examDate, toast, ask } = useStore()
   const [exams, setExams] = useState([])
   const [ai, setAi] = useState(loadStore)
   const [testing, setTesting] = useState(false)
@@ -136,6 +169,7 @@ export default function Data({ go, page }) {
     try {
       const d = JSON.parse(await f.text())
       if (d.app !== 'fund-quiz') throw new Error('这不是本应用导出的文件')
+      const incomingNotes = notesFromBackup(d)
       // 三态：覆盖 / 合并 / 什么都不做（点外面或 Esc）
       const overwrite = await ask({
         title: '导入进度',
@@ -169,6 +203,7 @@ export default function Data({ go, page }) {
       }
       for (const x of d.exams || []) await idb.put('exams', reconcileExam(x, qById))
       await saveFormulaProgress(nextProgress)
+      await importNotes(incomingNotes)
       setRecords(next)
       reload()
       toast(`导入成功，${(d.records || []).length} 条做题记录`)
@@ -214,6 +249,8 @@ export default function Data({ go, page }) {
         <section className="settings-section">
           <h2>学习助手</h2>
           <div className="settings-links">
+            <SettingsLink icon="exam" title="考试倒计时" detail={examDate ? `考试日期 · ${examDate.replaceAll('-', ' / ')}` : '设置考试日期，在首页查看倒计时'}
+              status={examDate ? '已配置' : '未配置'} onClick={() => open('countdown')} />
             <SettingsLink icon="sparkle" title="AI 解析" detail={`${PRESETS[active].label} · 答疑与解题讲解`}
               status={savedAi.providers?.[active]?.key ? '已配置' : '待配置'} onClick={() => open('ai')} />
             <SettingsLink icon="volume" title="语音朗读" detail={`${selectedVoice.name} · ${speed}× · ${TTS_STYLES.find(s => s.id === style).name}`}
@@ -229,6 +266,8 @@ export default function Data({ go, page }) {
           <p className="settings-note">进度和配置保存在当前浏览器，换设备前记得备份。</p>
         </section>
       </>}
+
+      {currentPage === 'countdown' && <CountdownSettings />}
 
       {currentPage === 'ai' && <>
         <section className="settings-section">
@@ -279,7 +318,7 @@ export default function Data({ go, page }) {
           </div>
           <KeyField label="MiMo API Key" value={ttsKey}
             onChange={v => { setTtsKey(v); saveStore({ ...loadStore(), ttsKey: v.trim() }) }} />
-          <p className="settings-note">仅支持 MiMo TTS，当前限时免费。Key 仅保存在本机。</p>
+          <p className="settings-note">用于 MiMo 语音朗读。Key 仅保存在本机。</p>
         </section>
         <section className="settings-section">
           <h2>音色与试听</h2>
@@ -323,7 +362,7 @@ export default function Data({ go, page }) {
             <button onClick={() => fileRef.current.click()}><Icon name="upload" />导入进度</button>
           </div>
           <input type="file" ref={fileRef} accept="application/json" hidden onChange={importFile} />
-          <p className="settings-note">备份包含学习记录，不包含 AI 和语音 Key。导入时可选择合并或覆盖。</p>
+          <p className="settings-note">备份包含学习记录和个人笔记，不包含 AI 和语音 Key。学习进度可合并或覆盖；个人笔记始终合并，保留较新的修改。</p>
         </section>
         <section className="settings-section">
           <h2>当前存量</h2>

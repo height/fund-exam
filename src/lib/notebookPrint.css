@@ -1,0 +1,22 @@
+*{box-sizing:border-box}
+:root{color-scheme:light;--ink:#171717;--ink2:#555;--sheet:#fff;--sheet2:#f4f4f4;--rule:#bbb;--accent-ink:#222;--columns:3}
+body{margin:0;background:#e9eaec;color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+.print-toolbar{position:sticky;top:0;z-index:1;display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;font-size:13px}
+.print-toolbar>div{display:flex;align-items:center;gap:12px;margin-right:auto}.print-toolbar span,.print-toolbar p{color:#62646a}.print-toolbar p{flex-basis:100%;margin:0;font-size:12px}
+button,select{font:inherit;border:1px solid #d6d7da;border-radius:6px;padding:8px 10px;background:white;color:#252528;cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #345fa1;outline-offset:2px}#print{background:#252528;color:white;border-color:#252528}button:disabled{opacity:.5;cursor:wait}
+.preview{padding:16px 12px;overflow:auto}.paper{width:210mm;min-height:297mm;padding:8mm;margin:0 auto;background:white;box-shadow:0 2px 18px #0001;font-size:8pt;line-height:1.38;overflow-wrap:anywhere}
+.sheet-title{display:flex;align-items:baseline;justify-content:space-between;gap:4mm;border-bottom:1pt solid #333;padding-bottom:2mm;margin-bottom:2mm}.sheet-title h1{font-size:13pt;letter-spacing:.04em;margin:0}.sheet-title span{font-size:7pt;color:#555}
+.sheet-columns{column-count:var(--columns);column-gap:4mm;column-rule:.3pt solid #ccc;column-fill:balance}
+.chapter{margin:0 0 2mm}.chapter>h2{font-size:9pt;line-height:1.35;margin:0 0 1.5mm;padding:1mm 0;border-top:1pt solid #222;border-bottom:.4pt solid #aaa;break-after:avoid}
+.entry{margin:0 0 2mm;padding-bottom:1.4mm;border-bottom:.35pt dotted #bbb;break-inside:auto}.entry h3{margin:0 0 .7mm;font-size:8.5pt;line-height:1.35;break-after:avoid}.entry-index{font:7pt monospace;margin-right:1.3mm;color:#666}
+.nb-markdown>:first-child{margin-top:0}.nb-markdown>:last-child{margin-bottom:0}.nb-markdown p{margin:.7mm 0;orphans:2;widows:2}.nb-markdown h1,.nb-markdown h2,.nb-markdown h3,.nb-markdown h4{font-size:8pt;margin:1mm 0 .5mm;break-after:avoid}
+.nb-markdown ul,.nb-markdown ol{padding-left:1.3em;margin:.7mm 0}.nb-markdown li{margin:.3mm 0;orphans:2;widows:2}.nb-markdown li p{margin:0}.nb-markdown blockquote{margin:1mm 0;padding-left:1.5mm;border-left:1pt solid #888;color:#444}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.2pt;line-height:1.3;margin:1mm 0}th,td{border:.35pt solid #aaa;padding:.7mm;vertical-align:top;overflow-wrap:anywhere}thead{display:table-header-group}tr{break-inside:avoid}th{background:#f1f1f1;font-weight:600}
+mark{background:#ededed;color:#111;padding:0 .1em;font-weight:600;text-decoration:underline;text-decoration-color:#777;text-underline-offset:2px}strong{font-weight:700}a{color:inherit;text-decoration:underline}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:1mm 0;font-size:7pt}code{font-size:.95em}hr{border:0;border-top:.35pt solid #bbb;margin:1mm 0}
+img,svg{max-width:100%;height:auto;max-height:65mm;object-fit:contain;break-inside:avoid}svg{display:block;width:100%}svg text{fill:#171717}img{display:block;margin:1mm auto}img:not([src]){display:none}
+figure{margin:1mm 0;break-inside:avoid}figcaption{font-size:7pt;color:#444;margin:.5mm 0}.nb-formula{padding:1mm;border:.35pt solid #aaa}.nb-formula-expression{font-weight:600}.nb-formula dl{margin:.5mm 0}.nb-formula dl div{display:flex;gap:1mm}.nb-formula dd{margin:0}.nb-diagram-relations{padding-left:1.3em}
+math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{margin:1mm 0;display:block;overflow:visible}.katex-display{margin:1mm 0}.sheet-end{margin-top:2mm;border-top:.4pt solid #aaa;padding-top:1mm;font-size:6.5pt;color:#666}
+@page{size:A4 portrait;margin:8mm}
+@media print{html,body{background:white;margin:0;padding:0}.print-toolbar{display:none!important}.preview{padding:0;overflow:visible}.paper{zoom:1!important;width:auto;min-height:0;margin:0;padding:0;box-shadow:none;font-size:8pt}.sheet-columns{column-fill:auto}.sheet-title,.sheet-end{break-inside:avoid}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(max-width:600px){.print-toolbar{padding:10px;gap:8px}.print-toolbar>div{width:100%}.print-toolbar p{font-size:11px}button,select{padding:8px;font-size:12px}}

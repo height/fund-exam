@@ -31,8 +31,21 @@ export const idb = {
   get: (s, k) => request(s, 'readonly', store => store.get(k)),
   all: (s) => request(s, 'readonly', store => store.getAll()),
   put: (s, v) => request(s, 'readwrite', store => store.put(v)),
+  delete: (s, k) => request(s, 'readwrite', store => store.delete(k)),
   clear: (s) => request(s, 'readwrite', store => store.clear()),
 }
 
 export const kvGet = async (k, dflt) => ((await idb.get('kv', k)) || { v: dflt }).v
 export const kvSet = (k, v) => idb.put('kv', { k, v })
+
+// 合并笔记时更新目标与移除旧条目必须一起提交。
+export function kvBatch(puts, deletes = []) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('kv', 'readwrite')
+    const store = tx.objectStore('kv')
+    for (const row of puts) store.put(row)
+    for (const key of deletes) store.delete(key)
+    tx.oncomplete = () => resolve()
+    tx.onerror = tx.onabort = () => reject(tx.error || new Error('笔记保存失败'))
+  })
+}

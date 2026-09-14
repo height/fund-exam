@@ -310,7 +310,8 @@ function SubjectKnowledgeMap({ go }) {
         <footer className="kg-status"><span>{mode === 'map' ? `显示 ${nodes.length} 个节点` : '大纲阅读'}<span className="kg-status-path"> / 章 → 节 → 考点</span></span>
           <span>点击考点阅读要点</span></footer>
       </section>
-      {selected && <aside className={`kg-detail${reading ? ' is-reading' : ''}`} role="complementary" aria-label="考点详情">
+      {selected && <aside className={`kg-detail${reading ? ' is-reading' : ''}`} role="complementary" aria-label="考点详情"
+        data-note-subject={subject} data-note-chapter={selected.chapter} data-note-title={selected.t}>
         <div className="kg-detail-top"><div className="kg-note-tools"><span>{selected.depth === 3 ? '考点笔记' : selected.depth === 2 ? '本节内容' : '章节概览'}</span>
           {selected.d && <Speaker key={selected.id} getText={() => mdToSpeech(studyNoteSpeech(selected))} label="朗读考点笔记" />}</div>
           <button className="kg-note-practice" aria-label="练习本章题目" disabled={!stat?.total} onClick={() => go('practice', { scope: `ch:${selected.chapter}`, order: 'seq' })}>
