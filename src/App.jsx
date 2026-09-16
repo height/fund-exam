@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import Calculator from './components/Calculator'
 import SelectionTip from './components/SelectionTip'
 import NoteModal from './components/NoteModal'
+import CheatsheetFloat from './components/CheatsheetFloat'
+import { useCheatsheetTask } from './lib/useCheatsheetTask'
 import { Dialog, Icon } from './components/ui'
 import { track, trackPageview } from './lib/analytics'
 import { SUBJECTS, stats } from './lib/bank'
@@ -45,6 +47,7 @@ function parseHash() {
 
 export default function App() {
   const { ready, records, subject, toastMsg, ask } = useStore()
+  const cheatsheet = useCheatsheetTask(ready)
   const [calcOpen, setCalcOpen] = useState(false)
   const [{ view, params }, setNav] = useState(parseHash)
   // 答题中（练习进行、考试进行）：收起底栏，只留「退出」一个出口，
@@ -109,7 +112,7 @@ export default function App() {
       <a className="skip" href="#app">跳到主要内容</a>
       <main id="app" className={`${reduceMotion ? '' : 'fade'}${view === 'map' ? ' kg-page' : view === 'notebook' ? ' notebook-page' : ''}`} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
-        {view === 'cheatsheet' && <Cheatsheet go={go} />}
+        {view === 'cheatsheet' && <Cheatsheet go={go} generation={cheatsheet} />}
         {view === 'notebook' && <Notebook go={go} noteId={params.note} editRequested={params.edit === '1'} />}
         {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setQuiz={setQuiz} chapter={params.ch}
@@ -152,6 +155,7 @@ export default function App() {
       {needsCalc && <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />}
 
       <NoteModal go={go} />
+      <CheatsheetFloat go={go} generation={cheatsheet} />
       <Dialog />
       <SelectionTip go={go} />
       <div className={`toast ${toastMsg ? 'on' : ''}`} role="status" aria-live="polite">{toastMsg}</div>

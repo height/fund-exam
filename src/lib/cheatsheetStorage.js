@@ -15,6 +15,10 @@ export async function loadCheatsheet() {
 export async function saveCheatsheet(html, notes, sourceNotes) {
   const value = { version: 1, html, notes, createdAt: Date.now(), sourceCount: sourceNotes.length,
     fingerprint: cheatsheetFingerprint(sourceNotes) }
-  await kvSet(KEY, value)
+  await saveCheatsheetResult(value)
   return value
+}
+
+export async function saveCheatsheetResult(value) {
+  await kvSet(KEY, value)
 }

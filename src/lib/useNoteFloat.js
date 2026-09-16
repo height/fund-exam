@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { noteFloatPosition } from './noteFloatPosition'
 
-export function useNoteFloat(frame, active) {
+export function useNoteFloat(frame, active, extraObstacles = '') {
   const position = useRef(null)
   const drag = useRef(null)
   const place = useRef(() => {})
@@ -14,7 +14,7 @@ export function useNoteFloat(frame, active) {
       const bounds = { x: viewport?.offsetLeft || 0, y: viewport?.offsetTop || 0, width: viewport?.width || innerWidth, height: viewport?.height || innerHeight }
       element.style.maxWidth = `${Math.max(1, bounds.width - 16)}px`
       const rect = element.getBoundingClientRect()
-      const obstacles = [...document.querySelectorAll('.actionbar,.app-bottom-nav,.calc-drawer,.calc-fab')]
+      const obstacles = [...document.querySelectorAll('.actionbar,.app-bottom-nav,.calc-drawer,.calc-fab' + extraObstacles)]
         .filter(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden')
         .map(el => el.getBoundingClientRect()).filter(r => r.bottom > bounds.y && r.top < bounds.y + bounds.height)
       const next = noteFloatPosition(point || position.current, rect, bounds, obstacles)
@@ -44,7 +44,7 @@ export function useNoteFloat(frame, active) {
       element.style.removeProperty('max-width')
       drag.current = null
     }
-  }, [active, frame])
+  }, [active, frame, extraObstacles])
   const end = e => {
     if (drag.current?.id !== e.pointerId) return
     drag.current = null; setDragging(false)

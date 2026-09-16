@@ -1,0 +1,13 @@
+.cs-float{position:fixed;left:var(--note-float-x,16px);top:var(--note-float-y,80px);z-index:90;display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100vw - 16px);padding:5px;border:1px solid var(--rule);border-radius:999px;background:var(--sheet);color:var(--ink);box-shadow:0 8px 28px #00000014,0 2px 5px #0000000a;animation:cs-float-in .2s ease-out}
+.cs-float button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 12px;border:0;border-radius:999px;background:transparent;color:inherit;font-size:13px;font-weight:400;white-space:nowrap;line-height:20px}
+.cs-float button:hover{background:var(--sheet2)}
+.cs-float button:focus-visible{outline:2px solid var(--accent-ink);outline-offset:2px}
+.cs-float .cs-float-keep{background:var(--ink);color:var(--sheet);box-shadow:inset 0 0 0 1px #ffffff20}
+.cs-float .cs-float-keep:hover{opacity:.85;background:var(--ink)}
+.cs-float .cs-float-status{color:var(--ink2)}
+.cs-float .cs-float-icon{width:36px;padding:8px;color:var(--ink2)}
+.cs-float-divider{width:1px;height:18px;margin:0 3px;background:var(--rule)}
+.cs-float-spinner{width:13px;height:13px;border:2px solid var(--rule);border-top-color:var(--ink2);border-radius:50%;animation:cs-float-spin .8s linear infinite}
+@keyframes cs-float-spin{to{transform:rotate(360deg)}}
+@keyframes cs-float-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.cs-float,.cs-float-spinner{animation:none}}

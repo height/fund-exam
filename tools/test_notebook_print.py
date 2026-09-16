@@ -65,6 +65,8 @@ def run():
             page.get_by_role('button',name='生成小抄',exact=True).click()
             button=page.get_by_role('button',name='查看 / 打印',exact=True)
             button.wait_for()
+            page.get_by_role('button',name='保留',exact=True).click()
+            page.get_by_role('region',name='上次生成的小抄').wait_for()
             assert len(context.pages)==1 and len(calls)==1
             page.screenshot(path=str(OUT/f'{engine}-cheatsheet-feature-page.png'))
             with page.expect_popup() as opened:button.click()
