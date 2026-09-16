@@ -344,3 +344,23 @@
 .cs-inline-preview iframe{display:block;width:100%;height:280px;border:0;border-radius:6px;background:#f1f2f4}
 .cs-document-title{margin:14px 0 12px}.cs-document{border:0}.cs-contents,.cs-prompt-editor{border-top-color:color-mix(in srgb,var(--rule) 45%,transparent)}
 @media(max-width:400px){.cs-inline-preview iframe{height:220px}}
+
+
+/* Expanded mobile editor gives the document and conversation equal space. */
+.nb-document-toolbar{display:flex;align-items:center;flex-shrink:0;border-bottom:1px solid var(--rule)}
+.nb-document-toolbar .nb-version-tabs{flex:1;min-width:0;border-bottom:0}
+@media(min-width:701px){.note-modal .nb-workspace.is-editing{grid-template-columns:minmax(0,1fr) minmax(320px,1fr)}}
+@media(max-width:700px){
+ .note-modal-backdrop:not(.is-collapsed) .nb-workspace.is-editing{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+ .nb-workspace.is-editing .nb-document-scroll{padding:8px 12px}
+ .nb-workspace.is-editing .nb-note-meta{margin-bottom:6px}
+ .nb-workspace.is-editing .nb-selected-excerpt{margin:6px 0;font-size:14px;line-height:1.5}
+ .nb-workspace.is-editing .provided-chat{border-top:1px solid var(--rule)}
+ .nb-workspace.is-editing .provided-chat-thread{padding:8px 12px;min-height:0}
+ .nb-workspace.is-editing .provided-chat-header{padding:2px 6px}
+ .nb-workspace.is-editing .note-quick-prompts{margin-bottom:4px}
+ .nb-workspace.is-editing .provided-composer.nb-chat-compose{gap:2px;padding:6px 9px}
+ .nb-workspace.is-editing .provided-composer-actions button{width:28px;height:28px}
+}
+.is-collapsed .note-quick-prompts,.is-collapsed .provided-mic{display:none}
+.note-receipt .provided-composer-actions>span:empty{display:none}

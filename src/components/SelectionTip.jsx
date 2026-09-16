@@ -26,6 +26,10 @@ let uid = 0
 const HOLD_MS = 420
 const MOVE_CANCEL = 10
 const MAX_TERM = MAX_EXCERPT
+const usesNativeSelection = node => {
+  const element = node?.nodeType === 1 ? node : node?.parentElement
+  return !!element?.closest('.note-modal,input,textarea,[contenteditable="true"]')
+}
 
 const clamp = (n, min, max) => Math.max(min, Math.min(n, max))
 
@@ -63,8 +67,13 @@ export default function SelectionTip({ go }) {
       clearTimeout(t)
       // selectionchange 在拖选过程中连环触发，停一拍再算
       t = setTimeout(() => {
-        if (customRef.current) return
         const sel = getSelection()
+        if (usesNativeSelection(sel?.anchorNode) || usesNativeSelection(sel?.focusNode) || usesNativeSelection(document.activeElement)) {
+          clearCustom()
+          setNativeTip(null)
+          return
+        }
+        if (customRef.current) return
         // 某些 iOS WebView 不完全遵守 user-select:none，触屏端再用 JS 兜底清掉原生选区。
         if (document.documentElement.hasAttribute('data-custom-selection')) {
           if (sel && !sel.isCollapsed) sel.removeAllRanges()
@@ -90,7 +99,7 @@ export default function SelectionTip({ go }) {
     }
     document.addEventListener('selectionchange', onSel)
     return () => { clearTimeout(t); document.removeEventListener('selectionchange', onSel) }
-  }, [])
+  }, [clearCustom])
 
   // 触屏自定义取词：普通滑动先交给浏览器，只有停住 420ms 后才接管本次手势。
   useEffect(() => {
@@ -179,6 +188,7 @@ export default function SelectionTip({ go }) {
       if (e.touches.length !== 1) return stopGesture()
       const touch = e.touches[0]
       const target = e.target instanceof Element ? e.target : e.target?.parentElement
+      if (usesNativeSelection(target)) { stopGesture(); clearCustom(); setNativeTip(null); return }
       const handle = target?.closest('.sel-handle')
       if (handle && customRef.current) {
         e.preventDefault()
@@ -251,6 +261,7 @@ export default function SelectionTip({ go }) {
     const onTouchCancel = () => stopGesture()
     const onContextMenu = e => {
       const target = e.target instanceof Element ? e.target : e.target?.parentElement
+      if (usesNativeSelection(target)) return
       if (target?.closest('#app,.bubble-body')) e.preventDefault()
     }
     const onClick = e => {

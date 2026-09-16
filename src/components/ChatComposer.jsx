@@ -44,15 +44,15 @@ export default function ChatComposer({ retrying = false, messages, streamed = ''
   const send = () => { if (canSend) { following.current = true; setTab('对话'); onSend() } }
   const composer = (
     <div className="provided-composer-wrap">
-      <div className="note-quick-prompts" aria-label="快捷输入"><select className="note-thinking-toggle" aria-label="Thinking depth" value={thinking} disabled={busy || disabled} onChange={e => setThinking(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select>{[
+      {!compact && <div className="note-quick-prompts" aria-label="快捷输入"><select className="note-thinking-toggle" aria-label="Thinking depth" value={thinking} disabled={busy || disabled} onChange={e => setThinking(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select>{[
         ['解释概念', '用通俗语言解释这段内容，保留关键术语和适用条件。'],
         ['提炼要点', '提炼这段内容的核心要点，保留条件与例外，去掉重复。'],
         ['图解说明', '用简洁图示辅助说明这段内容的关系，不适合画图的部分保留文字。'],
         ['对比易错点', '对比这段内容中容易混淆的概念，说明区别与易错点。'],
-      ].map(([label, prompt]) => <button type="button" key={label} disabled={busy || disabled} onClick={() => { onDraft(draft.trim() ? `${draft.trim()}\n${prompt}` : prompt); input.current?.focus() }}>{label}</button>)}</div>
+      ].map(([label, prompt]) => <button type="button" key={label} disabled={busy || disabled} onClick={() => { onDraft(draft.trim() ? `${draft.trim()}\n${prompt}` : prompt); input.current?.focus() }}>{label}</button>)}</div>}
       <form className="provided-composer nb-chat-compose" onSubmit={e => { e.preventDefault(); send() }}>
       <textarea ref={input} rows={1} aria-label="告诉 AI 怎么调整" placeholder={placeholder} value={draft} maxLength={2000} onChange={e => onDraft(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send() } }} />
-      <div className="provided-composer-actions"><span role="status">{notice}</span><button type="button" className="provided-mic" aria-label="语音输入" onClick={() => notify('尽请期待')}><Glyph name="mic" /></button>{busy ? <button type="button" className="provided-send" key="stop" aria-label="停止生成" onClick={e => { e.preventDefault(); onStop?.() }}><Glyph name="stop" /></button> : <button type="submit" className="provided-send" key="send" aria-label="发送" disabled={!canSend}><Glyph name="send" /></button>}</div>
+      <div className="provided-composer-actions"><span role="status">{notice}</span>{!compact && <button type="button" className="provided-mic" aria-label="语音输入" onClick={() => notify('尽请期待')}><Glyph name="mic" /></button>}{busy ? <button type="button" className="provided-send" key="stop" aria-label="停止生成" onClick={e => { e.preventDefault(); onStop?.() }}><Glyph name="stop" /></button> : <button type="submit" className="provided-send" key="send" aria-label="发送" disabled={!canSend}><Glyph name="send" /></button>}</div>
     </form></div>
   )
   if (compact) return composer
@@ -65,7 +65,7 @@ export default function ChatComposer({ retrying = false, messages, streamed = ''
         {!messages.length && <p className="provided-chat-empty">说说想怎么改，也可以先问一个问题。</p>}
         {messages.map((m, i) => m.role === 'user' ? <div className="provided-user-row" key={i}><div className="provided-user-bubble">{m.text}</div></div> : <div className="provided-reply" key={i}><div className="provided-reply-label"><span>笔记助手</span>{m.elapsed != null && <small>{m.elapsed.toFixed(1)}s</small>}</div><p>{m.text}</p>{m.interrupted && <div className="chat-stream-interrupted"><strong>{m.failure?.label || '本轮回复未成功'}</strong><p>{m.failure?.detail || '未收到完整有效的笔记结果，可重新发送。'}</p><small>本轮未生成新的修改预览，已有笔记保持不变。</small></div>}</div>)}
         {busy && <div className="provided-reply chat-stream-reply"><ChatLoading received={received} mode={thinking === 'off' ? '' : thinking.toUpperCase()} retrying={retrying} />{streamed && <StreamingText text={streamed} />}</div>}
-      </> : captures.map(c => <details key={c.id} className="provided-source"><summary>{c.sourceTitle || '学习摘录'} · {new Date(c.at).toLocaleString('zh-CN')}</summary><p>{c.excerpt}</p><details><summary>上下文</summary><p>{c.context}</p></details></details>)}
+      </> : captures.map(c => <details key={c.id} className="provided-source" open><summary>{c.sourceTitle || '学习摘录'} · {new Date(c.at).toLocaleString('zh-CN')}</summary><p>{c.excerpt}</p><details open><summary>上下文</summary><p>{c.context}</p></details></details>)}
     </div>
     {error && <p className="provided-chat-error" role="alert">{error}</p>}
     {composer}

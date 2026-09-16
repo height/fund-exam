@@ -15,7 +15,7 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
   const [tab, setTab] = useState('original')
   const previewTop = useRef(null)
   const [editing, setEditing] = useState(autoEdit)
-  const [input, setInput] = useState(initialPrompt)
+  const [input, setInput] = useState(initialPrompt || (isNew ? '整理这个知识点' : ''))
   const initialSent = useRef(false)
   const [messages, setMessages] = useState([])
   const [proposal, setProposal] = useState(null)
@@ -83,12 +83,14 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
   }
   return <article className={`nb-note nb-note-detail nb-workspace ${editing ? "is-editing" : ""}`}>
     <div className="nb-document">
+    <div className="nb-document-toolbar">
     <div className="nb-version-tabs" role="tablist" aria-label="笔记版本" ref={previewTop}>
       {[['original', isNew ? '选中原文' : '原笔记'], ['draft', isNew ? '待保存' : '修改中']].map(([value, label]) => <button key={value} id={`note-tab-${value}`} role="tab" aria-selected={tab === value} aria-controls={`note-panel-${value}`} tabIndex={tab === value ? 0 : -1} onClick={() => setTab(value)} onKeyDown={e => {
         if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) { e.preventDefault(); const next = e.key === 'Home' ? 'original' : e.key === 'End' ? 'draft' : value === 'original' ? 'draft' : 'original'; setTab(next); document.getElementById(`note-tab-${next}`)?.focus() }
       }}>{label}{value === 'draft' && proposal && <span className="nb-unsaved-dot" aria-label="尚未保存" />}</button>)}
     </div>
-    <div className="nb-document-scroll">
+    </div>
+    <div className="nb-document-scroll" id="nb-document-content">
     <section id="note-panel-original" role="tabpanel" aria-labelledby="note-tab-original" hidden={tab !== 'original'}>
     <div className="nb-note-heading"><h3>{isNew ? '本次选中的内容' : note.title}</h3>{!isNew && note.status !== 'ready' && <span className="nb-state">{running ? '整理中' : '待核对'}</span>}</div>
     <p className="nb-note-meta">{note.subject} · {note.chapter}</p>
@@ -110,7 +112,7 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
         try { await removeNote(note.id); onDeleted(); toast('已删除考点') } catch (e) { setError(e.message) }
       }
     }}>删除</button>}</div>
-    <details className="nb-source"><summary>原文与整理依据 · {captures.length} 次摘录</summary>{(note.evidence || []).map((e, i) => <blockquote key={i}>{e}</blockquote>)}{[...captures].reverse().map(c => <details key={c.id}><summary>{stamp(c.at)} · {c.sourceTitle || '学习摘录'}</summary><blockquote>{c.excerpt}</blockquote><p>{c.context}</p></details>)}</details>
+    {!editing && <details className="nb-source"><summary>原文与整理依据 · {captures.length} 次摘录</summary>{(note.evidence || []).map((e, i) => <blockquote key={i}>{e}</blockquote>)}{[...captures].reverse().map(c => <details key={c.id}><summary>{stamp(c.at)} · {c.sourceTitle || '学习摘录'}</summary><blockquote>{c.excerpt}</blockquote><p>{c.context}</p></details>)}</details>}
     {relatedNotes(note, allNotes).length > 0 && <details className="nb-source"><summary>相关考点</summary>{relatedNotes(note, allNotes).map(n => <div key={n.id}><b>{n.title}</b><p>{n.points.join(' ')}</p><button className="btn-sm" disabled={busy || saving || !!proposal || running} onClick={() => { setEditing(true); send(`请比较并合并“${n.title}”，保留必要条件，删除重复。`, n) }}>让 AI 比较并合并</button></div>)}</details>}
     </div></div>
     {editing && <ChatComposer retrying={retrying} streamed={streamed} received={received} messages={messages} draft={input} onDraft={setInput} onSend={() => { onResume?.(); send() }} busy={busy} disabled={saving || running} onStop={() => controller.current?.abort()} error={error || (running && sendOnOpen && !initialSent.current ? '原文正在整理，你的要求已保留，完成后会自动继续。' : '')} captures={captures} hasKey={!!getKey()} onSettings={() => go('data', { page: 'ai' })} />}

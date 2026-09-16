@@ -612,6 +612,12 @@ button:has(>.icon){display:inline-flex;align-items:center;justify-content:center
 :root[data-custom-selection] #app,
 :root[data-custom-selection] .bubble-body{
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* Native selection/copy remains available inside notes and editable fields. */
+:root[data-custom-selection] .note-modal,
+:root[data-custom-selection] input,
+:root[data-custom-selection] textarea,
+:root[data-custom-selection] [contenteditable="true"]{
+  -webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 ::selection{background:color-mix(in srgb,var(--accent) 18%,transparent);color:inherit}
 .sel-marks{position:fixed;inset:0;z-index:calc(var(--z-overlay) - 1);pointer-events:none}
 .sel-marks i{position:fixed;display:block;background:rgba(47,61,115,.2);

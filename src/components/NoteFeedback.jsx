@@ -12,8 +12,8 @@ export function useNoteCapture() {
 }
 export default function NoteFeedback({ receipt, dismiss }) {
   const element = useRef(null)
-  const [input, setInput] = useState('')
-  useEffect(() => { setInput('') }, [receipt?.captureId])
+  const [input, setInput] = useState('整理这个知识点')
+  useEffect(() => { setInput('整理这个知识点') }, [receipt?.captureId])
   useEffect(() => {
     if (!receipt) return
     const viewport = window.visualViewport
@@ -27,7 +27,7 @@ export default function NoteFeedback({ receipt, dismiss }) {
     dismiss()
   }
   return <section ref={element} className="note-receipt" aria-label="摘录反馈">
-    <div className="note-receipt-top"><div className="note-receipt-copy"><b role="status">新建笔记 · 尚未保存</b><small title={receipt.draft.excerpt}>{receipt.draft.excerpt}</small></div>
+    <div className="note-receipt-top"><div className="note-receipt-copy"><b role="status">新建笔记 · 尚未保存</b></div>
       <div className="note-receipt-actions"><button onClick={() => open(false)}>展开</button><button aria-label="放弃这次摘录" onClick={dismiss}><Icon name="x" /></button></div></div>
     <ChatComposer compact draft={input} onDraft={setInput} onSend={() => open(true)} placeholder="这段想怎么记？说说你的要求…" />
   </section>
