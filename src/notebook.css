@@ -364,3 +364,35 @@
 }
 .is-collapsed .note-quick-prompts,.is-collapsed .provided-mic{display:none}
 .note-receipt .provided-composer-actions>span:empty{display:none}
+
+/* 手动新建沿用笔记本的纸面、边线与字号。 */
+.nb-summary .nb-summary-actions{align-items:flex-end;flex-direction:column;flex-shrink:0;gap:6px}
+@media(max-width:700px){.notebook-page .nb-summary{display:flex}.nb-summary>div:first-child{display:none}.nb-summary .nb-summary-actions{width:100%;flex-direction:row;align-items:center;justify-content:space-between}}
+/* 自主新建使用同一笔记浮层，仅增加科目与章节选择。 */
+.nb-create-classification{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;margin:12px 0 20px}
+.nb-create-classification label{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;color:var(--ink2)}
+.nb-create-classification select{width:100%;min-width:0;padding:8px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet2);color:var(--ink);font:inherit}
+
+/* Floating prompt bar: compact controls, a dedicated drag handle, no page-wide hit area. */
+.note-modal-backdrop.overlay.is-collapsed{left:var(--note-float-x,8px);top:var(--note-float-y,80px);right:auto;bottom:auto;width:min(420px,calc(100vw - 24px));height:auto;max-width:none;margin:0;padding:0;pointer-events:none}
+.is-collapsed .note-modal{pointer-events:auto;border-radius:18px;box-shadow:0 4px 18px #00000016,0 1px 3px #0000000a}
+.is-collapsed .note-modal-header{height:30px;min-height:30px;padding:0 6px 0 4px;background:transparent}
+.is-collapsed .note-modal-header>div{gap:5px;min-width:0}
+.is-collapsed .note-modal-header h2{font-size:11px;white-space:nowrap}
+.is-collapsed .note-modal-header small{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.is-collapsed .note-modal-header button{width:28px;height:28px;min-width:28px;min-height:28px;padding:5px}
+.is-collapsed .note-drag-handle{touch-action:none;cursor:grab;border:0;background:transparent;color:var(--ink2);user-select:none;-webkit-user-select:none}
+.is-dragging .note-drag-handle{cursor:grabbing}
+.is-collapsed .provided-composer-wrap{padding:0 6px 6px}
+.is-collapsed .nb-workspace .provided-composer.nb-chat-compose{grid-template-columns:minmax(0,1fr) auto auto;align-items:end;gap:4px;margin:0;padding:5px 5px 5px 8px;border:0;border-radius:12px;box-shadow:none;background:transparent}
+.is-collapsed .provided-composer textarea{font-size:16px;line-height:22px;min-height:28px;padding:3px 0}
+.is-collapsed .provided-composer .note-collapsed-thinking{width:76px;min-height:28px;height:28px;padding:3px;border:0;border-radius:7px;font-size:10px;background:transparent;color:var(--ink2)}
+.is-collapsed .provided-composer-actions button{width:28px;height:28px;min-height:28px;border-radius:8px}
+.is-collapsed .provided-composer-actions{gap:0}
+.is-collapsed .provided-chat-error{margin:2px 12px 4px;max-height:40px}
+.is-collapsed .provided-chat>button{margin:0 10px 6px;align-self:flex-start}
+
+.is-collapsed .note-modal-header>div:first-child{flex:1}
+.is-collapsed .note-modal-header h2.note-float-status{display:flex;align-items:center;min-width:0;flex:1;font-weight:500}
+.note-float-excerpt{display:inline-block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.is-collapsed .note-modal-window-actions{flex-shrink:0}

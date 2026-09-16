@@ -15,7 +15,7 @@ import { Icon, Speaker } from './ui'
 import { useStore } from '../lib/store'
 import { captureNote } from '../lib/notebookCapture'
 import { MAX_EXCERPT } from '../lib/notebook'
-import NoteFeedback, { useNoteCapture } from './NoteFeedback'
+import { openNote } from '../lib/noteModal'
 
 /**
  * 划词解释：选中任意文字浮出「解释」按钮，点开是流式 AI 气泡。
@@ -35,7 +35,6 @@ const clamp = (n, min, max) => Math.max(min, Math.min(n, max))
 
 export default function SelectionTip({ go }) {
   const { subject, toast } = useStore()
-  const notebookCapture = useNoteCapture()
   const [nativeTip, setNativeTip] = useState(null) // 桌面端系统划选
   const [custom, setCustom] = useState(null) // 触屏端自绘选区
   const [layout, setLayout] = useState(0) // 滚动/旋转后重算浮层位置
@@ -338,7 +337,7 @@ export default function SelectionTip({ go }) {
     setNativeTip(null)
     clearCustom()
     getSelection()?.removeAllRanges()
-    notebookCapture.capture(draft)
+    openNote(draft.id, 'edit', { draft, captureId: draft.id, initialPrompt: '整理这个知识点', sendOnOpen: true, collapsed: true })
   }
 
   const copy = async () => {
@@ -385,7 +384,6 @@ export default function SelectionTip({ go }) {
           <button onClick={copy}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></svg>复制</button>
         </div>
       )}
-      <NoteFeedback {...notebookCapture} go={go} />
       {stack.map((b, i) => (
         <Bubble key={b.id} {...b} lift={i} depth={stack.length - 1 - i} go={go}
           onClose={() => setStack(s => s.filter(x => x.id !== b.id))} />

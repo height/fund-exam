@@ -47,36 +47,14 @@ def run():
             page.get_by_text('已复制',exact=True).wait_for()
             assert page.evaluate('window.copiedSelection').strip().replace('\n',' ') == selected
             assert notes(page)==[] and requests==[]
-            select(page, '.stem', mobile, True); page.get_by_role('button',name='记笔记',exact=True).click()
-            page.get_by_text('新建笔记 · 尚未保存',exact=True).wait_for()
-            assert notes(page)==[] and requests==[]
-            page.get_by_role('button',name='放弃这次摘录',exact=True).click()
-            assert notes(page)==[]
-            select(page, '.stem', mobile, True); page.get_by_role('button',name='记笔记',exact=True).click()
-            receipt=page.get_by_role('region',name='摘录反馈')
-            assert receipt.get_by_role('combobox',name='Thinking depth').input_value()=='medium'
-            receipt.get_by_role('combobox',name='Thinking depth').select_option('low')
-            receipt.get_by_role('button',name='图解说明',exact=True).click()
-            assert '图示' in receipt.get_by_role('textbox',name='告诉 AI 怎么调整').input_value()
-            assert requests==[] and notes(page)==[]
-            receipt_input=receipt.get_by_role('textbox',name='告诉 AI 怎么调整')
-            receipt_input.fill('第一行')
-            height1=receipt_input.bounding_box()['height']
-            receipt_input.fill('第一行\n第二行')
-            assert receipt_input.bounding_box()['height'] > height1
-            receipt_input.fill('第一行\n第二行\n第三行')
-            height3=receipt_input.bounding_box()['height']
-            receipt_input.fill('第一行\n第二行\n第三行\n第四行')
-            assert abs(receipt_input.bounding_box()['height']-height3)<1
-            assert receipt_input.evaluate('e=>getComputedStyle(e).overflowY')=='auto'
-            receipt_input.fill('短句')
-            assert abs(receipt_input.bounding_box()['height']-height1)<1
-            receipt.get_by_role('textbox',name='告诉 AI 怎么调整').fill('只记判断方法，保留例外')
+            page.evaluate("localStorage.setItem('note-thinking-level','low')")
             url=page.url; stem=page.locator('.stem').inner_text(); y=page.evaluate('scrollY')
-            receipt.get_by_role('button',name='发送',exact=True).click()
+            select(page, '.stem', mobile, True); page.get_by_role('button',name='记笔记',exact=True).click()
+            page.get_by_text('已整理 · 展开确认',exact=True).wait_for()
+            assert notes(page)==[] and len(requests)==1
+            page.get_by_role('button',name='展开笔记浮层',exact=True).click()
             page.get_by_role('dialog',name='新建笔记',exact=True).wait_for()
             page.get_by_role('button',name='加入笔记本',exact=True).wait_for()
-            assert notes(page)==[] and len(requests)==1
             page.get_by_role('textbox',name='告诉 AI 怎么调整').fill('收起后保留的补充')
             page.get_by_role('button',name='收起笔记浮层',exact=True).click()
             assert not page.locator('#root').evaluate('e=>e.inert')
@@ -85,7 +63,7 @@ def run():
             collapsed_input=page.get_by_role('textbox',name='告诉 AI 怎么调整')
             collapsed_input.fill('第一行\n第二行\n第三行\n第四行')
             assert collapsed_input.evaluate('e=>e.scrollHeight>e.clientHeight')
-            assert collapsed_input.evaluate('e=>e.clientHeight <= parseFloat(getComputedStyle(e).lineHeight)*3+3')
+            assert collapsed_input.evaluate('e=>{const c=getComputedStyle(e);return e.clientHeight <= parseFloat(c.lineHeight)*3+parseFloat(c.paddingTop)+parseFloat(c.paddingBottom)+1}')
             page.screenshot(path=str(OUT/f'{engine}-three-line-input.png'))
             collapsed_input.fill('收起后保留的补充')
             page.screenshot(path=str(OUT/f'{engine}-collapsed-note.png'))
@@ -93,7 +71,7 @@ def run():
             assert page.locator('#root').evaluate('e=>e.inert')
             assert page.locator('.nb-proposal').is_visible()
             page.get_by_role('textbox',name='告诉 AI 怎么调整').fill('')
-            assert requests[0][-1]['conversation'][0]['text']=='只记判断方法，保留例外'
+            assert requests[0][-1]['conversation'][0]['text']=='整理这个知识点'
             assert requests[0][-1]['selectedExcerpt']
             page.get_by_role('tab',name='选中原文',exact=True).click()
             assert page.locator('.nb-selected-excerpt').inner_text()
@@ -217,7 +195,7 @@ def run():
             # Deep links and notebook timeline both open the same floating view.
             page.evaluate("id=>location.hash='#/notebook?note='+id+'&edit=1'",original['id']); page.get_by_role('dialog',name='编辑笔记',exact=True).wait_for()
             page.get_by_role('button',name='关闭笔记浮层').click()
-            page.get_by_role('tab',name='时间索引',exact=True).click(); page.locator('.nb-index-entry').first.click(); page.get_by_role('dialog',name='笔记详情',exact=True).wait_for()
+            page.get_by_role('tab',name='时间索引',exact=True).click(); page.locator('.nb-timeline .nb-note').first.click(); page.get_by_role('dialog',name='笔记详情',exact=True).wait_for()
             page.keyboard.press('Tab'); assert page.locator('.note-modal').evaluate('e=>e.contains(document.activeElement)')
             page.keyboard.press('Escape'); assert not page.locator('.note-modal').count()
             # A generic Markdown note renders identically in cards and the shared modal.
@@ -247,16 +225,16 @@ def run():
                 for i in range(6):
                     seed(page,dict(original,id=f'density-{i}',title=f'复习考点 {i+1}',points=['先核对适用条件，保留必要例外。'*8],status='ready'))
                 page.evaluate("location.hash='#/notebook'")
-                page.get_by_role('tab',name='章节精华',exact=True).click()
+                page.get_by_role('tab',name='章节精华',exact=False).click()
                 for width in [320,390]:
                     page.set_viewport_size({'width':width,'height':844})
                     page.wait_for_timeout(100)
-                    assert page.locator('.nb-note-list').first.bounding_box()['y'] < 300
+                    assert page.locator('.nb-note-list').first.bounding_box()['y'] < page.viewport_size['height'] / 2
                     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
                     assert page.get_by_role('combobox',name='筛选笔记章节',exact=True).is_visible()
                     page.screenshot(path=str(OUT / f'notebook-portrait-{width}.png'))
                 page.get_by_role('combobox',name='筛选笔记章节',exact=True).select_option(original['subject']+':'+original['chapter'])
-                page.locator('.nb-mobile-preview').first.click()
+                page.locator('.nb-chapter .nb-note').first.click()
                 page.get_by_role('dialog',name='笔记详情',exact=True).wait_for()
                 page.get_by_role('button',name='关闭笔记浮层').click()
             assert not errors, errors

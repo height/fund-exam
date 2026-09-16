@@ -11,6 +11,16 @@ test('明确来源章节不被AI猜测覆盖；没有来源时未知章进入待
   const unknown = parse({ ...result, chapter: '其他章' }, { ...source, chapterLocked: false })
   assert.equal(unknown.chapter, UNFILED); assert.equal(unknown.status, 'review')
 })
+test('用户选择的科目保持不变，AI只能在该科目内调整章节', () => {
+  const manual = { ...source, subjectLocked: true, chapterLocked: false }
+  const changed = parse({ ...result, subject: '科目一', chapter: '权益投资' }, manual)
+  assert.equal(changed.subject, '科目二')
+  assert.equal(changed.chapter, '权益投资')
+  const outside = parse({ ...result, subject: '科目一', chapter: '基金职业道德规范' }, manual)
+  assert.equal(outside.subject, '科目二')
+  assert.equal(outside.chapter, UNFILED)
+  assert.equal(outside.status, 'review')
+})
 test('复杂知识可以超过80字，不截断适用条件与推导', () => {
   const long = '这段规则适用于有明确范围的情形，必须先核对对象与适用条件。'.repeat(5)
   const got = parse({ ...result, points: [long], evidence: [long], detailReason: '需要保留适用条件' }, { ...source, evidenceContext: long })

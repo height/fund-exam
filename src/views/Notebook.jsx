@@ -45,11 +45,12 @@ export default function Notebook({ go, noteId, editRequested }) {
   const changeMode = next => { setMode(next); setChapter('all') }
   const selectChapter = value => { setChapter(value); setOutlineOpen(false) }
   const resetFilters = () => { setQuery(''); setSubject('all'); setChapter('all') }
+  const createNote = () => openNote(null, 'create', { subject: chapter !== 'all' ? chapter.split(':')[0] : subject === 'all' ? undefined : subject })
 
   return <>
     <PageHeader variant="subpage" title="我的笔记本" onBack={() => go('home')} backLabel="首页" action={<div className="nb-print-action"><button className="nb-print-button" aria-label="小抄生成页面" onClick={() => go('cheatsheet')}><Icon name="sparkle" size={15} /><span>小抄</span></button><ThemeToggle iconOnly /></div>} />
     <div className="nb-summary"><div><b>{ready.length}</b><span>条精华</span><small>记住关键，也保留必要的复杂</small></div>
-      {pending > 0 && <button className="nb-inbox-link" onClick={() => changeMode('inbox')}>{pending} 条待处理 <Icon name="right" /></button>}</div>
+      <div className="nb-summary-actions"><button type="button" className="btn-pri btn-sm" disabled={loading || !!error} onClick={createNote}>＋ 新建笔记</button>{pending > 0 && <button className="nb-inbox-link" onClick={() => changeMode('inbox')}>{pending} 条待处理 <Icon name="right" /></button>}</div></div>
     <div className="nb-controls"><label className="nb-search"><Icon name="search" /><input type="search" aria-label="搜索笔记" placeholder="搜索考点或原文" value={query} onChange={e => setQuery(e.target.value)} /></label>
       <select aria-label="筛选笔记科目" value={subject} onChange={e => { setSubject(e.target.value); setChapter('all') }}><option value="all">全部科目</option>{Object.keys(CHAPTERS).map(s => <option key={s}>{s}</option>)}</select><select className="nb-mobile-chapters" aria-label="筛选笔记章节" value={chapter} onChange={e => selectChapter(e.target.value)}><option value="all">全部章节</option>{groups.map(g => <option key={`${g.subject}:${g.chapter}`} value={`${g.subject}:${g.chapter}`}>{g.subject} · {g.label}（{g.notes.length}）</option>)}</select></div>
     <div className="nb-browse-tabs" role="tablist" aria-label="笔记浏览方式">{[['outline', '章节精华', ready.length], ['inbox', '待处理', pending], ['index', '时间索引', null]].map(([value, label, count], i) =>
@@ -59,7 +60,7 @@ export default function Notebook({ go, noteId, editRequested }) {
         if (next !== null) { e.preventDefault(); changeMode(modes[next]); document.getElementById(`nb-tab-${modes[next]}`)?.focus() }
       }}><span>{label}</span>{count !== null && <span className="nb-tab-count">{count}</span>}</button>)}</div>
     {error ? <div className="nb-empty" role="alert">笔记读取失败：{error}<button onClick={() => location.reload()}>重新加载</button></div>
-      : loading ? <p role="status">正在打开笔记本…</p> : !notes.length ? <section className="nb-empty"><Icon name="list" size={32} /><h2>从一个想记住的考点开始</h2><p>长按选中文字，点“记笔记”后说说想怎么记。AI 整理后，确认才会加入笔记本。</p><button className="btn-pri" onClick={() => go('map')}>去知识图谱摘录 <Icon name="right" /></button></section>
+      : loading ? <p role="status">正在打开笔记本…</p> : !notes.length ? <section className="nb-empty"><Icon name="list" size={32} /><h2>从一个想记住的考点开始</h2><p>长按选中文字，点“记笔记”后 AI 会自动整理。确认后才会加入笔记本。</p><button className="btn-pri" onClick={() => go('map')}>去知识图谱摘录 <Icon name="right" /></button></section>
         : <div className="nb-layout">
           <aside className={`nb-outline ${outlineOpen ? 'is-open' : ''}`}><button className="nb-outline-toggle" aria-expanded={outlineOpen} onClick={() => setOutlineOpen(v => !v)}>章节目录 <span>{chapter === 'all' ? '全部' : chapter.split(':')[1]} ▾</span></button>
             <nav aria-label="笔记章节目录"><button className={chapter === 'all' ? 'on' : ''} aria-pressed={chapter === 'all'} onClick={() => selectChapter('all')}>全部章节 <span>{groups.reduce((sum, g) => sum + g.notes.length, 0)}</span></button>

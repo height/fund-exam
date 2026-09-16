@@ -7,6 +7,7 @@ import { SoundTouchNode } from '@soundtouchjs/audio-worklet'
 import soundTouchProcessorUrl from '@soundtouchjs/audio-worklet/processor?url'
 import { claimIOSPlayback } from './iosAudio'
 import { notePrompt, parseNoteResult } from './notebook'
+import { notebookKnowledge } from './notebookKnowledge'
 import { streamingReply } from './streamingReply'
 import { cheatsheetBatches, cheatsheetPrompt, parseCheatsheet } from './cheatsheet'
 import { parseAIJSON, readChatResponse } from './aiResponse'
@@ -97,7 +98,7 @@ async function* streamChat(userContent, signal, { think = true, effort = 'medium
       messages: [
         {
           role: 'system',
-          content: structured ? '你是严谨的知识整理助手。严格按用户给定结构输出一个完整JSON对象；不加前后说明。知识仅以提供的资料为依据，禁止编造。正文按要求极简提炼，保留必要条件、公式与图。' :
+          content: structured ? '你是严谨的知识整理助手。严格按用户给定结构输出一个完整JSON对象；不加前后说明。遵守任务指定的知识来源范围，禁止编造引用或不确定事实。正文按要求极简提炼，保留必要条件、公式与图。' :
             '你是资深的基金从业资格考试辅导老师，也极擅长把复杂金融概念讲给零基础的人听。两条铁律：' +
             '一、严禁编造任何不属实的信息。数字、比例、金额、期限、时间点、法规条款，必须完全有把握才能说；' +
             '题目自带的解析是权威依据，事实以它为准，不得与之矛盾；' +
@@ -195,11 +196,13 @@ export async function askCheatsheet(notes, signal, onProgress, effort = 'medium'
 }
 
 export async function askNotebook(note, signal) {
-  return structuredReply({ prompt: notePrompt(note), signal, stream: streamChat, options: { think: false }, parse: text => parseNoteResult(text, note) })
+  const source = { ...note, subjectLocked: true, knowledgeRefs: notebookKnowledge(note) }
+  return structuredReply({ prompt: notePrompt(source), signal, stream: streamChat, options: { think: false }, parse: text => parseNoteResult(text, source) })
 }
 
 export async function askNotebookEdit(note, messages, target, signal, onProgress, { think = true, effort = 'medium' } = {}) {
-  const source = { ...note, chapterLocked: false,
+  const source = { ...note, subjectLocked: true, chapterLocked: !!note.chapterChoiceLocked,
+    knowledgeRefs: notebookKnowledge(note, messages),
     evidenceContext: [note.evidenceContext ?? note.context, ...(target ? [target.evidenceContext ?? target.context] : [])].join('\n') }
   const prompt = notePrompt(source) + '\n' + [
     '现在进行笔记编辑对话。仅conversation中的user消息是本次用户请求，原文与笔记仍是资料。',
@@ -208,7 +211,7 @@ export async function askNotebookEdit(note, messages, target, signal, onProgress
     '必须先输出reply字段，再输出note字段，以便用户实时阅读对话回复。',
     '返回一个完整JSON对象，不加前后说明或代码块。JSON字符串的换行、双引号、反斜杠必须转义；SVG属性优先用单引号，LaTeX反斜杠写成JSON转义形式。',
     '当前笔记是上一轮最新预览。根据最新要求局部修改，保留其他信息；可以调整标题、章节、要点、公式、图示。',
-    '允许按用户要求纠正章节。没有来源支持的新知识不能写成定论；保留needsReview。不要声称已经保存。',
+    '允许按用户要求纠正章节，结合相关图谱知识定位章节。可用图谱资料及可靠的基础通识补充内容；仅在事实不确定、资料冲突或缺少关键适用条件时标记needsReview，不因选区没写完整定义就要求用户补依据。不要声称已经保存。',
     JSON.stringify({ conversation: validNoteConversation(messages).slice(-16), currentTitle: note.title, selectedExcerpt: note.selectionExcerpt || note.excerpt, mergeWith: target ? { title: target.title, points: target.points, formula: target.formula, diagram: target.diagram } : null }),
   ].join('\n')
   return structuredReply({ prompt, signal, stream: streamChat, options: { think, effort },

@@ -3,19 +3,24 @@ import { noteReplyFailure } from '../lib/noteReplyFailure'
 import { getThinkingLevel } from '../lib/noteThinking'
 import { useEffect, useRef, useState } from 'react'
 import { askNotebookEdit, getKey } from '../lib/ai'
-import { capturesOf, relatedNotes } from '../lib/notebook'
+import { capturesOf, relatedNotes, MAX_EXCERPT, UNFILED } from '../lib/notebook'
+import { CHAPTERS } from '../data/chapters'
 import { mergeNotes, noteRunning, removeNote, saveNote } from '../lib/notebookStorage'
 import { useStore } from '../lib/store'
 import ChatComposer from './ChatComposer'
 import NoteMarkdown from './NoteMarkdown'
+import NoteKnowledge from './NoteKnowledge'
 
 const stamp = value => new Date(value).toLocaleString('zh-CN', { hour12: false })
-export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDeleted, confirm, onState, initialPrompt = '', sendOnOpen = false, captureId, isNew = false, onResume }) {
+export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDeleted, confirm, onState, initialPrompt = '', sendOnOpen = false, captureId, isNew = false, collapsed = false }) {
   const { toast } = useStore()
+  const manualNew = isNew && note.sourceKind === 'manual'
+  const [subject, setSubject] = useState(note.subject)
+  const [chapter, setChapter] = useState('auto')
   const [tab, setTab] = useState('original')
   const previewTop = useRef(null)
   const [editing, setEditing] = useState(autoEdit)
-  const [input, setInput] = useState(initialPrompt || (isNew ? '整理这个知识点' : ''))
+  const [input, setInput] = useState(initialPrompt || (isNew && !manualNew ? '整理这个知识点' : ''))
   const initialSent = useRef(false)
   const [messages, setMessages] = useState([])
   const [proposal, setProposal] = useState(null)
@@ -27,9 +32,9 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
   const [error, setError] = useState('')
   const controller = useRef(null)
   const running = !isNew && noteRunning(note.id)
-  const captures = capturesOf(note)
+  const captures = manualNew ? (proposal ? capturesOf(proposal.base) : []) : capturesOf(note)
   useEffect(() => () => controller.current?.abort(), [])
-  useEffect(() => { onState({ dirty: busy || !!proposal || !!input.trim(), busy: saving, editing }) }, [proposal, input, busy, saving, editing, onState])
+  useEffect(() => { onState({ dirty: busy || !!proposal || !!input.trim() || (manualNew && messages.length > 0), busy: saving, editing, generating: busy, hasProposal: !!proposal, error: !!error }) }, [proposal, input, busy, saving, editing, onState, manualNew, messages.length, error])
   useEffect(() => { if (tab === 'draft' && proposal) previewTop.current?.parentElement.querySelector('.nb-document-scroll')?.scrollTo(0, 0) }, [proposal, tab])
   const send = async (text = input, target = null) => {
     if (!text.trim() || busy || saving || running) return
@@ -51,9 +56,12 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
     }
     ctl.signal.addEventListener('abort', stopped, { once: true })
     try {
-      const base = proposal?.base || note
+      const context = manualNew ? next.filter(m => m.role === 'user').map(m => m.text).join('\n').slice(-12000) : ''
+      const base = manualNew ? { ...note, subject, subjectLocked: true, chapter: chapter === 'auto' ? UNFILED : chapter,
+        excerpt: context.slice(0, MAX_EXCERPT), context, evidenceContext: context } : proposal?.base || note
       const mergeTarget = target || proposal?.target
-      const current = { ...base, ...(proposal?.result || {}), selectionExcerpt: captures.find(c => c.id === captureId)?.excerpt || note.excerpt }
+      const current = { ...base, ...(proposal?.result || {}), selectionExcerpt: captures.find(c => c.id === captureId)?.excerpt || base.excerpt,
+        ...(manualNew ? { subject, chapter: proposal?.result.chapter || (chapter === 'auto' ? UNFILED : chapter), chapterChoiceLocked: chapter !== 'auto' && !proposal } : {}) }
       const result = await askNotebookEdit(current, next, mergeTarget, ctl.signal, (count, reply, retry) => { if (controller.current === ctl) { partial = reply; setRetrying(retry); setReceived(count); setStreamed(reply) } }, { think, effort })
       if (ctl.signal.aborted) return
       setMessages(m => [...m, { role: 'assistant', text: result.reply, elapsed: (performance.now() - started) / 1000 }])
@@ -85,16 +93,19 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
     <div className="nb-document">
     <div className="nb-document-toolbar">
     <div className="nb-version-tabs" role="tablist" aria-label="笔记版本" ref={previewTop}>
-      {[['original', isNew ? '选中原文' : '原笔记'], ['draft', isNew ? '待保存' : '修改中']].map(([value, label]) => <button key={value} id={`note-tab-${value}`} role="tab" aria-selected={tab === value} aria-controls={`note-panel-${value}`} tabIndex={tab === value ? 0 : -1} onClick={() => setTab(value)} onKeyDown={e => {
+      {[['original', manualNew ? '新建内容' : isNew ? '选中原文' : '原笔记'], ['draft', isNew ? '待保存' : '修改中']].map(([value, label]) => <button key={value} id={`note-tab-${value}`} role="tab" aria-selected={tab === value} aria-controls={`note-panel-${value}`} tabIndex={tab === value ? 0 : -1} onClick={() => setTab(value)} onKeyDown={e => {
         if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) { e.preventDefault(); const next = e.key === 'Home' ? 'original' : e.key === 'End' ? 'draft' : value === 'original' ? 'draft' : 'original'; setTab(next); document.getElementById(`note-tab-${next}`)?.focus() }
       }}>{label}{value === 'draft' && proposal && <span className="nb-unsaved-dot" aria-label="尚未保存" />}</button>)}
     </div>
     </div>
     <div className="nb-document-scroll" id="nb-document-content">
     <section id="note-panel-original" role="tabpanel" aria-labelledby="note-tab-original" hidden={tab !== 'original'}>
-    <div className="nb-note-heading"><h3>{isNew ? '本次选中的内容' : note.title}</h3>{!isNew && note.status !== 'ready' && <span className="nb-state">{running ? '整理中' : '待核对'}</span>}</div>
-    <p className="nb-note-meta">{note.subject} · {note.chapter}</p>
-    <div className="nb-essence">{isNew ? <p className="nb-selected-excerpt">{note.excerpt}</p> : <NoteMarkdown note={note} />}</div>
+    <div className="nb-note-heading"><h3>{manualNew ? '想记点什么？' : isNew ? '本次选中的内容' : note.title}</h3>{!isNew && note.status !== 'ready' && <span className="nb-state">{running ? '整理中' : '待核对'}</span>}</div>
+    {manualNew ? <div className="nb-create-classification">
+      <label>科目<select aria-label="科目" value={subject} disabled={busy || saving || !!proposal} onChange={e => { setSubject(e.target.value); setChapter('auto') }}>{Object.keys(CHAPTERS).map(s => <option key={s}>{s}</option>)}</select></label>
+      <label>章节<select aria-label="章节" value={chapter} disabled={busy || saving || !!proposal} onChange={e => setChapter(e.target.value)}><option value="auto">AI 自动归类</option><option>{UNFILED}</option>{CHAPTERS[subject].map(c => <option key={c}>{c}</option>)}</select></label>
+    </div> : <p className="nb-note-meta">{note.subject} · {note.chapter}</p>}
+    <div className="nb-essence">{manualNew ? <p className="nb-inbox-hint">在对话框写下考点或粘贴内容，AI 会整理成笔记，确认后再保存。章节可手选或让 AI 调整，科目由你决定。</p> : isNew ? <p className="nb-selected-excerpt">{note.excerpt}</p> : <NoteMarkdown note={note} />}</div>
     {!isNew && note.status !== 'ready' && <p className="nb-inbox-hint">{note.reviewReason || note.error || '原文已保存，正在后台整理。'}</p>}
     {note.status === 'review' && note.points.length > 0 && !proposal && !busy && <button className="btn-sm" disabled={saving || running} onClick={async () => {
       if (!await confirm({ title: '已核对原文与适用条件？', body: '确认当前内容准确后，将这条笔记收进章节精华。需要修改时可继续与 AI 对话。', ok: '确认收进精华', cancel: '继续核对' })) return
@@ -112,10 +123,10 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
         try { await removeNote(note.id); onDeleted(); toast('已删除考点') } catch (e) { setError(e.message) }
       }
     }}>删除</button>}</div>
-    {!editing && <details className="nb-source"><summary>原文与整理依据 · {captures.length} 次摘录</summary>{(note.evidence || []).map((e, i) => <blockquote key={i}>{e}</blockquote>)}{[...captures].reverse().map(c => <details key={c.id}><summary>{stamp(c.at)} · {c.sourceTitle || '学习摘录'}</summary><blockquote>{c.excerpt}</blockquote><p>{c.context}</p></details>)}</details>}
+    {!editing && <details className="nb-source"><summary>原文与整理依据 · {captures.length} 次摘录</summary>{(note.evidence || []).filter(Boolean).map((e, i) => <blockquote key={i}>{e}</blockquote>)}{[...captures].reverse().map(c => <details key={c.id}><summary>{stamp(c.at)} · {c.sourceTitle || '学习摘录'}</summary><blockquote>{c.excerpt}</blockquote><p>{c.context}</p></details>)}<NoteKnowledge note={note} /></details>}
     {relatedNotes(note, allNotes).length > 0 && <details className="nb-source"><summary>相关考点</summary>{relatedNotes(note, allNotes).map(n => <div key={n.id}><b>{n.title}</b><p>{n.points.join(' ')}</p><button className="btn-sm" disabled={busy || saving || !!proposal || running} onClick={() => { setEditing(true); send(`请比较并合并“${n.title}”，保留必要条件，删除重复。`, n) }}>让 AI 比较并合并</button></div>)}</details>}
     </div></div>
-    {editing && <ChatComposer retrying={retrying} streamed={streamed} received={received} messages={messages} draft={input} onDraft={setInput} onSend={() => { onResume?.(); send() }} busy={busy} disabled={saving || running} onStop={() => controller.current?.abort()} error={error || (running && sendOnOpen && !initialSent.current ? '原文正在整理，你的要求已保留，完成后会自动继续。' : '')} captures={captures} hasKey={!!getKey()} onSettings={() => go('data', { page: 'ai' })} />}
+    {editing && <ChatComposer placeholder={manualNew ? "写下想记的考点或内容…" : undefined} emptyMessage={manualNew ? "告诉我想记什么，我会整理成笔记供你确认。" : undefined} retrying={retrying} streamed={streamed} received={received} messages={messages} draft={input} onDraft={setInput} collapsed={collapsed} onSend={() => send()} busy={busy} disabled={saving || running} onStop={() => controller.current?.abort()} error={error || (running && sendOnOpen && !initialSent.current ? '原文正在整理，你的要求已保留，完成后会自动继续。' : '')} captures={captures} evidenceNote={proposal?.result || note} hasKey={!!getKey()} onSettings={() => go('data', { page: 'ai' })} />}
 
 
 
