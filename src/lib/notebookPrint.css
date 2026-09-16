@@ -1,5 +1,5 @@
 *{box-sizing:border-box}
-:root{color-scheme:light;--ink:#171717;--ink2:#555;--sheet:#fff;--sheet2:#f4f4f4;--rule:#bbb;--accent-ink:#222;--columns:3}
+:root{color-scheme:light;--ink:#171717;--ink2:#555;--sheet:#fff;--sheet2:#f4f4f4;--rule:#bbb;--accent-ink:#222;--columns:2}
 body{margin:0;background:#e9eaec;color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",sans-serif}
 .print-toolbar{position:sticky;top:0;z-index:1;display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;font-size:13px}
 .print-toolbar>div{display:flex;align-items:center;gap:12px;margin-right:auto}.print-toolbar span,.print-toolbar p{color:#62646a}.print-toolbar p{flex-basis:100%;margin:0;font-size:12px}
@@ -14,7 +14,7 @@ button,select{font:inherit;border:1px solid #d6d7da;border-radius:6px;padding:8p
 table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.2pt;line-height:1.3;margin:1mm 0}th,td{border:.35pt solid #aaa;padding:.7mm;vertical-align:top;overflow-wrap:anywhere}thead{display:table-header-group}tr{break-inside:avoid}th{background:#f1f1f1;font-weight:600}
 mark{background:#ededed;color:#111;padding:0 .1em;font-weight:600;text-decoration:underline;text-decoration-color:#777;text-underline-offset:2px}strong{font-weight:700}a{color:inherit;text-decoration:underline}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:1mm 0;font-size:7pt}code{font-size:.95em}hr{border:0;border-top:.35pt solid #bbb;margin:1mm 0}
-img,svg{max-width:100%;height:auto;max-height:65mm;object-fit:contain;break-inside:avoid}svg{display:block;width:100%}svg text{fill:#171717}img{display:block;margin:1mm auto}img:not([src]){display:none}
+img,svg{max-width:100%;height:auto;max-height:65mm;object-fit:contain;break-inside:avoid}svg{display:block;width:100%}img{display:block;margin:1mm auto}img:not([src]){display:none}
 figure{margin:1mm 0;break-inside:avoid}figcaption{font-size:7pt;color:#444;margin:.5mm 0}.nb-formula{padding:1mm;border:.35pt solid #aaa}.nb-formula-expression{font-weight:600}.nb-formula dl{margin:.5mm 0}.nb-formula dl div{display:flex;gap:1mm}.nb-formula dd{margin:0}.nb-diagram-relations{padding-left:1.3em}
 math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{margin:1mm 0;display:block;overflow:visible}.katex-display{margin:1mm 0}.sheet-end{margin-top:2mm;border-top:.4pt solid #aaa;padding-top:1mm;font-size:6.5pt;color:#666}
 @page{size:A4 portrait;margin:8mm}
@@ -36,7 +36,7 @@ math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{m
 /* Three-pen print palette: blue conclusions, green conditions, red exceptions. */
 :root{--pen-key:#245b9a;--pen-condition:#24704f;--pen-caution:#a33432}
 .chapter>h2{color:#204e83;border-left-color:var(--pen-key);background:#eef3f9}
-.entry h3{color:#244d7b}.entry-index{color:#657182}
+.entry>h3{color:#fff;background:#293b50;padding:.7mm 1.2mm;margin:0 0 1mm;font-weight:650;line-height:1.35;border-radius:.5mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}.entry-index{color:#d6e0eb}
 .nb-markdown strong{color:#244d7b}
 .nb-markdown mark,.nb-markdown mark[data-pen=condition]{color:var(--pen-condition);border:0;border-bottom:.5pt solid #24704f80;background:#eef6f0}
 .nb-markdown mark[data-pen=key]{color:var(--pen-key);border-bottom-color:#245b9a80;background:#edf3fb}
@@ -63,3 +63,17 @@ math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{m
 .sheet-watermark{display:flex;align-items:center;justify-content:flex-end;gap:1.5mm;margin-top:2mm;color:#88909a;font-size:9pt;line-height:1;break-inside:avoid;pointer-events:none}.sheet-watermark img{display:block;width:5mm;height:5mm;max-height:none;margin:0;object-fit:contain;opacity:.55;border-radius:1.2mm}.sheet-watermark span{font-weight:500;letter-spacing:.06em}
 .print-watermark{display:none}
 @media print{.paper .sheet-watermark{display:none}.print-watermark{display:flex;position:fixed;right:0;bottom:0;margin:0}}
+
+/* Keep preview controls compact on portrait screens without reflowing the paper. */
+@media(max-width:600px){
+ .print-toolbar{gap:6px;padding:8px 10px}
+ .print-toolbar>div{gap:8px;flex-wrap:wrap}
+ .print-toolbar>div>span{margin-left:auto;font-size:10px}
+ .print-toolbar>label{display:flex;align-items:center;gap:5px;flex:1;font-size:11px}
+ .print-toolbar>label select{min-width:0;flex:1}
+ .print-toolbar>button{flex:1;min-height:36px}
+ .print-toolbar p{font-size:10px;line-height:1.4}
+}
+
+/* Figure dimensions are paired by fitFigures; never clamp only one axis. */
+.nb-markdown svg,.nb-markdown img,.nb-diagram svg{max-height:none;object-fit:contain;margin:.7mm auto}

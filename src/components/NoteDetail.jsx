@@ -1,3 +1,4 @@
+import { getCfg } from '../lib/ai'
 import { noteReplyFailure } from '../lib/noteReplyFailure'
 import { getThinkingLevel } from '../lib/noteThinking'
 import { useEffect, useRef, useState } from 'react'
@@ -38,7 +39,7 @@ export default function NoteDetail({ note, allNotes, autoEdit, go, onSaved, onDe
     let partial = ''
     const started = performance.now()
     const ctl = new AbortController(); controller.current = ctl
-    const effort = getThinkingLevel()
+    const effort = getThinkingLevel('note', getCfg().model)
     const think = effort !== 'off'
     let timedOut = false
     const timer = setTimeout(() => { timedOut = true; ctl.abort() }, think ? 600000 : 180000)

@@ -46,7 +46,7 @@ test('旧笔记兼容，摘录时间可恢复，大纲按教材章序排序', ()
 })
 test('提示词先判断表达形式，不要求绝对精简', () => {
   const prompt = notePrompt(source)
-  assert.ok(prompt.includes('不追求绝对短') && prompt.includes('formula') && prompt.includes('diagram'))
+  assert.ok(prompt.includes('不是截断字数的硬限制') && prompt.includes('formula') && prompt.includes('diagram'))
   assert.ok(!prompt.includes('不超过80字'))
 })
 

@@ -337,3 +337,10 @@
 .cs-prompt-editor{margin-top:12px;border-top:1px solid var(--rule);font-size:12px}.cs-prompt-editor summary{min-height:40px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;color:var(--ink2)}.cs-prompt-editor summary::-webkit-details-marker{display:none}.cs-prompt-editor summary>span{display:flex;align-items:center;gap:6px;font-size:11px}.cs-prompt-editor[open] summary svg{transform:rotate(90deg)}.cs-prompt-editor p{font-size:11px;line-height:1.6;color:var(--ink2);margin:0 0 8px}.cs-prompt-editor textarea{display:block;width:100%;min-height:230px;max-height:55dvh;resize:vertical;padding:10px 12px;border:1px solid var(--rule);border-radius:9px;background:var(--sheet);color:var(--ink);font-size:13px;line-height:1.7;box-sizing:border-box}.cs-prompt-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.cs-workbench .cs-prompt-actions button{font-size:12px;padding:7px 10px;min-height:36px;border:1px solid var(--rule);border-radius:7px;background:var(--sheet);color:var(--ink)}
 
 .nb-row-time{flex:0 0 42px;color:var(--ink2);font-size:12px;font-variant-numeric:tabular-nums;text-align:left}
+
+.cs-inline-preview{margin-top:12px;border-top:1px solid color-mix(in srgb,var(--rule) 45%,transparent)}
+.cs-inline-preview summary{display:flex;align-items:center;justify-content:space-between;min-height:36px;font-size:12px;cursor:pointer;color:var(--ink)}
+.cs-inline-preview summary span{font-size:10px;color:var(--ink2)}
+.cs-inline-preview iframe{display:block;width:100%;height:280px;border:0;border-radius:6px;background:#f1f2f4}
+.cs-document-title{margin:14px 0 12px}.cs-document{border:0}.cs-contents,.cs-prompt-editor{border-top-color:color-mix(in srgb,var(--rule) 45%,transparent)}
+@media(max-width:400px){.cs-inline-preview iframe{height:220px}}

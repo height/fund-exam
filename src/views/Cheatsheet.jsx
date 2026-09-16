@@ -1,5 +1,5 @@
 import { DEFAULT_CHEATSHEET_PROMPT, loadCheatsheetPrompt, saveCheatsheetPrompt } from '../lib/cheatsheetPrompt'
-import { getThinkingLevel, setThinkingLevel, THINKING_LEVELS } from '../lib/noteThinking'
+import { useThinkingLevel } from '../lib/useThinkingLevel'
 import { useEffect, useRef, useState } from 'react'
 import { PageHeader, ThemeToggle, Icon } from '../components/ui'
 import ChatLoading from '../components/ChatLoading'
@@ -10,7 +10,7 @@ import '../notebook.css'
 
 export default function Cheatsheet({ go }) {
   const { notes, loading, error: notesError } = useNotebook()
-  const [effort, setEffort] = useState(() => getThinkingLevel('cheatsheet'))
+  const [effort, setEffort, levels] = useThinkingLevel('cheatsheet')
   const [savedPrompt, setSavedPrompt] = useState(loadCheatsheetPrompt)
   const [promptDraft, setPromptDraft] = useState(loadCheatsheetPrompt)
   const [promptStatus, setPromptStatus] = useState('')
@@ -21,6 +21,15 @@ export default function Cheatsheet({ go }) {
     catch (e) { setPromptError(e.message); setPromptStatus('') }
   }
   const [result, setResult] = useState(null)
+  const [previewHTML, setPreviewHTML] = useState('')
+  useEffect(() => {
+    let active = true
+    if (!result) return
+    import('../lib/notebookPrint').then(({ notebookPrintHTML }) => {
+      if (active) setPreviewHTML(notebookPrintHTML(result.notes, { sourceCount: result.sourceCount, generatedAt: result.createdAt, embedded: true }))
+    }).catch(() => { if (active) setPreviewHTML('') })
+    return () => { active = false }
+  }, [result])
   const [cacheLoading, setCacheLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [opening, setOpening] = useState(false)
@@ -76,13 +85,14 @@ export default function Cheatsheet({ go }) {
         <div className="cs-document-top"><span className="cs-format">A4 <i /> 双栏 <i /> 三色笔</span><span className="cs-cache-state">{result.unsaved ? '尚未保存' : '本地已保存'}</span></div>
         <div className="cs-document-title"><span className="cs-file-icon"><Icon name="list" size={24} /></span><div><h2>复习小抄</h2><p>{result.sourceCount} 条笔记，提炼为 <strong>{result.notes.length}</strong> 个考点</p></div></div>
         <div className="cs-document-bottom"><time>{new Date(result.createdAt).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })} 生成</time><span className="cs-export-formats">PDF / HTML</span></div>
+        <details className="cs-inline-preview" open><summary>版面预览 <span>A4 等比缩放</span></summary>{previewHTML && <iframe title="小抄版面预览" sandbox="allow-scripts" srcDoc={previewHTML} />}</details>
         <button className="btn-pri cs-preview" disabled={opening} onClick={openPreview}>{opening ? '正在打开…' : '查看 / 打印'} <Icon name="chevronRight" size={16} /></button>
         {stale && <p className="cs-update-hint"><span />笔记有更新，可在下方重新生成</p>}
         <details className="cs-contents"><summary>考点目录 <span>{result.notes.length}<Icon name="chevronRight" size={14} /></span></summary><ol>{result.notes.map(n => <li key={n.id}>{n.title}</li>)}</ol></details>
       </section> : <section className="cs-intro"><span className="cs-format">A4 <i /> 双栏 <i /> 三色笔</span><h2>把重点，收在一张纸上</h2><p>合并关联知识，精简文字，保留图与公式。</p></section>}
       <section className="cs-generation" aria-label="生成设置">
         <div className="cs-generation-heading"><h2><Icon name="sparkle" size={16} />{result ? '更新小抄' : '生成小抄'}</h2><span>{ready.length} 条精华 · {chapterCount} 章</span></div>
-        <div className="cs-generation-controls"><label><span>Thinking</span><select aria-label="Cheatsheet thinking depth" value={effort} disabled={busy || loading || cacheLoading} onChange={e => { setEffort(e.target.value); setThinkingLevel(e.target.value, 'cheatsheet') }}>{THINKING_LEVELS.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select></label>
+        <div className="cs-generation-controls"><label><span>Thinking</span><select aria-label="Cheatsheet thinking depth" value={effort} disabled={busy || loading || cacheLoading} onChange={e => setEffort(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select></label>
           {busy ? <button className="cs-cancel" onClick={() => controller.current?.abort()}>取消生成</button> : <button className={result ? 'cs-regenerate' : 'btn-pri cs-generate'} disabled={loading || cacheLoading || !ready.length || !!notesError || promptDirty} onClick={generate}>{result ? '重新生成' : '生成小抄'}<Icon name={result ? 'refresh' : 'sparkle'} size={15} /></button>}
         </div>
         <details className="cs-prompt-editor"><summary>生成 Prompt <span>{promptDirty ? '未保存' : savedPrompt === DEFAULT_CHEATSHEET_PROMPT ? '默认' : '自定义'}<Icon name="chevronRight" size={14} /></span></summary>

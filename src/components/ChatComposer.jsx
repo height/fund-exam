@@ -1,4 +1,4 @@
-import { getThinkingLevel, setThinkingLevel, THINKING_LEVELS } from '../lib/noteThinking'
+import { useThinkingLevel } from '../lib/useThinkingLevel'
 import StreamingText from './StreamingText'
 import ChatLoading from './ChatLoading'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
@@ -6,7 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 // Adapted from the supplied ChatComposer: same panel, tabs, reply sections and composer.
 // Production messages replace the example's scripted timers and demo sales data.
 export default function ChatComposer({ retrying = false, messages, streamed = '', received = 0, draft, onDraft, onSend, busy, disabled, onStop, error, captures, hasKey, onSettings, compact = false, placeholder = '说说想怎么改…' }) {
-  const [thinking, setThinking] = useState(() => getThinkingLevel())
+  const [thinking, setThinking, levels] = useThinkingLevel()
   const [tab, setTab] = useState('对话')
   const [notice, setNotice] = useState('')
   const input = useRef(null)
@@ -44,7 +44,7 @@ export default function ChatComposer({ retrying = false, messages, streamed = ''
   const send = () => { if (canSend) { following.current = true; setTab('对话'); onSend() } }
   const composer = (
     <div className="provided-composer-wrap">
-      <div className="note-quick-prompts" aria-label="快捷输入"><select className="note-thinking-toggle" aria-label="Thinking depth" value={thinking} disabled={busy || disabled} onChange={e => { setThinking(e.target.value); setThinkingLevel(e.target.value) }}>{THINKING_LEVELS.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select>{[
+      <div className="note-quick-prompts" aria-label="快捷输入"><select className="note-thinking-toggle" aria-label="Thinking depth" value={thinking} disabled={busy || disabled} onChange={e => setThinking(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select>{[
         ['解释概念', '用通俗语言解释这段内容，保留关键术语和适用条件。'],
         ['提炼要点', '提炼这段内容的核心要点，保留条件与例外，去掉重复。'],
         ['图解说明', '用简洁图示辅助说明这段内容的关系，不适合画图的部分保留文字。'],

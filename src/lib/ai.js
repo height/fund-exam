@@ -1,3 +1,5 @@
+import { modelThinking } from './modelThinking'
+import { sheetRequest } from './cheatsheetRequest'
 import { validNoteConversation } from './noteReplyFailure'
 import { structuredReply } from './structuredReply'
 import { PCMPlayer } from '@speechmatics/web-pcm-player'
@@ -65,7 +67,7 @@ export async function pingAI(cfg) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.key}` },
       body: JSON.stringify({
-        model: cfg.model, stream: false, max_tokens: 16,
+        model: cfg.model, stream: false, max_tokens: 128, ...modelThinking(cfg.model, false),
         messages: [{ role: 'user', content: 'hi' }],
       }),
     })
@@ -89,9 +91,7 @@ async function* streamChat(userContent, signal, { think = true, effort = 'medium
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.key}` },
     body: JSON.stringify({
       model: cfg.model,
-      thinking: { type: think ? 'enabled' : 'disabled' },
-      // 讲考点用不着深思熟虑，medium 起答快、够用
-      ...(think && { reasoning_effort: effort }),
+      ...modelThinking(cfg.model, think, effort),
       ...(structured && { response_format: { type: 'json_object' }, max_tokens: think ? 65536 : 32768 }),
       stream: true,
       messages: [
@@ -170,10 +170,11 @@ export async function askCheatsheet(notes, signal, onProgress, effort = 'medium'
   const batches = cheatsheetBatches(notes)
   const output = []
   const run = async (batch, current, total, label) => {
-    return structuredReply({ prompt: cheatsheetPrompt(batch, instructions), signal, stream: streamChat,
+    return sheetRequest(() => structuredReply({ prompt: cheatsheetPrompt(batch, instructions), signal, stream: streamChat,
+      retryHint: '合并重复知识点与同名条目，sourceIds取并集，覆盖全部来源。',
       options: { think: effort !== 'off', effort }, parse: text => parseCheatsheet(text, batch),
       onProgress: (text, attempt) => onProgress?.({ current, total, chapter: label, received: text.length, retrying: !!attempt }),
-    })
+    }), { signal, onRetry: () => onProgress?.({ current, total, chapter: `${label} · 连接中断，正在重试`, received: 0, retrying: true }) })
   }
   for (const subject of new Set(batches.map(b => b.subject))) {
     const parts = batches.filter(b => b.subject === subject)

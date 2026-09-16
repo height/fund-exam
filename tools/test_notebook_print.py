@@ -95,14 +95,19 @@ def run():
             preview.locator('#scale').select_option('fit')
             assert preview.locator('.paper').bounding_box()['width'] <= 390
             assert preview.locator('script[src],link[rel=stylesheet]').count()==0
+            assert preview.locator('#columns').count()==0
+            for media in ['screen','print']:
+                preview.emulate_media(media=media)
+                dims=preview.locator('.nb-markdown svg').first.evaluate('e=>({width:parseFloat(e.style.width),height:parseFloat(e.style.height),ratio:e.viewBox.baseVal.width/e.viewBox.baseVal.height})')
+                assert dims['width']>0 and dims['height']>0
+                assert abs(dims['width']/dims['height']-dims['ratio'])<0.01
+            preview.emulate_media(media='screen')
             preview.screenshot(path=str(OUT/f'{engine}-print-mobile.png'))
             with preview.expect_download() as exported:preview.get_by_role('button',name='下载 HTML').click()
             html=OUT/f'{engine}-cheatsheet.html';exported.value.save_as(html)
             offline=context.new_page();offline.goto(html.as_uri());offline.wait_for_selector('.entry')
             assert offline.locator('.entry').count()==45
-            offline.locator('#columns').select_option('2')
             assert offline.locator('.sheet-columns').evaluate('e=>getComputedStyle(e).columnCount')=='2'
-            offline.locator('#columns').select_option('3')
             if engine=='chromium':
                 pdf=OUT/'cheatsheet-a4.pdf';offline.pdf(path=str(pdf),prefer_css_page_size=True,print_background=True)
                 reader=PdfReader(pdf)
@@ -115,7 +120,6 @@ def run():
                 subprocess.run(['pdftoppm','-f','1','-singlefile','-scale-to','1400','-png',str(pdf),str(OUT/'cheatsheet-page-1')],check=True)
                 print(f'A4 PDF: {len(reader.pages)} pages, all 45 notes retained')
             # Small exports balance both columns in print, preserving all three inks.
-            offline.locator('#columns').select_option('2')
             offline.evaluate('''() => {
               document.querySelector('.sheet-columns').innerHTML = '<section class="chapter"><h2>第一章</h2><article class="entry"><h3>条件一</h3><p><mark data-pen="key">结论</mark>：保留比较基准。</p></article></section><section class="chapter"><h2>第二章</h2><article class="entry"><h3>条件二</h3><p><mark data-pen="condition">适用范围</mark>；<mark data-pen="caution">注意例外</mark>。</p></article></section>';
             }''')

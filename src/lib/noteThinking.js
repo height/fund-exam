@@ -1,12 +1,10 @@
-export const THINKING_LEVELS = ['off', 'low', 'medium', 'high', 'max']
-// A new key makes MEDIUM the default instead of inheriting the old MAX-only switch.
-export function getThinkingLevel(scope = 'note') {
-  try {
-    const value = localStorage.getItem(`${scope}-thinking-level`)
-    return THINKING_LEVELS.includes(value) ? value : 'medium'
-  } catch { return 'medium' }
+import { normalizeThinking, thinkingLevels } from './modelThinking.js'
+export const THINKING_LEVELS = thinkingLevels('')
+export function getThinkingLevel(scope = 'note', model = '') {
+  try { return normalizeThinking(localStorage.getItem(`${scope}-thinking-level`), model) }
+  catch { return normalizeThinking(null, model) }
 }
-export function setThinkingLevel(value, scope = 'note') {
-  if (!THINKING_LEVELS.includes(value)) return
-  try { localStorage.setItem(`${scope}-thinking-level`, value) } catch { /* session UI still works */ }
+export function setThinkingLevel(value, scope = 'note', model = '') {
+  const normalized = normalizeThinking(value, model)
+  try { localStorage.setItem(`${scope}-thinking-level`, normalized) } catch { /* session UI still works */ }
 }
