@@ -24,6 +24,7 @@ with sync_playwright() as p:
         page.get_by_role('button',name='对话编辑',exact=True).click()
         for height in [844, 560]:
             page.set_viewport_size({'width':390,'height':height})
+            page.evaluate('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))')
             doc=page.locator('.nb-document').bounding_box()
             chat=page.locator('.provided-chat').bounding_box()
             assert abs(chat['height']-doc['height']) < 2, (doc,chat)
@@ -31,5 +32,19 @@ with sync_playwright() as p:
             assert composer['y']+composer['height'] <= height
         page.set_viewport_size({'width':390,'height':844})
         page.screenshot(path='/tmp/fund-notebook-qa/'+engine+'-edit-layout.png')
-        print(engine, 'native selection and mobile conversation layout passed')
+        page.get_by_role('textbox',name='告诉 AI 怎么调整').fill('请整理')
+        page.get_by_role('button',name='关闭笔记浮层').click()
+        alert=page.get_by_role('alertdialog')
+        alert.wait_for()
+        assert page.locator('.note-modal-content').evaluate('e=>getComputedStyle(e).isolation')=='isolate'
+        for width,height in [(390,844),(320,480)]:
+            page.set_viewport_size({'width':width,'height':height})
+            box=alert.bounding_box()
+            assert box['x']>=0 and box['x']+box['width']<=width
+            assert box['y']>=0 and box['y']+box['height']<=height
+            assert page.get_by_role('button',name='继续编辑',exact=True).is_visible()
+            page.screenshot(path=f'/tmp/fund-notebook-qa/{engine}-confirm-{width}.png')
+        page.get_by_role('button',name='继续编辑',exact=True).click()
+        assert alert.count()==0
+        print(engine, 'native selection, editor layout and confirmation overlay passed')
         browser.close()
