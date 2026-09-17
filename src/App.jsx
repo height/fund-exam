@@ -25,14 +25,13 @@ import Cheatsheet from './views/Cheatsheet'
 
 const NAV = [
   { v: 'home', label: '学习概览', paths: ['M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'] },
-  { v: 'practice', label: '练习', paths: ['M4 19.5 8 18l11-11a2.1 2.1 0 0 0-3-3L5 15z', 'M14 6l3 3'] },
+  { v: 'notebook', label: '笔记本', paths: ['M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M8 3v18', 'M12 8h4', 'M12 12h4'] },
   { v: 'exam', label: '模拟考', paths: ['M12 9v4l2.5 2M9 2h6'], circle: true },
   { v: 'wrong', label: '错题本', paths: ['M3 12a9 9 0 1 0 3-6.7L3 8', 'M3 3v5h5'] },
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
 ]
 
 const LIBRARY = [
-  { v: 'notebook', label: '我的笔记', icon: 'list' },
   { v: 'formula', label: '公式攻坚', icon: 'calc' },
   { v: 'map', label: '知识图谱', icon: 'map' },
   { v: 'numbers', label: '数字必背', icon: 'numbers' },
