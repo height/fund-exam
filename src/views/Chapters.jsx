@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PageHeader, SubjectSeg } from '../components/ui'
+import { Icon, PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, PASS, chapterStats, minutesFor } from '../lib/bank'
 import { useStore } from '../lib/store'
 import { CHAPTER_DETAILS } from '../data/chapters'
@@ -43,34 +43,35 @@ export default function Chapters({ go }) {
         </div>
       </div>
 
-      <p className="muted ch-hint">
-        {mode === 'practice'
-          ? `点一章开始练，选完立刻出解析。已做 ${done}/${total} 题。`
-          : `点一章抽最多 ${CHAPTER_EXAM_N} 题限时考，${PASS} 分及格，考中不看答案。`}
-      </p>
+      <div className="chapter-summary">
+        <span>{chs.length} 章 · 已做 {done}/{total} 题</span>
+        <span>{mode === 'practice' ? '即时解析' : `${PASS} 分及格`}</span>
+      </div>
 
-      <div className="stack">
+      <div className="chapter-list">
         {chs.map((c, i) => (
           <button className="ch-row" key={c.chapter} disabled={!c.total}
             onClick={() => (mode === 'practice'
               ? go('practice', { scope: `ch:${c.chapter}`, order: 'seq' })
               : go('exam', { ch: c.chapter }))}>
-            <span className="ch-no num">{i + 1}</span>
+            <span className="ch-no num">{String(i + 1).padStart(2, '0')}</span>
             <span className="ch-body">
               <b>{c.chapter}</b>
               <small className="muted">
                 {c.total
                   ? <>
-                      {CHAPTER_DETAILS[subject][c.chapter].sections.length} 节 · {c.total} 题
-                      {c.done ? ` · 做过 ${c.done}` : ' · 没做过'}
-                      {mode === 'exam' && ` · 考 ${Math.min(CHAPTER_EXAM_N, c.total)} 题 ${minutesFor(Math.min(CHAPTER_EXAM_N, c.total))} 分钟`}
+                      {mode === 'practice'
+                        ? `${CHAPTER_DETAILS[subject][c.chapter].sections.length} 节 · ${c.total} 题${c.done ? ` · 已做 ${c.done}` : ''}`
+                        : `${Math.min(CHAPTER_EXAM_N, c.total)} 题 · ${minutesFor(Math.min(CHAPTER_EXAM_N, c.total))} 分钟 · 交卷后解析`}
                     </>
-                  : '题库里还没有这一章的题'}
+                  : '暂无题目'}
               </small>
             </span>
-            {c.acc !== null && (
-              <span className={`ch-acc num ${c.acc < PASS ? 'under' : ''}`}>{c.acc}%</span>
-            )}
+            <span className="ch-trailing">
+              {c.acc !== null && <span className={`ch-acc num ${c.acc < PASS ? 'under' : ''}`}
+                aria-label={`正确率 ${c.acc}%`}>{c.acc}%</span>}
+              <Icon name="chevronRight" size={16} />
+            </span>
           </button>
         ))}
       </div>

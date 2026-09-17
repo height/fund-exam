@@ -1,5 +1,6 @@
 /* 全局状态：做题记录、当前科目、主题、toast。所有写入同时落 IndexedDB */
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { readPracticePreferences, savePracticePreferences } from './practicePreferences'
 import { qById } from './bank'
 import { reconcileRecord, reconcileExam } from './questionQuality'
 import { idb, kvGet, kvSet, openDB } from './db'
@@ -38,7 +39,8 @@ export function StoreProvider({ children }) {
         if (next !== exam) await idb.put('exams', next)
       }
       setRecords(rs)
-      setSubjectState(await kvGet('subject', '科目一'))
+      const savedSubject = readPracticePreferences().subject
+      setSubjectState(['科目一', '科目二'].includes(savedSubject) ? savedSubject : await kvGet('subject', '科目一'))
       setAutoNextState(await kvGet('autoNext', true))
       setThemeState(await kvGet('theme', 'auto'))
       const savedExamDate = await kvGet('examDate', '')
@@ -59,7 +61,7 @@ export function StoreProvider({ children }) {
     const r = document.documentElement
     if (theme === 'auto') delete r.dataset.theme
     else r.dataset.theme = theme
-    document.querySelector('meta[name=theme-color]').content = isDark ? "#101012" : "#f5f5f7"
+    document.querySelector('meta[name=theme-color]').content = getComputedStyle(r).getPropertyValue('--paper').trim()
   }, [theme, isDark])
 
   const toast = useCallback(m => {
@@ -76,7 +78,7 @@ export function StoreProvider({ children }) {
     setDialog({ ...opts, resolve: v => { setDialog(null); resolve(v) } })
   }), [])
 
-  const setSubject = useCallback(s => { setSubjectState(s); kvSet('subject', s) }, [])
+  const setSubject = useCallback(s => { setSubjectState(s); savePracticePreferences({ subject: s }); kvSet('subject', s) }, [])
   const setAutoNext = useCallback(v => { setAutoNextState(v); kvSet('autoNext', v) }, [])
   const setTheme = useCallback(t => { setThemeState(t); kvSet('theme', t) }, [])
   const setExamDate = useCallback(async value => {

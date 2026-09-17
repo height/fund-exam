@@ -24,7 +24,7 @@ export default function Tools({ go }) {
           <button className="tool-row" key={tool.v} onClick={() => go(tool.v)}>
             <Icon name={tool.icon} />
             <span className="grow"><b>{tool.t}</b><small className="muted">{tool.d}</small></span>
-            <Icon name="right" />
+            <Icon name="chevronRight" size={16} />
           </button>
         ))}
       </div>

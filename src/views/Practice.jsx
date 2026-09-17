@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, PageHeader, Speaker, SubjectSeg, ThemeToggle } from '../components/ui'
 import { qToSpeech } from '../lib/ai'
 import { track } from '../lib/analytics'
-import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle, stats } from '../lib/bank'
+import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle } from '../lib/bank'
 import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
 import { useStore } from '../lib/store'
 import { useQuestionNav } from '../lib/useQuestionNav'
+import { readPracticePreferences, savePracticePreferences } from '../lib/practicePreferences'
 import { courseUnit } from '../data/formulaCourses'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
@@ -26,7 +27,7 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
     if (initialScope) start(initialScope, initialOrder || 'rand')
   }, [initialScope, initialOrder])
 
-  async function start(scope, order) {
+  async function start(scope, order, chapter = '') {
     const formula = scope.startsWith('formula:') ? courseUnit(scope.slice(8)) : null
     // 计算题不分科目：31 道里 29 道在科目二，按科目切会把另一科那 2 道藏起来
     let qs = scope.startsWith('formula:')
@@ -36,13 +37,14 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
       : scope.startsWith('kw:')
         ? BANK.filter(q => new RegExp(scope.slice(3)).test(q.q + q.explain)) // 专题动画「去练相关题」
         : bySubject(subject)
+    if (chapter) qs = qs.filter(q => q.chapter === chapter)
     if (scope === 'new') qs = qs.filter(q => !records[q.id]?.seen)
     else if (scope === 'wrong') qs = qs.filter(q => records[q.id]?.wrongFlag)
     else if (scope.startsWith('ch:')) qs = qs.filter(q => q.chapter === scope.slice(3))
     if (!qs.length) return toast('这个范围已经没题了，换一个')
     // 随机练习是「一小轮」，抽满题量就够；顺序练习才是从头啃到尾
     if (order === 'rand') qs = shuffle(qs).slice(0, getRandomN())
-    const key = keepsCursor(scope) ? `cursor:${subject}:${scope}:${order}` : null
+    const key = keepsCursor(scope) ? `cursor:${subject}:${chapter && scope === 'all' ? `ch:${chapter}` : scope}:${order}` : null
     const saved = key && order === 'seq' ? await kvGet(key, 0) : 0
     const scopeType = scope.startsWith('formula:') ? 'formula' : scope.startsWith('ch:') ? 'chapter' : scope.startsWith('kw:') ? 'keyword' : scope
     track('practice_started', {
@@ -62,94 +64,66 @@ export default function Practice({ go, setQuiz, initialScope, initialOrder }) {
       setSession(null)
       if (initialScope?.startsWith('formula:')) go('formula', { unit: initialScope.slice(8) }, true)
     }} />
-    : <>{initialScope?.startsWith('formula:') && <button className="btn-sm" onClick={() => go('formula', { unit: initialScope.slice(8) })}>返回微课堂</button>}<Setup onStart={start} /></>
+    : <>{initialScope?.startsWith('formula:') && <button className="btn-sm" onClick={() => go('formula', { unit: initialScope.slice(8) })}>返回微课堂</button>}<Setup key={subject} onStart={start} go={go} /></>
 }
 
-function Setup({ onStart }) {
+function Setup({ onStart, go }) {
   const { records, subject, autoNext, setAutoNext } = useStore()
   const [scope, setScope] = useState('all')
   const [order, setOrder] = useState('seq')
   const [randN, setRandN] = useState(getRandomN)
-
+  const chs = chapterStats(records, subject, true)
+  const [chapter, setChapter] = useState(() => {
+    const saved = readPracticePreferences().chapters?.[subject]
+    return chs.some(c => c.chapter === saved) ? saved : ''
+  })
   const qs = bySubject(subject)
-  const st = stats(records, subject)
-  // 章节列表全站统一按教材章序，跟首页进去的章节页对齐；
-  // 「弱项优先」是推荐视角，留给首页那块「知识点掌握度」，不混进选择器
-  const chs = chapterStats(records, subject, true).filter(c => c.total)
+  const matches = q => scope === 'new' ? !records[q.id]?.seen : scope === 'wrong' ? records[q.id]?.wrongFlag : true
+  const available = qs.filter(matches)
+  const selectedCount = available.filter(q => !chapter || q.chapter === chapter).length
   const scopes = [
-    { v: 'all', t: '全部题目', n: qs.length },
-    { v: 'new', t: '只做没做过的', n: qs.length - st.done },
-    { v: 'wrong', t: '只做错题', n: st.wrong },
+    { v: 'all', t: '全部', n: qs.length },
+    { v: 'new', t: '未做', n: qs.filter(q => !records[q.id]?.seen).length },
+    { v: 'wrong', t: '错题', n: qs.filter(q => records[q.id]?.wrongFlag).length },
   ]
-
-  return (
-    <>
-      <PageHeader title="练习模式" subtitle="选完立刻看解析 · 答错自动进错题本" />
-      <SubjectSeg />
-
-      <div className="card">
-        <h2>练什么</h2>
-        <div className="stack">
-          {scopes.map(s => (
-            <button className={`row between ${scope === s.v ? 'btn-pri' : ''}`} key={s.v}
-              disabled={!s.n} onClick={() => setScope(s.v)}>
-              <span>{s.t}</span><span className="num">{s.n}</span>
-            </button>
-          ))}
-        </div>
-        <details>
-          <summary className="muted">按知识点练 ▾</summary>
-          <div className="stack" style={{ marginTop: 10 }}>
-            {chs.map((c, i) => (
-              <button className={`row between ${scope === `ch:${c.chapter}` ? 'btn-pri' : ''}`}
-                key={c.chapter} onClick={() => setScope(`ch:${c.chapter}`)}>
-                <span><span className="muted num">{i + 1}</span> {c.chapter}</span>
-                <span className="muted num">{c.acc === null ? '未做' : `${c.acc}%`} · {c.total}</span>
-              </button>
-            ))}
-          </div>
-        </details>
-      </div>
-
-      <div className="card">
-        <h2>怎么练</h2>
-        {/* 题库本来就是按 (科目, 章节) 排好的，所以「顺序」实际就是章节顺序，标签照实写 */}
-        <div className="seg">
-          <button className={order === 'seq' ? 'on' : ''} onClick={() => setOrder('seq')}>
-            章节顺序<small>接着上次</small>
-          </button>
-          <button className={order === 'rand' ? 'on' : ''} onClick={() => setOrder('rand')}>
-            随机<small>打乱抽题</small>
-          </button>
-        </div>
-        {order === 'rand' && (
-          <label className="row between">
-            <span>这一轮抽多少题<span className="muted" style={{ display: 'block', fontSize: 12 }}>
-              下次进来还是这个数</span></span>
-            <span className="seg seg-n">
-              {RANDOM_SIZES.map(n => (
-                <button key={n} className={randN === n ? 'on' : ''}
-                  onClick={() => { setRandN(n); setRandomN(n) }}>{n}</button>
-              ))}
-            </span>
-          </label>
-        )}
-        <label className="row between" style={{ cursor: 'pointer' }}>
-          <span>
-            答对后自动跳下一题
-            <span className="muted" style={{ display: 'block', fontSize: 12 }}>答错会停下看解析</span>
-          </span>
-          <input type="checkbox" checked={autoNext} onChange={e => setAutoNext(e.target.checked)}
-            style={{ width: 20, height: 20, accentColor: 'var(--accent)' }} />
-        </label>
-      </div>
-
-      <button className="btn-pri" style={{ padding: 15 }} onClick={() => onStart(scope, order)}>
-        开始练习
+  const chooseChapter = value => {
+    setChapter(value)
+    savePracticePreferences({ subject, chapters: { ...readPracticePreferences().chapters, [subject]: value } })
+  }
+  return <div className="practice-setup practice-unified">
+    <PageHeader variant="subpage" title="练习" onBack={() => go('home')} backLabel="首页" />
+    <SubjectSeg />
+    <div className="practice-range-tabs" role="group" aria-label="练习范围">
+      {scopes.map(s => <button key={s.v} aria-pressed={scope === s.v} className={scope === s.v ? 'on' : ''} onClick={() => setScope(s.v)}>{s.t}<span>{s.n}</span></button>)}
+    </div>
+    <div className="chapter-summary"><span>选择章节</span><button className="btn-ghost" onClick={() => go('exam', chapter ? { ch: chapter } : {})}>模拟考 <Icon name="chevronRight" size={14} /></button></div>
+    <div className="chapter-list practice-chapter-picker" role="group" aria-label="章节">
+      <button className={`ch-row ${!chapter ? 'selected' : ''}`} aria-pressed={!chapter} onClick={() => chooseChapter('')}>
+        <span className="ch-no"><Icon name="list" size={14} /></span><span className="ch-body"><b>全部章节</b><small className="muted">{available.length} 题</small></span><span className="chapter-check" aria-hidden="true">{!chapter ? '✓' : ''}</span>
       </button>
-      <div className="muted" style={{ textAlign: 'center' }}>电脑上可用键盘：A/B/C/D 选择，← → 翻题</div>
-    </>
-  )
+      {chs.map((c, i) => {
+        const count = available.filter(q => q.chapter === c.chapter).length
+        return <button key={c.chapter} className={`ch-row ${chapter === c.chapter ? 'selected' : ''}`} aria-pressed={chapter === c.chapter} onClick={() => chooseChapter(c.chapter)}>
+          <span className="ch-no">{String(i + 1).padStart(2, '0')}</span>
+          <span className="ch-body"><b>{c.chapter}</b><small className="muted">{count ? `${count} 题${c.done ? ` · 已做 ${c.done}` : ''}` : '此范围暂无题目'}</small></span>
+          <span className="chapter-check" aria-hidden="true">{chapter === c.chapter ? '✓' : ''}</span>
+        </button>
+      })}
+    </div>
+    <footer className="practice-dock" aria-label="练习操作">
+      <div className="practice-dock-inner">
+        <div className="practice-dock-options">
+          <div className="seg" role="group" aria-label="练习方式">
+            <button aria-pressed={order === 'seq'} className={order === 'seq' ? 'on' : ''} onClick={() => setOrder('seq')}>顺序</button>
+            <button aria-pressed={order === 'rand'} className={order === 'rand' ? 'on' : ''} onClick={() => setOrder('rand')}>随机</button>
+          </div>
+          {order === 'rand' && <select className="practice-dock-count" aria-label="每轮题量" value={randN} onChange={e => { const n = Number(e.target.value); setRandN(n); setRandomN(n) }}>{RANDOM_SIZES.map(n => <option key={n} value={n}>{n} 题</option>)}</select>}
+          <label className="practice-dock-auto"><span>自动下一题</span><input className="practice-switch" type="checkbox" role="switch" aria-label="答对自动下一题，答错停下看解析" checked={autoNext} onChange={e => setAutoNext(e.target.checked)} /></label>
+        </div>
+        <button className="btn-pri practice-start" disabled={!selectedCount} onClick={() => onStart(scope, order, chapter)}>开始练习<span>{order === 'rand' ? Math.min(randN, selectedCount) : selectedCount} 题</span></button>
+      </div>
+    </footer>
+  </div>
 }
 
 function Runner({ session: s, setSession, onQuit }) {

@@ -8,7 +8,6 @@ import { Dialog, Icon } from './components/ui'
 import { track, trackPageview } from './lib/analytics'
 import { SUBJECTS, stats } from './lib/bank'
 import { useStore } from './lib/store'
-import Chapters from './views/Chapters'
 import Data from './views/Data'
 import DuPont from './views/DuPont'
 import Exam from './views/Exam'
@@ -33,7 +32,6 @@ const NAV = [
 ]
 
 const LIBRARY = [
-  { v: 'chapters', label: '章节练习', icon: 'list' },
   { v: 'notebook', label: '我的笔记', icon: 'list' },
   { v: 'formula', label: '公式攻坚', icon: 'calc' },
   { v: 'map', label: '知识图谱', icon: 'map' },
@@ -47,7 +45,7 @@ const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'f
 function parseHash() {
   const [v, qs] = location.hash.replace(/^#\/?/, '').split('?')
   return {
-    view: VIEWS.includes(v) ? v : 'home',
+    view: v === 'chapters' ? 'practice' : VIEWS.includes(v) ? v : 'home',
     params: Object.fromEntries(new URLSearchParams(qs)),
   }
 }
@@ -61,8 +59,8 @@ export default function App() {
   // 免得手滑点到别的 tab 把一轮答题丢了
   const [quiz, setQuiz] = useState(false)
   // 时间线/基金运作自己顶栏就带返回，底栏留着只是白占一截高度——按整页处理
-  const bare = view === 'map' || view === 'timeline' || view === 'fundops' || view === 'dupont'
-  const subpage = ['map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'notebook', 'cheatsheet'].includes(view)
+  const bare = view === 'practice' || view === 'map' || view === 'timeline' || view === 'fundops' || view === 'dupont'
+  const subpage = ['practice', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'notebook', 'cheatsheet'].includes(view)
     || (view === 'data' && ['ai', 'voice', 'storage', 'countdown'].includes(params.page))
     || (view === 'exam' && !!(params.scope === 'numbers' || params.ch))
   useEffect(() => {
@@ -112,7 +110,7 @@ export default function App() {
   // 挂在 Formula 里的话，正要算题的那一刻它反而没了。
   // 出现条件＝这页可能要算：公式攻坚本身、它带出来的计算题专练、以及科目二的做题页
   const needsCalc = view === 'formula'
-    || (['practice', 'exam'].includes(view) && (subject === '科目二' || params.scope === 'calc' || params.scope?.startsWith('formula:')))
+    || (quiz && ['practice', 'exam'].includes(view) && (subject === '科目二' || params.scope === 'calc' || params.scope?.startsWith('formula:')))
 
   return (
     <>
@@ -132,7 +130,6 @@ export default function App() {
         {view === 'fundops' && <FundOps go={go} />}
         {view === 'tools' && <Tools go={go} />}
         {view === 'dupont' && <DuPont go={go} />}
-        {view === 'chapters' && <Chapters go={go} />}
         {view === 'data' && <Data go={go} page={params.page} />}
       </main>
 

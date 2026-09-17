@@ -43,7 +43,7 @@ function ExamCountdown({ date, go }) {
       {days > 0 ? <span className="exam-countdown-value">
         <strong className="exam-countdown-days">{days}</strong><span>天</span>
       </span> : <span className="exam-countdown-status">{days === 0 ? '今天' : '修改日期'}</span>}
-      <span className="exam-countdown-chevron" aria-hidden="true">›</span>
+      <span className="exam-countdown-chevron" aria-hidden="true"><Icon name="chevronRight" size={16} /></span>
     </button>
   </section>
 }
@@ -133,7 +133,7 @@ export default function Home({ go }) {
       {/* 两个刷题入口并排：左边接着上次，右边打乱来一小轮 */}
       <section className="home-start"><div className="home-section-title"><h2>开始学习</h2></div>
       <div className="grid2 go-pair">
-        <button className="go go-seq" onClick={() => go('chapters')}>
+        <button className="go go-seq" onClick={() => go('practice')}>
           <Icon name="list" />
           <b>章节练习</b>
           <small>{chs2.length} 章 · 按教材目录练或考</small>
@@ -151,7 +151,7 @@ export default function Home({ go }) {
       <button className="notebook-home" onClick={() => go('notebook')}>
         <span className="notebook-home-icon"><Icon name="list" /></span>
         <span><b>我的笔记本</b><small>{notebook.error ? '打开查看笔记' : notebook.notes.length ? `${notebook.notes.filter(n => n.status === 'ready').length} 条精华${notebook.notes.some(n => n.status !== 'ready') ? ' · 有摘录待处理' : ' · 按章节快速回顾'}` : '摘录与考点回顾'}</small></span>
-        <Icon name="right" />
+        <Icon name="chevronRight" size={16} />
       </button>
 
       <div className="grid2">

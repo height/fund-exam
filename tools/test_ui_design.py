@@ -23,7 +23,7 @@ with sync_playwright() as p:
    assert pg.locator('#app').evaluate('e=>e===document.activeElement')
    overflow=pg.evaluate('document.documentElement.scrollWidth > innerWidth + 1')
    assert not overflow,(width,route,'overflow')
-  pg.goto(BASE+'#/chapters');pg.locator('.ch-row').first.click();pg.wait_for_selector('.opt')
+  pg.goto(BASE+'#/chapters');pg.locator('.ch-row').nth(1).click();pg.locator('.practice-start').click();pg.wait_for_selector('.opt')
   assert not pg.locator('.app-bottom-nav').count()
   pg.locator('.opt').first.click();pg.screenshot(path=f'{SHOTS}/practice-{width}.png',full_page=True)
   pg.goto(BASE+'#/home');pg.wait_for_selector('.hero-top');pg.wait_for_timeout(250)

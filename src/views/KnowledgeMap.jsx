@@ -315,7 +315,7 @@ function SubjectKnowledgeMap({ go }) {
         <div className="kg-detail-top"><div className="kg-note-tools"><span>{selected.depth === 3 ? '考点笔记' : selected.depth === 2 ? '本节内容' : '章节概览'}</span>
           {selected.d && <Speaker key={selected.id} getText={() => mdToSpeech(studyNoteSpeech(selected))} label="朗读考点笔记" />}</div>
           <button className="kg-note-practice" aria-label="练习本章题目" disabled={!stat?.total} onClick={() => go('practice', { scope: `ch:${selected.chapter}`, order: 'seq' })}>
-            {stat?.total ? `练习 ${stat.total} 题` : '暂无题目'} <span aria-hidden="true">›</span></button>
+            {stat?.total ? `练习 ${stat.total} 题` : '暂无题目'} <Icon name="chevronRight" size={16} /></button>
           <button className="kg-reading-toggle" aria-label={reading ? '返回脑图' : '专注阅读'} title={reading ? '返回脑图' : '专注阅读'} aria-pressed={reading} onClick={() => setReading(!reading)}><Icon name={reading ? 'shrink' : 'expand'} size={16} /></button>
           <button className="kg-icon-btn" aria-label="关闭考点详情" onClick={closeDetail}><Icon name="x" size={18} /></button></div>
         {pointIndex >= 0 && <nav className="kg-point-nav" aria-label="连续复习">
@@ -328,7 +328,7 @@ function SubjectKnowledgeMap({ go }) {
           <h2 ref={detailRef} tabIndex={-1}>{selected.t}</h2>
           {selected.review ? <StudyNotes review={selected.review} />
             : selected.d ? <div className="kg-detail-copy"><span className="kg-note-label">学习要点</span><p>{selected.d}</p></div>
-            : <div className="kg-detail-children">{selected.children.map(id => <button key={id} onClick={() => reveal(index.byId.get(id))}>{index.byId.get(id).t}<span>›</span></button>)}</div>}
+            : <div className="kg-detail-children">{selected.children.map(id => <button key={id} onClick={() => reveal(index.byId.get(id))}>{index.byId.get(id).t}<Icon name="chevronRight" size={16} /></button>)}</div>}
 
         </div>
       </aside>}

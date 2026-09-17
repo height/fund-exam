@@ -230,7 +230,7 @@ function ExamSetup({ go }) {
           <b>全部数字考点</b>
           <small className="muted">跨章节随机抽 {n}/{total} 题 · {minutesFor(n)} 分钟 · {PASS} 分及格</small>
         </span>
-        <Icon name="right" />
+        <Icon name="chevronRight" size={16} />
       </button>
 
       <div className="number-exam-note">

@@ -46,7 +46,7 @@ function SettingsLink({ icon, title, detail, status, onClick }) {
     <span className="settings-link-icon"><Icon name={icon} /></span>
     <span className="settings-link-copy"><strong>{title}</strong><small>{detail}</small></span>
     {status && <span className="settings-link-status">{status}</span>}
-    <Icon name="right" />
+    <Icon name="chevronRight" size={16} />
   </button>
 }
 
@@ -284,7 +284,7 @@ export default function Data({ go, page }) {
           <KeyField label="API Key" value={cur.key || ''} disabled={testing}
             onChange={v => editAi({ key: v.trim() })} />
           <details className="settings-advanced">
-            <summary>接口与模型<span>{cur.model}</span><Icon name="right" /></summary>
+            <summary>接口与模型<span>{cur.model}</span><Icon name="chevronRight" size={16} /></summary>
             <div className="settings-advanced-fields">
               <label className="ai-field">接口地址
                 <input type="url" required disabled={testing} autoCapitalize="none" spellCheck={false}
