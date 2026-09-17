@@ -432,23 +432,24 @@ function Bubble({ term, ctx, origin, lift, depth, go, onClose }) {
   useEffect(() => { run(); return () => ctlRef.current?.abort() }, [])
 
   return (
-    <div className="bubble card" role="dialog" aria-label={`解释 ${term}`}
+    <div className="bubble" role="dialog" aria-label={`解释 ${term}`}
       data-note-subject={origin?.subject} data-note-chapter={origin?.chapter} data-note-title={origin?.sourceTitle} data-note-qid={origin?.sourceQid}
       style={{ zIndex: 21 + lift, transform: `translateY(${-9 * depth}px)` }}>
-      <div className="row between">
+      <div className="bubble-header">
         <b className="bubble-term">{term}</b>
         <div className="row">
           {state === 'done' && <Speaker getText={() => mdToSpeech(text)} label="朗读解释" />}
           <button className="btn-sm btn-ghost" onClick={onClose} aria-label="关闭"><Icon name="x" /></button>
         </div>
       </div>
+      <div className="bubble-content">
       {state === 'nokey' ? (
-        <div className="row between">
+        <div className="bubble-status">
           <span className="muted">先配好模型和 Key 才能解释</span>
-          <button className="btn-sm" onClick={() => go('data')}>去设置 ›</button>
+          <button className="btn-sm" onClick={() => go('data', { page: 'ai' })}>去设置 <Icon name="chevronRight" size={14} /></button>
         </div>
       ) : state === 'error' ? (
-        <div className="row between">
+        <div className="bubble-status">
           <span className="muted grow">{err}</span>
           <button className="btn-sm" onClick={run}>重试</button>
         </div>
@@ -457,6 +458,7 @@ function Bubble({ term, ctx, origin, lift, depth, go, onClose }) {
           <Md text={state === 'loading' ? `${text || '正在思考'}▍` : text} />
         </div>
       )}
+      </div>
     </div>
   )
 }

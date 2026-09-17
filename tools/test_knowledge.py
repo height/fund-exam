@@ -123,6 +123,8 @@ def run(browser, engine, mobile):
     page.get_by_role('button', name='切换到深色主题').click()
     expect(page.locator('.react-flow')).to_have_class(re.compile('dark'))
     fit(page)
+    assert page.locator('.kg-branch-toggle').evaluate_all('els=>els.every(e=>Math.abs(e.getBoundingClientRect().width-e.getBoundingClientRect().height)<1)')
+    assert page.locator('.kg-node-read strong').evaluate_all('els=>els.every(e=>e.scrollHeight<=e.clientHeight+1)'), 'node label clipped'
     page.screenshot(path=str(OUT/f'{engine}-{"mobile" if mobile else "desktop"}-all-chapters.png'))
     page.get_by_role('searchbox', name='搜索知识图谱').fill('var 置信')
     page.get_by_role('complementary', name='搜索结果').get_by_role('button', name=re.compile('VaR、ES与压力测试')).click()

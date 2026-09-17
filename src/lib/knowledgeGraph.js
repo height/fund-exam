@@ -41,9 +41,9 @@ export function toggleBranch(open, id) {
 // Nodes hug their labels. Long titles wrap instead of widening every node.
 export function knowledgeNodeSize(entry) {
   const units = [...entry.t].reduce((n, c) => n + (c.charCodeAt(0) > 255 ? 1 : .55), 0)
-  const width = Math.min(250, Math.max(92, Math.ceil(units * 13) + 28))
-  const lines = Math.max(1, Math.ceil(units * 13 / (width - 24)))
-  return { width, height: Math.max(32, lines * 19 + 10) }
+  const width = Math.min(250, Math.max(92, Math.ceil(units * 14) + 32))
+  const lines = Math.max(1, Math.ceil(units * 14 / (width - 30)))
+  return { width, height: Math.max(40, lines * 19 + 16) }
 }
 
 export function chapterLabel(entry) {

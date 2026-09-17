@@ -281,3 +281,20 @@ button{min-height:44px}button:active:not(:disabled){transform:scale(.975);transi
 /* A single opaque top-edge color prevents seams with iOS browser/status chrome. */
 html{background-color:var(--paper)}
 .page-head.is-subpage{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
+
+/* Explanation is a floating reading surface, independent of plain page cards. */
+.bubble{display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden;
+  background:var(--sheet);color:var(--ink);border:1px solid var(--rule);border-radius:18px;
+  box-shadow:0 12px 40px #00000026,0 2px 8px #00000012;
+  bottom:calc(88px + env(safe-area-inset-bottom) + var(--calc-h));
+  max-height:min(48dvh,calc(100dvh - 180px - env(safe-area-inset-bottom) - var(--calc-h)))}
+.bubble-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none;min-height:48px;padding:4px 8px 4px 14px;border-bottom:1px solid var(--rule)}
+.bubble-term{min-width:0;font-size:14px;font-weight:600;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.bubble-header>.row{flex:none;gap:2px}.bubble-header button{display:inline-flex;align-items:center;justify-content:center;min-width:36px;min-height:36px;padding:6px;border-radius:10px}
+.bubble-header button .icon{width:17px;height:17px}
+.bubble-content{padding:12px 14px;min-height:0;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere}
+.bubble-body{font-size:14px;line-height:1.75}.bubble-body .md>:first-child{margin-top:0}.bubble-body .md>:last-child{margin-bottom:0}
+.bubble-status{display:flex;align-items:center;justify-content:space-between;gap:12px}.bubble-status>span{min-width:0;flex:1}.bubble-status button{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:12px}
+:root[data-quiz] .bubble{bottom:calc(80px + env(safe-area-inset-bottom) + var(--calc-h))}
+:root:has(.practice-dock) .bubble{bottom:calc(132px + env(safe-area-inset-bottom))}
+@media(prefers-contrast:more){.bubble{border-color:var(--ink)}}

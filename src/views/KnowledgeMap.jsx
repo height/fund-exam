@@ -40,7 +40,7 @@ function KnowledgeNode({ data }) {
         ? `${entry.children.length} 节 / ${entry.points} 组考点` : entry.depth === 2 ? `${entry.points} 组考点` : '点击阅读要点'}</span>
     </ReadElement>
     {branch && <button className="kg-branch-toggle nodrag nopan" aria-expanded={expanded}
-      aria-label={`${expanded ? '收起' : '展开'}：${entry.t}`} onClick={() => onToggle(entry.id)}>{expanded ? '−' : '+'}</button>}
+      aria-label={`${expanded ? '收起' : '展开'}：${entry.t}`} onClick={() => onToggle(entry.id)}><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M3 8h10" />{!expanded && <path d="M8 3v10" />}</svg></button>}
   </div>
 }
 
@@ -224,7 +224,7 @@ function SubjectKnowledgeMap({ go }) {
     <div className="kg-toolbar">
       <button className="kg-nav-toggle" aria-label="章节导航" aria-expanded={navOpen} onClick={() => setNavOpen(!navOpen)}>章节</button>
       <label className="kg-search"><Icon name="search" size={17} />
-        <input ref={searchRef} value={query} placeholder="搜索章节、考点或关键词" aria-label="搜索知识图谱"
+        <input ref={searchRef} value={query} placeholder="搜索章节或考点" aria-label="搜索知识图谱"
           type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
           onFocus={() => { if (query.trim()) setNavOpen(true) }} onChange={e => { setQuery(e.target.value); setNavOpen(true) }}
           onKeyDown={e => { if (e.key === 'Enter' && results.length) reveal(results[0]) }} />
@@ -281,7 +281,7 @@ function SubjectKnowledgeMap({ go }) {
             minZoom={.12} maxZoom={2} panOnDrag zoomOnPinch zoomOnScroll zoomOnDoubleClick={false}
             colorMode={isDark ? 'dark' : 'light'} ariaLabelConfig={ariaLabels}
             defaultEdgeOptions={{ style: { stroke: 'var(--kg-line)', strokeWidth: 1.6 } }}>
-            <Background color="var(--kg-dot)" gap={24} size={1} />
+            <Background color="var(--kg-dot)" gap={28} size={.8} />
             <CanvasControls graph={graph} request={request} containerRef={canvasRef} onFit={() => setAnnouncement('已显示全部可见节点')} />
             {mini && <MiniMap pannable zoomable nodeColor="var(--accent-soft)" nodeStrokeColor="var(--accent-ink)" nodeStrokeWidth={2}
               maskColor="var(--kg-map-mask)" bgColor="var(--sheet)" position="bottom-right" />}

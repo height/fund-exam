@@ -85,7 +85,7 @@ test('节点矩形按标题宽度收紧，长标题换行且不裁切', () => {
   const short = knowledgeNodeSize({ t: '权益投资' })
   const long = knowledgeNodeSize({ t: '基金管理人的合规管理、风险管理和内部控制' })
   assert.ok(short.width < long.width)
-  assert.equal(short.height, 32)
+  assert.equal(short.height, 40)
   assert.ok(long.height > short.height)
   assert.ok(long.width <= 250)
 })

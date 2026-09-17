@@ -165,6 +165,23 @@ def run():
         page.locator(".sel-tip button").first.tap()
         page.wait_for_selector(".bubble")
         assert page.locator(".bubble-term").inner_text() == term
+        # Floating explanations must retain their own surface after plain-card changes.
+        for theme in ['light', 'dark']:
+            page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
+            for width in [320, 390]:
+                page.set_viewport_size({'width': width, 'height': 844})
+                page.evaluate('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))')
+                surface = page.locator('.bubble').evaluate("""e => {
+                  const s = getComputedStyle(e), r = e.getBoundingClientRect();
+                  return { background: s.backgroundColor, radius: s.borderRadius,
+                    shadow: s.boxShadow, left: r.left, right: r.right, bottom: r.bottom };
+                }""")
+                assert surface['background'] != 'rgba(0, 0, 0, 0)', surface
+                assert surface['radius'] == '18px' and surface['shadow'] != 'none', surface
+                assert surface['left'] >= 0 and surface['right'] <= width and surface['bottom'] < 844, surface
+                assert page.locator('.bubble-content').evaluate('e=>getComputedStyle(e).overflowY') == 'auto'
+        page.get_by_role('button', name='关闭', exact=True).click()
+        assert page.locator('.bubble').count() == 0
         assert not errors, f"WebKit 页面报错：{errors}"
         browser.close()
     print("WebKit 长按 E2E 通过")
