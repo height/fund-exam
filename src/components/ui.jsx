@@ -171,13 +171,13 @@ export function SubjectSeg() {
   )
 }
 
-export function ThemeToggle({ iconOnly = false }) {
+export function ThemeToggle({ iconOnly = true }) {
   const { isDark, setTheme } = useStore()
   const label = `切换到${isDark ? '浅色' : '深色'}主题`
   return (
-    <button className="btn-sm btn-ghost" aria-label={label} title={label}
+    <button className={`btn-sm btn-ghost theme-toggle${iconOnly ? ' is-icon-only' : ''}`} aria-label={label} title={label}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}>
-      <Icon name={isDark ? 'sun' : 'moon'} />
+      <span className="theme-toggle-face"><Icon name={isDark ? 'sun' : 'moon'} /></span>
       {!iconOnly && (isDark ? ' 浅色' : ' 深色')}
     </button>
   )

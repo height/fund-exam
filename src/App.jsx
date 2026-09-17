@@ -24,14 +24,21 @@ import Wrong from './views/Wrong'
 import Notebook from './views/Notebook'
 import Cheatsheet from './views/Cheatsheet'
 
-const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
-
 const NAV = [
-  { v: 'home', label: '首页', paths: ['M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'] },
+  { v: 'home', label: '学习概览', paths: ['M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'] },
   { v: 'practice', label: '练习', paths: ['M4 19.5 8 18l11-11a2.1 2.1 0 0 0-3-3L5 15z', 'M14 6l3 3'] },
   { v: 'exam', label: '模拟考', paths: ['M12 9v4l2.5 2M9 2h6'], circle: true },
   { v: 'wrong', label: '错题本', paths: ['M3 12a9 9 0 1 0 3-6.7L3 8', 'M3 3v5h5'] },
   { v: 'data', label: '设置', paths: ['M4 8h16', 'M15 6v4', 'M4 16h16', 'M8 14v4'] },
+]
+
+const LIBRARY = [
+  { v: 'chapters', label: '章节练习', icon: 'list' },
+  { v: 'notebook', label: '我的笔记', icon: 'list' },
+  { v: 'formula', label: '公式攻坚', icon: 'calc' },
+  { v: 'map', label: '知识图谱', icon: 'map' },
+  { v: 'numbers', label: '数字必背', icon: 'numbers' },
+  { v: 'tools', label: '学习工具', icon: 'grid' },
 ]
 
 const VIEWS = ['home', 'practice', 'exam', 'wrong', 'data', 'map', 'numbers', 'formula', 'timeline', 'chapters', 'fundops', 'tools', 'dupont', 'notebook', 'cheatsheet']
@@ -109,8 +116,8 @@ export default function App() {
 
   return (
     <>
-      <a className="skip" href="#app">跳到主要内容</a>
-      <main id="app" className={`${reduceMotion ? '' : 'fade'}${view === 'map' ? ' kg-page' : view === 'notebook' ? ' notebook-page' : ''}`} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
+      <a className="skip" href="#app" onClick={e => { e.preventDefault(); document.getElementById('app')?.focus() }}>跳到主要内容</a>
+      <main id="app" tabIndex={-1} data-view={view} className={view === 'map' ? 'kg-page' : view === 'notebook' ? 'notebook-page' : undefined} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
         {view === 'cheatsheet' && <Cheatsheet go={go} generation={cheatsheet} />}
         {view === 'notebook' && <Notebook go={go} noteId={params.note} editRequested={params.edit === '1'} />}
@@ -129,10 +136,12 @@ export default function App() {
         {view === 'data' && <Data go={go} page={params.page} />}
       </main>
 
-      {!quiz && !bare && <nav className="app-bottom-nav">
+      {!quiz && !bare && <nav className="app-bottom-nav" aria-label="主导航">
+        <button className="nav-brand" onClick={() => go('home')} aria-label="考基宝 · 学习概览"><img src="./icon-192.png" alt="" /><span>考基宝<small>基金从业</small></span></button>
+        <span className="nav-heading">学习</span>
         {NAV.map(({ v, label, paths, circle }) => (
-          <button key={v} className={view === v ? 'on' : ''} onClick={() => go(v)}>
-            <svg viewBox="0 0 24 24">
+          <button key={v} className={view === v ? 'on' : ''} aria-current={view === v ? 'page' : undefined} onClick={() => go(v)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
               {circle && <circle cx="12" cy="13" r="8" />}
               {paths.map(d => <path key={d} d={d} />)}
             </svg>
@@ -140,6 +149,8 @@ export default function App() {
             {v === 'wrong' && wrongCount > 0 && <span className="dot" aria-label={`${wrongCount} 道错题待清`} />}
           </button>
         ))}
+        <span className="nav-heading nav-library">资料库</span>
+        {LIBRARY.map(({ v, label, icon }) => <button key={v} className={`nav-library ${view === v ? 'on' : ''}`} aria-current={view === v ? 'page' : undefined} onClick={() => go(v)}><Icon name={icon} />{label}</button>)}
       </nav>}
 
       {/* 抽屉展开时收起唤起钮，它本来就落在抽屉底下；收起用抽屉自己的 ×。

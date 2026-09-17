@@ -284,9 +284,9 @@ export function selectionTipPosition(rects) {
   const last = rects[rects.length - 1]
   // 文案会随术语变宽；按最大宽度判断左右空间，保证长词省略后也不出屏。
   const width = 224
-  const height = 40
-  // 工具条仍在选区上方，但贴近到 3px：视觉上不再悬得过高，也不会压住高亮。
-  const gap = 3
+  const height = 44
+  // 留出选区手柄和文字的呼吸空间。与工具条实际高度保持一致。
+  const gap = 12
   const inset = 8
   const safeBottom = innerHeight - 82
   const centerX = clamp((last.left + last.right) / 2, width / 2 + inset, innerWidth - width / 2 - inset)

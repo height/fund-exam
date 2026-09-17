@@ -13,7 +13,7 @@ export default function Tools({ go }) {
     <>
       <PageHeader
         variant="subpage"
-        title="其他工具"
+        title="学习工具"
         subtitle="辅助理解 · 不计练习成绩"
         onBack={() => go('home')}
         backLabel="首页"

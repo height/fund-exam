@@ -84,7 +84,7 @@
   clip:rect(0,0,0,0);white-space:nowrap;border:0}
 /* 双击放大在答题时最烦：连点两个选项就被当成双击。manipulation 只掐双击缩放，
    保留滚动和双指缩放，是这一条里唯一不伤无障碍的做法。
-   双指缩放另由 meta 的 user-scalable=no + main.jsx 里拦 gesturestart 处理 */
+   保留双指缩放，方便按阅读需要放大内容。 */
 html{touch-action:manipulation}
 body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.65 var(--f-body);
   padding-bottom:calc(64px + env(safe-area-inset-bottom) + var(--calc-h));-webkit-font-smoothing:antialiased;

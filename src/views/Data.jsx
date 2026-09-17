@@ -234,7 +234,6 @@ export default function Data({ go, page }) {
   return (
     <div className="settings">
       <PageHeader title={PAGES[currentPage] || '设置'}
-        subtitle={currentPage ? undefined : '按你的习惯，调整学习体验'}
         variant={currentPage ? 'subpage' : 'tab'}
         onBack={currentPage ? () => open(null) : undefined} backLabel="设置" />
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { askTerm, getKey, mdToSpeech } from '../lib/ai'
 import { Md } from '../lib/format'
 import {
@@ -39,6 +39,7 @@ export default function SelectionTip({ go }) {
   const [custom, setCustom] = useState(null) // 触屏端自绘选区
   const [layout, setLayout] = useState(0) // 滚动/旋转后重算浮层位置
   const [stack, setStack] = useState([]) // [{id, term, ctx}]
+  const toolbarRef = useRef(null)
   const customRef = useRef(null)
   const gestureRef = useRef(null)
   const swallowClickRef = useRef(null)
@@ -318,6 +319,17 @@ export default function SelectionTip({ go }) {
     ? { ...geometry.tip, term: custom.term, ctx: custom.ctx, root: custom.root, source: 'custom' }
     : null
   const tip = customTip || nativeTip
+  const tipVisible = !!tip
+  useLayoutEffect(() => {
+    const el = toolbarRef.current
+    if (!tipVisible || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // Only animate arrival; selection dragging and scroll repositioning remain immediate.
+    const animation = el.animate([
+      { opacity: 0, scale: '.96' },
+      { opacity: 1, scale: '1' },
+    ], { duration: 180, easing: 'cubic-bezier(.16, 1, .3, 1)' })
+    return () => animation.cancel()
+  }, [tipVisible])
   useEffect(() => {
     const clear = () => setNativeTip(null)
     window.addEventListener('hashchange', clear)
@@ -377,7 +389,7 @@ export default function SelectionTip({ go }) {
         <span className="sr-only" role="status" aria-live="polite">已选择 {custom.term}</span>
       </>}
       {tip && (
-        <div className="sel-tip" role="toolbar" aria-label="选中文字操作" data-side={tip.side}
+        <div ref={toolbarRef} className="sel-tip" role="toolbar" aria-label="选中文字操作" data-side={tip.side}
           data-term={tip.term} style={{ left: tip.x, top: tip.y }} onPointerDown={e => e.preventDefault()}>
           <button aria-label={`解释“${tip.term}”`} onClick={open}><Icon name="sparkle" />解释</button>
           <button onClick={collect}><Icon name="list" />记笔记</button>

@@ -88,7 +88,6 @@ export default function Home({ go }) {
     <>
       <PageHeader
         title={<span className="brand-title"><img src="./icon-192.png" alt="" aria-hidden="true" />考基宝</span>}
-        subtitle="考点刷透，过线有数。"
         action={<ThemeToggle />}
       />
       <SubjectSeg />
@@ -98,7 +97,8 @@ export default function Home({ go }) {
         <span className="muted">题目复核发现材料缺失或内容问题，受影响的旧版作答已作废，不再影响错题本和正确率。旧记录仍保存在导出备份中；已修订题可重新练习，待核实题已暂停使用。</span>
       </div>}
 
-      <div className="card">
+      <div className="card study-overview">
+        <div className="overview-label"><span>学习进度</span><span>{subject}</span></div>
         <div className="hero-top">
           {enough ? (
             <>
@@ -110,13 +110,13 @@ export default function Home({ go }) {
             </>
           ) : (
             <div className="hero-verdict">
-              <b className="hero-num flat">{st.done ? `再做 ${MIN_SAMPLE - st.done} 题就能看出水平` : '还没开始'}</b>
-              <span className="muted">答满 {MIN_SAMPLE} 题才算得准</span>
+              <b className="hero-num flat">{st.done ? `再做 ${MIN_SAMPLE - st.done} 题就能看出水平` : '从第一题开始'}</b>
+              <span className="muted">答满 {MIN_SAMPLE} 题后显示正确率</span>
             </div>
           )}
         </div>
 
-        <Gauge value={enough ? st.acc : 0} />
+        {enough && <Gauge value={st.acc} />}
 
         <div className="hero-foot">
           <span>已做<b>{st.done}<i>/{total}</i></b></span>
@@ -131,6 +131,7 @@ export default function Home({ go }) {
       </div>
 
       {/* 两个刷题入口并排：左边接着上次，右边打乱来一小轮 */}
+      <section className="home-start"><div className="home-section-title"><h2>开始学习</h2></div>
       <div className="grid2 go-pair">
         <button className="go go-seq" onClick={() => go('chapters')}>
           <Icon name="list" />
@@ -140,34 +141,39 @@ export default function Home({ go }) {
         <button className="go go-rand" onClick={() => go('practice', { scope: 'all', order: 'rand' })}>
           <Icon name="dice" />
           <b>随机 {randN} 题</b>
-          <small>打乱抽一小轮</small>
+          <small>随机抽题 · 即时解析</small>
         </button>
       </div>
 
+      </section>
+
+      <section className="home-library"><div className="home-section-title"><h2>资料库</h2></div>
       <button className="notebook-home" onClick={() => go('notebook')}>
         <span className="notebook-home-icon"><Icon name="list" /></span>
-        <span><b>我的笔记本</b><small>{notebook.error ? '打开查看笔记' : notebook.notes.length ? `${notebook.notes.filter(n => n.status === 'ready').length} 条精华${notebook.notes.some(n => n.status !== 'ready') ? ' · 有摘录待处理' : ' · 按章节快速回顾'}` : '随手摘录，留住核心考点'}</small></span>
+        <span><b>我的笔记本</b><small>{notebook.error ? '打开查看笔记' : notebook.notes.length ? `${notebook.notes.filter(n => n.status === 'ready').length} 条精华${notebook.notes.some(n => n.status !== 'ready') ? ' · 有摘录待处理' : ' · 按章节快速回顾'}` : '摘录与考点回顾'}</small></span>
         <Icon name="right" />
       </button>
 
       <div className="grid2">
         <button className="tile" onClick={() => go('formula')}>
           <b><Icon name="calc" /> 公式攻坚</b>
-          <small>按科目二章节查公式、看例题、做练习</small>
+          <small>科目二 · 公式与例题</small>
         </button>
         <button className="tile" onClick={() => go('map')}>
           <b><Icon name="map" /> 知识图谱</b>
-          <small>章节 → 主题 → 必背要点</small>
+          <small>章节考点速览</small>
         </button>
         <button className="tile" onClick={() => go('numbers')}>
           <b><Icon name="numbers" /> 数字必背</b>
-          <small>{numberN} 张题卡 · 背完模拟练</small>
+          <small>{numberN} 张数字题卡</small>
         </button>
         <button className="tile" onClick={() => go('tools')}>
-          <b><Icon name="grid" /> 其他工具</b>
-          <small>发展时间线 · 基金运作动画</small>
+          <b><Icon name="grid" /> 学习工具</b>
+          <small>时间线 · 运作图解</small>
         </button>
       </div>
+
+      </section>
 
       {chs.length > 0 && (
         <section className="section">
@@ -184,7 +190,7 @@ export default function Home({ go }) {
         </section>
       )}
 
-      <section className="section">
+      <section className="section home-exams">
         <div className="section-head">
           <h2>最近模拟考</h2>
           {exams.length > 0 && <span className="muted">及格线 {PASS} 分</span>}
@@ -203,8 +209,8 @@ export default function Home({ go }) {
           </div>
         ) : (
           <div className="empty">
-            <div><b>还没有考试记录</b>先做一套摸底，知道离 {PASS} 分还差多少。</div>
-            <button className="btn-sm" onClick={() => go('exam')}>去考一套</button>
+            <div><b>还没有考试记录</b>完成模拟考后查看成绩。</div>
+            <button className="btn-sm" onClick={() => go('exam')}>开始模拟考</button>
           </div>
         )}
       </section>

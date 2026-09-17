@@ -59,7 +59,7 @@ export function StoreProvider({ children }) {
     const r = document.documentElement
     if (theme === 'auto') delete r.dataset.theme
     else r.dataset.theme = theme
-    document.querySelector('meta[name=theme-color]').content = isDark ? "#0B0D10" : "#F1F2F4"
+    document.querySelector('meta[name=theme-color]').content = isDark ? "#101012" : "#f5f5f7"
   }, [theme, isDark])
 
   const toast = useCallback(m => {

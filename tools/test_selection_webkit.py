@@ -76,7 +76,7 @@ def assert_tip_above_selection(page):
     }""")
     assert position["side"] == "above" and position["tipBottom"] <= position["markTop"], \
         f"解释控件没有位于选区上方：{position}"
-    assert 2 <= position["gap"] <= 4, f"解释控件与选区的垂直间距发生漂移：{position}"
+    assert 11 <= position["gap"] <= 13, f"解释控件与选区的垂直间距发生漂移：{position}"
 
 
 def assert_handles_aligned(page):
@@ -123,7 +123,7 @@ def run():
         assert page.locator(".sel-tip").get_attribute("data-term") == expected, \
             "WebKit 首页长按命中了相邻词"
         assert page.locator('.sel-tip button').first.get_attribute('aria-label') == f'解释“{expected}”'
-        assert page.get_by_role('button',name='加入笔记本',exact=True).is_visible()
+        assert page.get_by_role('button',name='记笔记',exact=True).is_visible()
         assert page.locator(".sel-handle").count() == 2, "WebKit 没画双端手柄"
         assert_custom_selection_visible(page)
         assert_handles_aligned(page)
