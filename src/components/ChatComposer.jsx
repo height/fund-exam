@@ -23,7 +23,9 @@ export default function ChatComposer({ retrying = false, messages, streamed = ''
     const padding = parseFloat(css.paddingTop) + parseFloat(css.paddingBottom)
     const border = parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth)
     const max = line * 3 + padding + border
+    el.style.minHeight = `${line + padding + border}px`
     el.style.maxHeight = `${max}px`
+    el.style.overflowY = 'hidden'
     el.style.height = '0px'
     const height = Math.max(line + padding + border, Math.min(el.scrollHeight + border, max))
     el.style.height = `${height}px`

@@ -396,3 +396,6 @@
 .is-collapsed .note-modal-header h2.note-float-status{display:flex;align-items:center;min-width:0;flex:1;font-weight:500}
 .note-float-excerpt{display:inline-block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .is-collapsed .note-modal-window-actions{flex-shrink:0}
+
+/* Let the measured one-to-three-line height control the composer in every layout. */
+.provided-composer.nb-chat-compose textarea{flex:none;box-sizing:border-box;overflow-wrap:break-word}
