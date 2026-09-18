@@ -67,11 +67,11 @@ export default function ChatComposer({ retrying = false, messages, streamed = ''
         ['图解说明', '用简洁图示辅助说明这段内容的关系，不适合画图的部分保留文字。'],
         ['对比易错点', '对比这段内容中容易混淆的概念，说明区别与易错点。'],
       ].map(([label, prompt]) => <button type="button" key={label} disabled={busy || disabled} onClick={() => appendPrompt(prompt)}>{label}</button>)}</div>}
-      <form className="provided-composer nb-chat-compose" onSubmit={e => { e.preventDefault(); send() }}>
-      <textarea ref={input} rows={1} aria-label="告诉 AI 怎么调整" placeholder={collapsed ? "补充要求…" : placeholder} value={draft} maxLength={2000} onChange={e => onDraft(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send() } }} />
+      <div className="provided-composer nb-chat-compose note-input-bar" role="group" aria-label="笔记输入">
+      <textarea ref={input} rows={1} enterKeyHint="enter" aria-label="告诉 AI 怎么调整" placeholder={collapsed ? "补充要求…" : placeholder} value={draft} maxLength={2000} onChange={e => onDraft(e.target.value)} />
       {collapsed && <select className="note-collapsed-thinking" aria-label="Thinking depth" value={thinking} disabled={busy || disabled} onChange={e => setThinking(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select>}
-      <div className="provided-composer-actions"><span role="status">{notice}</span>{!compact && !collapsed && <button type="button" className="provided-mic" aria-label="语音输入" onClick={() => notify('尽请期待')}><Glyph name="mic" /></button>}{busy ? <button type="button" className="provided-send" key="stop" aria-label="停止生成" onClick={e => { e.preventDefault(); onStop?.() }}><Glyph name="stop" /></button> : <button type="submit" className="provided-send" key="send" aria-label="发送" disabled={!canSend}><Glyph name="send" /></button>}</div>
-    </form></div>
+      <div className="provided-composer-actions">{busy ? <button type="button" className="provided-send" key="stop" aria-label="停止生成" onClick={e => { e.preventDefault(); onStop?.() }}><Glyph name="stop" /></button> : <button type="button" onClick={send} className="provided-send" key="send" aria-label="发送" disabled={!canSend}><Glyph name="send" /></button>}</div>
+    </div><span className="note-input-notice" role="status">{notice}</span></div>
   )
   if (compact) return composer
   return <section className="provided-chat nb-chat" aria-label="AI 对话编辑">
@@ -94,7 +94,6 @@ export default function ChatComposer({ retrying = false, messages, streamed = ''
 function Glyph({ name }) {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{{
     send: <path d="M12 19V5M5 12l7-7 7 7" />,
-    mic: <><rect x="9" y="2" width="6" height="13" rx="3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" /></>,
     stop: <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />,
   }[name]}</svg>
 }

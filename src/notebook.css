@@ -399,3 +399,27 @@
 
 /* Let the measured one-to-three-line height control the composer in every layout. */
 .provided-composer.nb-chat-compose textarea{flex:none;box-sizing:border-box;overflow-wrap:break-word}
+
+/* One stable input row: Return edits the text, the trailing button sends it. */
+.nb-workspace .provided-composer.nb-chat-compose.note-input-bar,.note-receipt .provided-composer.nb-chat-compose.note-input-bar,.is-collapsed .nb-workspace .provided-composer.nb-chat-compose.note-input-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px;padding:3px 4px 3px 10px;border:1px solid var(--rule);border-radius:16px;background:var(--sheet2);box-shadow:none}
+.provided-composer.nb-chat-compose.note-input-bar:focus-within{border-color:var(--ink2);box-shadow:none}
+.provided-composer.nb-chat-compose.note-input-bar textarea{grid-column:1;align-self:center;display:block;margin:0;padding:0;width:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;line-height:22px;letter-spacing:normal;border:0;border-radius:0;resize:none;background:transparent;color:var(--ink)}
+.provided-composer.nb-chat-compose.note-input-bar textarea::placeholder{font-size:inherit;color:var(--ink2)}
+.note-input-bar .provided-composer-actions{grid-column:-2;align-self:end;gap:0}
+.provided-composer.nb-chat-compose.note-input-bar .provided-composer-actions button{position:relative;isolation:isolate;width:32px;height:32px;min-width:32px;min-height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--sheet);touch-action:manipulation;transition:transform .1s ease-out}
+.note-input-bar .provided-composer-actions button::before{content:"";position:absolute;inset:2px;border-radius:50%;background:var(--ink);z-index:-1}
+.provided-composer.nb-chat-compose.note-input-bar .provided-composer-actions button:disabled{color:var(--ink2);opacity:1}
+.note-input-bar .provided-composer-actions button:disabled::before{background:var(--rule)}
+.note-input-bar .provided-composer-actions button:enabled:active{transform:scale(.94)}
+.note-input-bar .provided-composer-actions button:focus-visible{outline:2px solid var(--accent-ink);outline-offset:1px}
+.note-input-bar .provided-composer-actions svg{width:16px;height:16px}
+.is-collapsed .nb-workspace .provided-composer.nb-chat-compose.note-input-bar{grid-template-columns:minmax(0,1fr) auto auto}
+.provided-composer.nb-chat-compose.note-input-bar .note-collapsed-thinking{align-self:end;height:32px;min-height:32px;width:68px}
+.note-input-notice:empty{display:none}
+.note-input-notice{display:block;padding:4px 12px;font-size:12px;color:var(--ink2)}
+@media(prefers-reduced-motion:reduce){.provided-composer.nb-chat-compose.note-input-bar .provided-composer-actions button{transition:none;transform:none}}
+@media(prefers-contrast:more){.provided-composer.nb-chat-compose.note-input-bar{border-color:var(--ink)}}
+
+@media(min-width:701px){.provided-composer.nb-chat-compose.note-input-bar textarea{font-size:14px;line-height:20px}}
+/* Expand the touch target without making the visible input bar taller. */
+@media(pointer:coarse){.note-input-bar .provided-composer-actions button::after{content:"";position:absolute;inset:-6px;border-radius:50%}}
