@@ -9,7 +9,7 @@ import { claimIOSPlayback } from './iosAudio'
 import { notePrompt, parseNoteResult } from './notebook'
 import { notebookKnowledge } from './notebookKnowledge'
 import { streamingReply } from './streamingReply'
-import { cheatsheetBatches, cheatsheetPrompt, parseCheatsheet } from './cheatsheet'
+import { generateOrganizedSheet } from './cheatsheetPlan'
 import { parseAIJSON, readChatResponse } from './aiResponse'
 
 /**
@@ -84,8 +84,8 @@ export async function pingAI(cfg) {
 }
 
 /** 流式对话。401 时顺手清掉坏 Key，让 UI 重新要一个。think=false 关掉推理，秒出正文 */
-async function* streamChat(userContent, signal, { think = true, effort = 'medium', structured = false } = {}) {
-  const cfg = getCfg()
+async function* streamChat(userContent, signal, { think = true, effort = 'medium', structured = false, config } = {}) {
+  const cfg = config || getCfg()
   const res = await fetch(cfg.url, {
     method: 'POST',
     signal,
@@ -117,7 +117,10 @@ async function* streamChat(userContent, signal, { think = true, effort = 'medium
       ],
     }),
   })
-  if (res.status === 401) { setKey(''); throw new Error('Key 无效，已清除，请重新填一个') }
+  if (res.status === 401) {
+    if (config) throw new Error('所选模型的 Key 无效，请在 AI 设置中更新')
+    setKey(''); throw new Error('Key 无效，已清除，请重新填一个')
+  }
   if (!res.ok) {
     const detail = (await res.json().catch(() => null))?.error?.message
     throw new Error(`请求失败（${res.status}）${detail ? `：${detail}` : '，稍后再试'}`)
@@ -167,32 +170,16 @@ export function askTerm(term, ctx, signal) {
     '用 Markdown，不超过150字，直接讲，不要客套。', signal)
 }
 
-export async function askCheatsheet(notes, signal, onProgress, effort = 'medium', instructions) {
-  const batches = cheatsheetBatches(notes)
-  const output = []
-  const run = async (batch, current, total, label) => {
-    return sheetRequest(() => structuredReply({ prompt: cheatsheetPrompt(batch, instructions), signal, stream: streamChat,
-      retryHint: '合并重复知识点与同名条目，sourceIds取并集，覆盖全部来源。',
-      options: { think: effort !== 'off', effort }, parse: text => parseCheatsheet(text, batch),
-      onProgress: (text, attempt) => onProgress?.({ current, total, chapter: label, received: text.length, retrying: !!attempt }),
-    }), { signal, onRetry: () => onProgress?.({ current, total, chapter: `${label} · 连接中断，正在重试`, received: 0, retrying: true }) })
-  }
-  for (const subject of new Set(batches.map(b => b.subject))) {
-    const parts = batches.filter(b => b.subject === subject)
-    const drafts = []
-    for (let i = 0; i < parts.length; i++) {
-      drafts.push(...await run(parts[i], i + 1, parts.length + (parts.length > 1 ? 1 : 0),
-        `${subject} · ${parts.length > 1 ? '整理资料' : '整体编排'}`))
-    }
-    if (parts.length === 1) { output.push(...drafts); continue }
-    // Large inputs are condensed first, then unified across batch boundaries.
-    const sources = new Map(drafts.map(n => [n.id, n.sourceIds]))
-    const combined = { subject, chapter: '待归类', notes: drafts.map(n => ({ id: n.id, title: n.title, markdown: n.markdown })) }
-    if (JSON.stringify(combined).length > 100000) throw new Error('资料过多，整体编排超出本次容量；上次小抄仍保留，请减少收录内容后重试')
-    const merged = await run(combined, parts.length + 1, parts.length + 1, `${subject} · 合并关联考点、整体编排`)
-    output.push(...merged.map(n => ({ ...n, sourceIds: [...new Set(n.sourceIds.flatMap(id => sources.get(id)))] })))
-  }
-  return output
+export async function askCheatsheet(notes, signal, onProgress, effort = 'medium', instructions, config = getCfg()) {
+  let stage = 0
+  return generateOrganizedSheet(notes, instructions, async (prompt, parse, label) => {
+    const current = ++stage
+    return sheetRequest(() => structuredReply({ prompt, signal, stream: streamChat,
+      retryHint: '检查知识分组、topicId、来源和coverage是否完整；为每张原图交代保留、合并或省略去向。',
+      options: { think: effort !== 'off', effort, config }, parse,
+      onProgress: (text, attempt) => onProgress?.({ current, total: null, chapter: label, received: text.length, retrying: !!attempt }),
+    }), { signal, onRetry: () => onProgress?.({ current, total: null, chapter: `${label} · 连接中断，正在重试`, received: 0, retrying: true }) })
+  }, signal)
 }
 
 export async function askNotebook(note, signal) {

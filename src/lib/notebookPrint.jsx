@@ -13,19 +13,25 @@ export function notebookPrintHTML(notes, { sourceCount = notes.length, generated
   const groups = groupNotes(ready)
   const subjects = [...new Set(groups.map(group => group.subject))].join(' / ')
   const date = new Date(generatedAt).toLocaleDateString('zh-CN')
-  let index = 0
+  let index = 0, previousSection = null
   const body = renderToStaticMarkup(<>
     <header className="print-toolbar"><div>{/^(https?|file):\/\//.test(returnUrl) && <a id="back" href={returnUrl} aria-label="返回小抄生成页">← 返回</a>}<strong>复习小抄</strong><span>{sourceCount} 条笔记 → {ready.length} 个考点</span></div>
       <label>预览 <select id="scale" defaultValue="fit"><option value="fit">适应屏幕</option><option value="1">100%</option><option value="1.5">150%</option></select></label>
       <button id="download">下载 HTML</button><button id="print">打印 / 另存 PDF</button>
       <p id="print-help">请核对后打印。A4 纵向自动分页，请选择彩色打印，关闭页眉页脚、使用 100% 缩放。原笔记保持不变。</p>
     </header>
+    {ready.some(n => n.reviewNotes?.length) && <details className="print-review"><summary>待核对事项</summary><ul>{ready.flatMap(n => (n.reviewNotes || []).map((text, i) => <li key={`${n.id}-${i}`}><strong>{n.title}</strong>：{text}</li>))}</ul></details>}
     <div className="preview"><div className="paper-frame"><main className="paper">
       <header className="sheet-title"><h1>{subjects} · 复习小抄</h1><span className="pen-legend"><b>蓝 · 结论</b><b>绿 · 条件</b><b>红 · 易错</b></span><span>{ready.length} 个考点 / {date}</span></header>
-      <div className="sheet-columns">{groups.flatMap(group => group.notes).map(note => <article className="entry" key={note.id}>
-          <h3><span className="entry-index">{String(++index).padStart(2, '0')}</span>{note.title}</h3>
+      <div className="sheet-columns">{groups.flatMap(group => group.notes).map(note => {
+        const section = note.section ? `${note.subject}:${note.section}` : null
+        const first = section && section !== previousSection
+        previousSection = section
+        return <article className="entry" key={note.id}>
+          {first && <h2 className="sheet-group-title">{note.section}</h2>}
+          <h3><span className="entry-index">{String(++index).padStart(2, '0')}</span>{note.title}{!!note.reviewNotes?.length && <small className="sheet-review-flag"> · 待核对</small>}</h3>
           <NoteMarkdown note={note} />
-        </article>)}</div>
+        </article>})}</div>
       <footer className="sheet-end">{sourceCount} 条笔记提炼为 {ready.length} 个考点 · 条件 / 例外 / 公式</footer>
     <div className="sheet-watermark" aria-label="考基宝"><img src={brandLogo} alt="" /><span>考基宝</span></div>
     </main></div></div>

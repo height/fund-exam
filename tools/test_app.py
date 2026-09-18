@@ -428,7 +428,7 @@ def run():
         pg.wait_for_selector(".overlay.center", state="detached")
         pg.wait_for_selector("text=练什么")
 
-        # 模拟考：开考 -> 直接交卷（全不答）-> 出成绩，错题全进错题本
+        # 模拟考：开考 -> 直接交卷（全不答）-> 出成绩，未答题不新增错题
         pg.click('nav button:has-text("模拟考")')
         pg.click('button:has-text("开始考试")')
         pg.wait_for_selector(".timer")
@@ -458,7 +458,7 @@ def run():
         pg.click('button:has-text("去刷错题")')
         pg.wait_for_selector("text=道待消灭")
         n = int(pg.locator(".card .num").first.inner_text())
-        assert n > 0, "交卷后错题本还是空的"
+        assert n > 0, "之前练习的错题不应被未作答的考试清除"
 
         # 错题重练：跳过选范围，直接进答题（错题列表本身也有 .stem，等按钮才算真进了练习页）
         pg.click('button:has-text("错题重练")')

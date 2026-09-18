@@ -68,7 +68,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
     setStage('running')
   }
 
-  /** 交卷：未作答按错计分并进错题本 */
+  /** 交卷：未作答不得分，但不计入作答记录或错题本 */
   async function submit(current) {
     const e = current || ex
     const qs = e.ids.map(qById)
@@ -76,6 +76,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
     let right = 0
     for (const q of qs) {
       const p = e.answers[q.id]
+      if (p == null) continue
       const old = next[q.id] || { qid: q.id, subject: q.subject, seen: 0, right: 0, wrong: 0 }
       const ok = p === q.answer
       if (ok) right++
@@ -234,7 +235,7 @@ function Running({ ex, setEx, onSubmit, toast, ask, go }) {
     const miss = qs.length - answered
     if (miss && !await ask({
       title: `还有 ${miss} 题没作答`,
-      body: '未作答按错计分，会自动进错题本。',
+      body: '未作答不得分，但不会进入错题本。',
       ok: '确定交卷', cancel: '回去补答',
     })) return
     fire(ex)
@@ -354,7 +355,7 @@ function Result({ rec, go }) {
               onClick={() => setDetail(i)}>{i + 1}</button>
           ))}
         </div>
-        <div className="muted">绿=答对，红=答错或未答。错题已自动进错题本。</div>
+        <div className="muted">绿=答对，红=答错或未答。仅已作答的错题进入错题本，未答题不收录。</div>
       </div>
 
       <div ref={detailRef}>

@@ -27,25 +27,23 @@ test('related notes across chapters share a generation request; large inputs ret
  assert.deepEqual(cheatsheetBatches(large).flatMap(b=>b.notes.map(n=>n.id)), ['a','b'])
 })
 
-test('omitted source formula, image and SVG survive text distillation without duplication', () => {
+test('distillation does not append source variables, worked examples or redundant figures', () => {
  const source={...note('visual'),markdown:'说明 $x^2$。\n\n![图](https://example.com/a.png)\n\n<svg viewBox="0 0 100 50"><path d="M0 0L100 50"/></svg>'}
  const batch=cheatsheetBatches([source])[0]
  const parse=markdown=>parseCheatsheet(JSON.stringify({items:[{sourceIds:['visual'],title:'要点',markdown}]}),batch)[0].markdown
  const result=parse('极简结论')
- assert.ok(result.includes('x^2'))
- assert.ok(result.includes('https://example.com/a.png'))
- assert.ok(result.includes('<svg'))
+ assert.equal(result, '极简结论')
  assert.equal(parse(result),result)
 })
 
-test('identical output blocks merge sources and retain each source asset', () => {
+test('identical output blocks merge sources without resurrecting discarded formulas', () => {
  const batch=cheatsheetBatches([note('a'),{...note('b'),markdown:'公式 $x^2$'}])[0]
  const result=parseCheatsheet(JSON.stringify({items:[
    {sourceIds:['a'],title:'要点',markdown:'同一个结论'},
    {sourceIds:['b'],title:'重复要点',markdown:'同一个结论'}]}),batch)
  assert.equal(result.length,1)
  assert.deepEqual(result[0].sourceIds,['a','b'])
- assert.ok(result[0].markdown.includes('x^2'))
+ assert.equal(result[0].markdown, '同一个结论')
 })
 test('same topic with differing text is rejected for AI consolidation, not silently discarded', () => {
  const batch=cheatsheetBatches([note('a'),note('b')])[0]
@@ -70,14 +68,14 @@ test('SVG serialization changes do not create duplicate diagrams', () => {
  assert.equal((result[0].markdown.match(/<svg/g)||[]).length,1)
  const changed=original.replace('width="80"','width="60"')
  const different=parseCheatsheet(JSON.stringify({items:[{sourceIds:['a'],title:'图',markdown:changed}]}),batch)
- assert.equal((different[0].markdown.match(/<svg/g)||[]).length,2)
+ assert.equal((different[0].markdown.match(/<svg/g)||[]).length,1)
 })
 
 test('source SVG travels as a reference and is restored exactly once', () => {
  const svg='<svg viewBox="0 0 100 40"><text x="1" y="20">条件</text></svg>'
  const batch=cheatsheetBatches([{...note('a'),markdown:svg}])[0]
  const prompt=cheatsheetPrompt(batch)
- assert.ok(!prompt.includes('<svg'))
+ assert.ok(prompt.includes('sourceFigures'))
  const data=JSON.parse(prompt.split('\n').at(-1))
  const ref=data.sourceFigures[0].ref
  const result=parseCheatsheet(JSON.stringify({items:[{sourceIds:['a'],title:'条件',markdown:ref+'\n\n'+ref}]}),batch)

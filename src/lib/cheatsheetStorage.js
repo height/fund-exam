@@ -8,7 +8,9 @@ export async function loadCheatsheet() {
   const value = await kvGet(KEY, null)
   if (!value || value.version !== 1 || !Array.isArray(value.notes) || !value.notes.length ||
       !value.notes.every(n => typeof n.id === 'string' && typeof n.subject === 'string' && typeof n.chapter === 'string' &&
-        typeof n.title === 'string' && typeof n.markdown === 'string' && Array.isArray(n.points))) return null
+        typeof n.title === 'string' && typeof n.markdown === 'string' && Array.isArray(n.points) &&
+        (n.section === undefined || typeof n.section === 'string') &&
+        (n.reviewNotes === undefined || (Array.isArray(n.reviewNotes) && n.reviewNotes.every(r => typeof r === 'string'))))) return null
   return value
 }
 

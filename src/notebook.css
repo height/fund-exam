@@ -423,3 +423,7 @@
 @media(min-width:701px){.provided-composer.nb-chat-compose.note-input-bar textarea{font-size:14px;line-height:20px}}
 /* Expand the touch target without making the visible input bar taller. */
 @media(pointer:coarse){.note-input-bar .provided-composer-actions button::after{content:"";position:absolute;inset:-6px;border-radius:50%}}
+
+.cs-section-label{color:var(--ink2);font-size:11px}.cs-review{margin-top:12px;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;font-size:12px;line-height:1.6}.cs-review summary{cursor:pointer;color:var(--pen-caution,#a33432)}.cs-review ul{padding-left:18px}
+
+.cs-generation-controls{display:flex;flex-wrap:wrap}.cs-generation-controls .cs-model-select{flex:1 1 220px;min-width:0;min-height:44px;box-sizing:border-box}.cs-generation-controls .cs-model-select select{min-width:0;width:100%;text-overflow:ellipsis}.cs-generation-controls>label:not(.cs-model-select){flex:0 0 auto}.cs-generation-controls>button{flex:0 0 auto}@media(max-width:600px){.cs-generation-controls .cs-model-select{flex-basis:100%}.cs-generation-controls>button{margin-left:auto}}

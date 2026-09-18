@@ -1,16 +1,25 @@
-import { DEFAULT_CHEATSHEET_PROMPT, loadCheatsheetPrompt, saveCheatsheetPrompt } from '../lib/cheatsheetPrompt'
+import { CHEATSHEET_GENERATION_VERSION, DEFAULT_CHEATSHEET_PROMPT, loadCheatsheetPrompt, saveCheatsheetPrompt } from '../lib/cheatsheetPrompt'
 import { useThinkingLevel } from '../lib/useThinkingLevel'
 import { useEffect, useState } from 'react'
 import { PageHeader, ThemeToggle, Icon } from '../components/ui'
 import ChatLoading from '../components/ChatLoading'
-import { getKey } from '../lib/ai'
+import { PRESETS, getCfg, loadStore } from '../lib/ai'
 import { useNotebook } from '../lib/notebookStorage'
 import { cheatsheetFingerprint } from '../lib/cheatsheetStorage'
 import '../notebook.css'
 
 export default function Cheatsheet({ go, generation }) {
   const { notes, loading, error: notesError } = useNotebook()
-  const [effort, setEffort, levels] = useThinkingLevel('cheatsheet')
+  const [provider, setProvider] = useState(() => {
+    try { const saved = localStorage.getItem('cheatsheet-model-provider'); return PRESETS[saved] ? saved : '' } catch { return '' }
+  })
+  const modelStore = loadStore()
+  const modelConfig = getCfg(provider ? { ...modelStore, active: provider } : modelStore)
+  const selectProvider = value => {
+    setProvider(value)
+    try { localStorage.setItem('cheatsheet-model-provider', value) } catch { /* selection still works for this session */ }
+  }
+  const [effort, setEffort, levels] = useThinkingLevel('cheatsheet', modelConfig.model)
   const [savedPrompt, setSavedPrompt] = useState(loadCheatsheetPrompt)
   const [promptDraft, setPromptDraft] = useState(loadCheatsheetPrompt)
   const [promptStatus, setPromptStatus] = useState('')
@@ -35,11 +44,12 @@ export default function Cheatsheet({ go, generation }) {
   const [error, setError] = useState('')
   const ready = notes.filter(n => n.status === 'ready')
   const chapterCount = new Set(ready.map(n => `${n.subject}:${n.chapter}`)).size
-  const stale = result && result.fingerprint !== cheatsheetFingerprint(ready)
+  const oldGeneration = result && result.generationVersion !== CHEATSHEET_GENERATION_VERSION
+  const stale = result && (oldGeneration || result.fingerprint !== cheatsheetFingerprint(ready))
   const generate = () => {
     if (busy || draft || !ready.length || promptDirty) return
     setError('')
-    task.start({ notes: ready, effort, prompt: savedPrompt, returnUrl: window.location.href })
+    task.start({ notes: ready, effort, prompt: savedPrompt, modelConfig, returnUrl: window.location.href })
   }
   const openPreview = async () => {
     if (!result || opening) return
@@ -62,29 +72,36 @@ export default function Cheatsheet({ go, generation }) {
         <div className="cs-document-bottom"><time>{new Date(result.createdAt).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })} 生成</time><span className="cs-export-formats">PDF / HTML</span></div>
         <details className="cs-inline-preview" open><summary>版面预览 <span>A4 等比缩放</span></summary>{previewHTML && <iframe title="小抄版面预览" sandbox="allow-scripts" srcDoc={previewHTML} />}</details>
         <button className="btn-pri cs-preview" disabled={opening} onClick={openPreview}>{opening ? '正在打开…' : '查看 / 打印'} <Icon name="chevronRight" size={16} /></button>
-        {stale && <p className="cs-update-hint"><span />笔记有更新，可在下方重新生成</p>}
-        <details className="cs-contents"><summary>考点目录 <span>{result.notes.length}<Icon name="chevronRight" size={14} /></span></summary><ol>{result.notes.map(n => <li key={n.id}>{n.title}</li>)}</ol></details>
-      </section> : <section className="cs-intro"><span className="cs-format">A4 <i /> 双栏 <i /> 三色笔</span><h2>把重点，收在一张纸上</h2><p>合并关联知识，精简文字，保留图与公式。</p></section>}
+        {!!result.notes.flatMap(n => n.reviewNotes || []).length && <details className="cs-review"><summary>{result.notes.flatMap(n => n.reviewNotes || []).length} 项待核对</summary><ul>{result.notes.flatMap(n => (n.reviewNotes || []).map((text, i) => <li key={`${n.id}-${i}`}><strong>{n.title}</strong>：{text}</li>))}</ul></details>}
+        {stale && <p className="cs-update-hint"><span />{oldGeneration ? '生成规则已升级，重新生成可按知识图谱聚合与排序' : '笔记有更新，可在下方重新生成'}</p>}
+        <details className="cs-contents"><summary>知识结构 <span>{result.notes.length}<Icon name="chevronRight" size={14} /></span></summary><ol>{result.notes.map(n => <li key={n.id}>{n.section && <small className="cs-section-label">{n.section} · </small>}{n.title}</li>)}</ol></details>
+      </section> : <section className="cs-intro"><span className="cs-format">A4 <i /> 双栏 <i /> 三色笔</span><h2>把零散笔记，整理成知识脉络</h2><p>参考知识图谱聚合与排序，聚合同类知识，保留完整图文、公式与必要示例。</p></section>}
       <section className="cs-generation" aria-label="生成设置">
         <div className="cs-generation-heading"><h2><Icon name="sparkle" size={16} />{result ? '更新小抄' : '生成小抄'}</h2><span>{ready.length} 条精华 · {chapterCount} 章</span></div>
-        <div className="cs-generation-controls"><label><span>Thinking</span><select aria-label="Cheatsheet thinking depth" value={effort} disabled={busy || loading || cacheLoading} onChange={e => setEffort(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select></label>
+        <div className="cs-generation-controls"><label className="cs-model-select"><span>模型</span><select aria-label="小抄生成模型" value={provider} disabled={busy || loading || cacheLoading} onChange={e => selectProvider(e.target.value)}>
+          <option value="">跟随默认 · {getCfg(modelStore).model}</option>
+          {Object.entries(PRESETS).map(([id, preset]) => {
+            const config = getCfg({ ...modelStore, active: id })
+            return <option key={id} value={id} disabled={!config.key}>{preset.label} · {config.model}{!config.key ? '（未配置）' : ''}</option>
+          })}
+        </select></label><label><span>Thinking</span><select aria-label="Cheatsheet thinking depth" value={effort} disabled={busy || loading || cacheLoading} onChange={e => setEffort(e.target.value)}>{levels.map(level => <option key={level} value={level}>{level.toUpperCase()}</option>)}</select></label>
           {busy ? <button className="cs-cancel" disabled={status === 'saving'} onClick={task.cancel}>{status === 'saving' ? '正在保留…' : '取消生成'}</button> : <button className={result ? 'cs-regenerate' : 'btn-pri cs-generate'} disabled={loading || cacheLoading || !!draft || !ready.length || !!notesError || promptDirty} onClick={generate}>{result ? '重新生成' : '生成小抄'}<Icon name={result ? 'refresh' : 'sparkle'} size={15} /></button>}
         </div>
         <details className="cs-prompt-editor"><summary>生成 Prompt <span>{promptDirty ? '未保存' : savedPrompt === DEFAULT_CHEATSHEET_PROMPT ? '默认' : '自定义'}<Icon name="chevronRight" size={14} /></span></summary>
-          <p>调整提炼规则与表达方式。笔记资料、JSON 输出格式和来源校验由系统自动附加。</p>
+          <p>调整提炼规则与表达方式。知识图谱结构、笔记资料和覆盖校验由系统自动附加。</p>
           <textarea aria-label="小抄生成 Prompt" value={promptDraft} disabled={busy} maxLength={20000} onChange={e => { setPromptDraft(e.target.value); setPromptStatus(''); setPromptError('') }} spellCheck={false} />
           <div className="cs-prompt-actions"><button type="button" disabled={busy || !promptDirty || !promptDraft.trim()} onClick={savePrompt}>保存 Prompt</button><button type="button" disabled={busy} onClick={() => { setPromptDraft(DEFAULT_CHEATSHEET_PROMPT); setPromptStatus('默认规则已填入，保存后生效'); setPromptError('') }}>恢复默认</button>{promptDirty && <button type="button" disabled={busy} onClick={() => { setPromptDraft(savedPrompt); setPromptStatus(''); setPromptError('') }}>取消修改</button>}</div>
           {promptStatus && <p role="status">{promptStatus}</p>}{promptError && <p role="alert" className="nb-error">{promptError}</p>}
         </details>
         {promptDirty && <p className="cs-generation-note">Prompt 有未保存修改，请先保存或取消修改后生成。</p>}
         {busy ? <div className="cs-progress">
-          <ChatLoading mode={generation.effort === 'off' ? '' : generation.effort.toUpperCase()} retrying={progress?.retrying} received={progress?.received || 0} context="整体编排已保存的笔记，合并关联知识与重复内容。" completion="完成并校验后，可预览并选择保留。" />
-          <p role="status">{progress ? `${progress.current} / ${progress.total} · ${progress.chapter}` : '正在准备…'}</p>
+          <ChatLoading mode={generation.effort === 'off' ? '' : generation.effort.toUpperCase()} retrying={progress?.retrying} received={progress?.received || 0} context="参考知识图谱规划顺序，再按组整理图文与检查覆盖。" completion="完成并校验后，可预览并选择保留。" />
+          <p role="status">{progress ? `第 ${progress.current} 步 · ${progress.chapter}` : '正在准备…'}</p>
           <small>切换页面后会继续生成，可通过全局悬浮条查看进度。</small>
-        </div> : <p className="cs-generation-note">{!loading && !ready.length ? '先在笔记本保存至少一条章节精华。' : '使用全部章节精华，待核对笔记不参与。'}</p>}
+        </div> : <p className="cs-generation-note">{!loading && !ready.length ? '先在笔记本保存至少一条章节精华。' : '使用全部章节精华；模型来自已保存的 AI 配置，仅用于本次小抄，不改变全局默认。'}</p>}
         {draft && <p className="cs-generation-note">本次小抄已生成，可先查看，再通过悬浮条保留或丢弃。上次保存的小抄仍保留。</p>}
         {(error || taskError || notesError) && <p className="nb-error" role="alert">{error || taskError || notesError}</p>}
-        {!getKey() && <button className="btn-sm btn-ghost" onClick={() => go('data', { page: 'ai' })}>配置 AI 模型</button>}
+        {!modelConfig.key && <button className="btn-sm btn-ghost" onClick={() => go('data', { page: 'ai' })}>配置 AI 模型</button>}
       </section>
     </div>
   </>
