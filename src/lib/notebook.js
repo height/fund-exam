@@ -19,7 +19,7 @@ export function notePrompt(note) {
     '笔记默认展示结构：一句话核心知识（确有必要可多句话）＋表格（可选）＋公式（可选）＋图（可选），按此顺序排列。核心知识用普通段落，不默认拆成列表，也不加“定义、核心要点、总结”等栏目。优先使用原文和relatedKnowledge图谱资料；常规定义、基本原理、通用公式及必要适用条件，可用可靠的基础通识补全。不能从错误选项或单个例子反推规律，也不要把缺少原文引用等同于知识不确定。',
     '表格、公式和图独立按需选用，可以都没有，也可组合使用。表格用于分类、并列对比或多条件对应，比连续文字更清楚时才使用；不把一句话硬拆成表格，不设空列或重复栏目。公式用于准确表达数量关系，附最短的必要符号含义、单位和适用条件；图只在关系、流程或空间结构确实更易理解时添加。文字说明核心含义，表格组织对比，公式承载计算关系，图辅助理解，各种形式不重复复述。没有必要时直接省略，不输出“无表格”“无公式”“暂无图示”等占位，不为填结构而生造表格、公式或图。用户明确要求列表、表格、推导或展开说明时按其要求调整。',
     '例：若解析明确给出“变动量=基数×变化率”，题设代入100和5%得到5，默认记“变动量=基数×变化率”，不记“本题结果为5”；若只有这组数字，不从单例反推通用公式；可使用图谱或可靠通识中的既有公式。用户明确要求演示时可附最短示例，并标为示例，不能混同规则。',
-    '结构：{"subject":"科目一或科目二","chapter":"目录完整章名或待归类","title":"考点标题","points":["要点"],"markdown":"完整Markdown正文","evidence":["连续引用；基础通识填空字符串"],"evidenceKinds":["source或graph或common，与points逐项对应"],"needsReview":false,"reviewReason":"","detailReason":"","formula":null,"diagram":null}。',
+    '结构：{"subject":"科目一或科目二","chapter":"目录完整章名或待归类","title":"考点标题","points":["要点"],"markdown":"完整Markdown正文","evidence":["连续引用；基础通识填空字符串"],"evidenceKinds":["source"],"needsReview":false,"reviewReason":"","detailReason":"","formula":null,"diagram":null}。',
     'markdown是唯一展示正文，使用通用Markdown：标题、列表、表格、引用、加粗、==高亮==、$行内LaTeX$、$$块级LaTeX$$、图片![说明](来源已有URL)、svg代码围栏或内联SVG。按需选择形式，不堆砌装饰。points保留纯文本要点供检索，并用evidenceKinds说明每项依据类型，内容须与markdown一致。不得虚构图片URL。SVG只用静态图形、viewBox、文字和title，不含脚本、事件、外部资源、foreignObject或style；用fill/stroke等属性。已有公式或图若仍需要应完整转入markdown，新输出formula和diagram设null，避免重复。',
     '三色笔仅作少量阅读标记：核心结论用<mark data-pen="key">短语</mark>，条件与记忆锚点用<mark data-pen="condition">短语</mark>，易错或例外用<mark data-pen="caution">短语</mark>。每条通常0到3处，不要求三色齐全，不标整段、整表或重复标题，不以颜色代替明确的文字说明。普通==高亮==视为条件标记。',
     ...knowledgeDistillationRules,
@@ -30,6 +30,7 @@ export function notePrompt(note) {
     '生成SVG图示默认带不透明浅色背景：在viewBox范围内先绘制覆盖全图的背景rect（必须是第一个可见元素，禁止放在文字和线条上方），采用深色文字与清晰线条；不使用透明底。背景只是承载内容，不增加装饰。SVG所有文字和线条必须用显式fill/stroke属性，不用style样式表、class或foreignObject，以免安全渲染时丢失。确保图独立查看、深色界面和打印时都清楚。',
     'formula可选：{"expression":"用Unicode数学符号、括号、/、上标表达的公式，不用LaTex或HTML","symbols":[{"symbol":"符号","meaning":"含义与单位"}],"condition":"来源中的适用条件","evidence":"来源连续原文"}。可使用原文、图谱或公认的基础公式；不得编造公式或数值。基础公式无直接引用时可加evidenceKind="common"，evidence为空字符串。',
     'diagram可选：{"kind":"flow或compare","title":"图名","nodes":[{"id":"a","label":"节点文字，28字内","evidence":"支撑节点的原文"}],"edges":[{"from":"a","to":"b","label":"关系，16字内","evidence":"支撑关系的原文"}]}。2到6个节点，最多8条关系；compare为并列对比，edges为空。flow箭头须有原文、图谱或可靠通识支持，不把相关性画成因果。基础通识的节点或箭头可加evidenceKind="common"，evidence为空字符串。此字段仅为旧格式兼容；新笔记将静态SVG写进markdown，diagram设null。',
+    '输出前检查：points、evidence、evidenceKinds必须是长度相同的数组；每个要点对应一个引用和一个类型。evidenceKinds每项只能是小写source、graph或common，不填写说明文字，不省略重复类型；points不含空白项。',
     '依据按要点标记evidenceKinds，并与points/evidence一一对应：source引用evidenceContext连续原文，graph引用relatedKnowledge中text的连续原文，common用于可靠且稳定的基础通识，evidence填空字符串。不要把模型补充内容伪装成原文引用，也不要编造图谱条目。可混用三类依据。公式及图示的引用同样可来自原文或图谱。',
     '依据使用顺序：先读相关图谱知识补充定义、条件、公式和易错点，并结合其chapter辅助自动归类；无直接图谱条目但属于可靠基础通识时直接补全，不让用户自行找依据，不输出“来源未给出”“待补依据”等空占位。补充仅限用户主题，不把检索到的相邻知识全部塞入笔记。',
     '只有不确定事实、材料冲突、必要条件无法确定、现行法规/政策阈值或实时数据缺乏可靠且适用的依据时才needsReview=true，reviewReason点明具体疑点。基础数学常数、常规定义和经典公式不因缺少原文数字而待核对。不能将时效性规则、具体产品条款、行情或不确定数值冒充common。',
@@ -53,7 +54,9 @@ export function parseNoteResult(text, source) {
   const title = clean(value?.title)
   const markdown = clean(value?.markdown)
   if (markdown.length > 60000) throw new Error('笔记正文过长，请重试')
-  const points = Array.isArray(value?.points) && value.points.every(p => typeof p === 'string') ? value.points.map(clean).filter(Boolean) : null
+  const pointIndexes = Array.isArray(value?.points) && value.points.every(p => typeof p === 'string')
+    ? value.points.flatMap((p, i) => clean(p) ? [i] : []) : null
+  const points = pointIndexes?.map(i => clean(value.points[i]))
   if (!title || !points || (!points.length && value.needsReview !== true)) throw new Error('AI 未返回有效考点，请重试')
   // 这里只限制异常响应体积；不以字数判定知识是否值得保留。
   if (title.length > 100 || points.length > 20 || points.some(p => p.length > 2000)) throw new Error('AI 返回内容异常，请重试')
@@ -63,16 +66,25 @@ export function parseNoteResult(text, source) {
   const locked = note.chapterLocked && hasChapter(note)
   const subject = locked || note.subjectLocked ? note.subject : Object.hasOwn(CHAPTERS, value.subject) ? value.subject : note.subject
   const chapter = locked ? note.chapter : CHAPTERS[subject]?.includes(value.chapter) ? value.chapter : UNFILED
-  const evidence = Array.isArray(value.evidence) ? value.evidence.map(clean) : []
-  const evidenceKinds = value.evidenceKinds === undefined ? points.map(() => 'source') : value.evidenceKinds
-  if (!Array.isArray(evidenceKinds) || evidenceKinds.length !== points.length || evidenceKinds.some(kind => !['source', 'graph', 'common'].includes(kind)))
-    throw new Error('AI 返回的依据类型不完整，请重试')
   const knowledgeRefs = (note.knowledgeRefs || []).filter(ref => ref.subject === subject)
   const basis = compactText(note.evidenceContext ?? note.context)
   const graphBasis = knowledgeRefs.map(ref => compactText(ref.text))
   const matchesQuote = (quote, kind) => kind === 'common' ? quote === '' : quote.length >= 4 &&
     (kind === 'graph' ? graphBasis.some(text => text.includes(compactText(quote))) : basis.includes(compactText(quote)))
-  const citationsMatch = points.length > 0 && evidence.length === points.length && evidence.every((e, i) => matchesQuote(e, evidenceKinds[i]))
+  // Keep metadata aligned with the original point indexes when removing blank points.
+  const evidence = pointIndexes.map(i => clean(Array.isArray(value.evidence) ? value.evidence[i] : ''))
+  let evidenceUncertain = !Array.isArray(value.evidence) || value.evidence.length !== value.points.length
+  const evidenceKinds = pointIndexes.map((index, i) => {
+    const kind = clean(Array.isArray(value.evidenceKinds) ? value.evidenceKinds[index] : '').toLowerCase()
+    if (['source', 'graph', 'common'].includes(kind)) return kind
+    // Recover missing/invalid labels only from verifiable quotations. An empty
+    // quotation must never silently turn an unsupported claim into common knowledge.
+    if (matchesQuote(evidence[i], 'source')) return 'source'
+    if (matchesQuote(evidence[i], 'graph')) return 'graph'
+    evidenceUncertain = true
+    return 'source'
+  })
+  const citationsMatch = !evidenceUncertain && points.length > 0 && evidence.every((e, i) => matchesQuote(e, evidenceKinds[i]))
   // Quoted claims retain numeric checks. Stable common knowledge need not invent a quotation for formula constants.
   const newNumbers = points.some((p, i) => evidenceKinds[i] !== 'common' && (compactText(p).match(/\d+(?:\.\d+)?(?:%|‰)?/g) || [])
     .some(n => !(compactText(evidence[i]).match(/\d+(?:\.\d+)?(?:%|‰)?/g) || []).includes(n)))

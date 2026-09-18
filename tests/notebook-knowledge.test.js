@@ -54,8 +54,6 @@ test('引用与通识混合时逐项核对；编造引用和不确定结论仍�
   assert.equal(parse({ ...base, evidence: ['图谱不存在的句子。'] }).status, 'review')
   assert.equal(parse({ ...base, points: ['最大回撤固定为99%。'] }).status, 'review')
   assert.equal(parse({ ...base, evidence: [''], evidenceKinds: ['common'], needsReview: true, reviewReason: '现行产品费率需要核对' }).status, 'review')
-  assert.throws(() => parse({ ...base, evidenceKinds: ['unknown'] }), /依据类型/)
-  assert.throws(() => parse({ ...base, evidenceKinds: [] }), /依据类型/)
 })
 
 test('图谱引用与通识标记可持久化，备份校验拒绝跨科目及异常材料', () => {
@@ -64,4 +62,40 @@ test('图谱引用与通识标记可持久化，备份校验拒绝跨科目及�
   assert.throws(() => validateNote({ ...note, knowledgeRefs: [{ ...refs[0], subject: '科目一' }] }))
   assert.throws(() => validateNote({ ...note, knowledgeRefs: [{ ...refs[0], text: 'x'.repeat(1801) }] }))
   assert.throws(() => validateNote({ ...note, evidenceKinds: ['common', 'graph'] }))
+})
+
+
+test('依据类型缺失或格式异常时根据真实引用恢复，不丢失正文', () => {
+  for (const evidenceKinds of [undefined, null, [], ['unknown'], 'graph', {}, [' GRAPH '], ['graph', 'common']]) {
+    const got = parse({ ...base, markdown: quote, evidenceKinds })
+    assert.equal(got.status, 'ready')
+    assert.equal(got.markdown, quote)
+    assert.deepEqual(got.evidenceKinds, ['graph'])
+    assert.equal(validateNote({ ...source, ...got, id: 'repaired', createdAt: 1, updatedAt: 1 }).status, 'ready')
+  }
+  const got = parse({ ...base, evidenceKinds: null }, { ...source, evidenceContext: quote })
+  assert.deepEqual(got.evidenceKinds, ['source'])
+})
+
+test('类型缺项不会把未验证内容当成通识，也不跳过数值和引用核对', () => {
+  for (const evidenceKinds of [undefined, null, [], ['unknown'], 'common']) {
+    for (const evidence of [[''], ['不存在的引用'], [], null, quote]) {
+      const got = parse({ ...base, evidence, evidenceKinds })
+      assert.equal(got.status, 'review')
+      assert.deepEqual(got.evidenceKinds, ['source'])
+    }
+  }
+  assert.equal(parse({ ...base, points: ['最大回撤固定为99%。'], evidenceKinds: [] }).status, 'review')
+  const got = parse({ ...base, points: [quote, '收益率可以为负。'], evidence: [quote, ''], evidenceKinds: ['graph'] })
+  assert.equal(got.status, 'review')
+  assert.deepEqual(got.evidenceKinds, ['graph', 'source'])
+})
+
+test('清除空白要点时保留逐项依据对应关系', () => {
+  const got = parse({ ...base, points: [' ', quote, '', '收益率可以为负。'],
+    evidence: ['', quote, '', ''], evidenceKinds: ['', 'graph', '', 'common'] })
+  assert.equal(got.status, 'ready')
+  assert.deepEqual(got.points, [quote, '收益率可以为负。'])
+  assert.deepEqual(got.evidence, [quote, ''])
+  assert.deepEqual(got.evidenceKinds, ['graph', 'common'])
 })
