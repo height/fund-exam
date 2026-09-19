@@ -5,7 +5,7 @@ import { qById } from './bank'
 import { reconcileRecord, reconcileExam } from './questionQuality'
 import { idb, kvBatch, kvGet, kvSet, openDB } from './db'
 import { examDateStamp } from './examCountdown'
-import { displayBackground, EYE_COMFORT_FILTER } from './displayColor'
+import { applyComfortColors } from './displayColor'
 
 const Ctx = createContext(null)
 export const useStore = () => useContext(Ctx)
@@ -69,17 +69,12 @@ export function StoreProvider({ children }) {
     const r = document.documentElement
     if (theme === 'auto') delete r.dataset.theme
     else r.dataset.theme = theme
-    r.style.setProperty('--eye-comfort-filter', EYE_COMFORT_FILTER)
     r.toggleAttribute('data-eye-comfort', eyeComfort)
-    const paper = getComputedStyle(r).getPropertyValue('--paper').trim()
-    // Browser/status-bar chrome is outside the CSS filter, so pass its rendered color.
-    const background = displayBackground(paper, eyeComfort)
-    r.style.setProperty('--display-background', background)
-    document.querySelector('meta[name=theme-color]').content = background
+    const restoreColors = eyeComfort ? applyComfortColors(r) : () => {}
+    document.querySelector('meta[name=theme-color]').content = getComputedStyle(r).getPropertyValue('--paper').trim()
     return () => {
+      restoreColors()
       r.removeAttribute('data-eye-comfort')
-      r.style.removeProperty('--eye-comfort-filter')
-      r.style.removeProperty('--display-background')
     }
   }, [theme, isDark, eyeComfort])
 

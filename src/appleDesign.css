@@ -17,17 +17,10 @@
   --ink:#f5f5f7;--ink2:#a5a5ad;--accent:#0071e3;--accent-ink:#69afff;
   --accent-soft:#182e49;--nav-bg:rgba(30,30,33,.9);--shadow:0 4px 24px #0002;--grain:none;
 }
-/* Filter the document root so fixed toolbars keep the viewport as their containing block. */
-html{background:var(--paper)}
-/* The canvas color may be sampled by iOS without the CSS filter. Give it the
-   rendered color; an unfiltered-color underlay receives the filter exactly once. */
-:root[data-eye-comfort]{background:var(--display-background,var(--paper));filter:var(--eye-comfort-filter)}
-:root[data-eye-comfort] body{background:transparent}
-:root[data-eye-comfort]::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--paper);}
-@media print{
-  :root[data-eye-comfort]{filter:none;background:var(--paper)}
-  :root[data-eye-comfort]::before{display:none}
-}
+/* One opaque canvas color everywhere; no document filter or background underlay. */
+html,body,#root{background:var(--paper);background-image:none}
+html,body{min-height:100%}
+#root{min-height:100dvh}
 .theme-toggle-face{position:relative}
 .theme-comfort-eye{position:absolute;right:-1px;bottom:0;display:grid;place-items:center;width:13px;height:11px;border-radius:4px;background:var(--sheet2);color:color-mix(in srgb,var(--ink2) 65%,var(--sheet2));filter:grayscale(1)}
 
@@ -293,7 +286,6 @@ button{min-height:44px}button:active:not(:disabled){transform:scale(.975);transi
 @media(max-width:350px){.practice-dock{padding-inline:12px}.practice-dock-options{gap:4px}.practice-dock-options>.seg button{padding-inline:8px}.practice-dock-auto{gap:4px;font-size:10px}}
 
 /* A single opaque top-edge color prevents seams with iOS browser/status chrome. */
-html{background-color:var(--paper)}
 .page-head.is-subpage{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
 
 /* Explanation is a floating reading surface, independent of plain page cards. */
