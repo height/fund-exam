@@ -19,8 +19,15 @@
 }
 /* Filter the document root so fixed toolbars keep the viewport as their containing block. */
 html{background:var(--paper)}
-:root[data-eye-comfort]{filter:var(--eye-comfort-filter)}
-@media print{:root[data-eye-comfort]{filter:none}}
+/* The canvas color may be sampled by iOS without the CSS filter. Give it the
+   rendered color; an unfiltered-color underlay receives the filter exactly once. */
+:root[data-eye-comfort]{background:var(--display-background,var(--paper));filter:var(--eye-comfort-filter)}
+:root[data-eye-comfort] body{background:transparent}
+:root[data-eye-comfort]::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--paper);}
+@media print{
+  :root[data-eye-comfort]{filter:none;background:var(--paper)}
+  :root[data-eye-comfort]::before{display:none}
+}
 .theme-toggle-face{position:relative}
 .theme-comfort-eye{position:absolute;right:-1px;bottom:0;display:grid;place-items:center;width:13px;height:11px;border-radius:4px;background:var(--sheet2);color:color-mix(in srgb,var(--ink2) 65%,var(--sheet2));filter:grayscale(1)}
 

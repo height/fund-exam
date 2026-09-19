@@ -73,10 +73,13 @@ export function StoreProvider({ children }) {
     r.toggleAttribute('data-eye-comfort', eyeComfort)
     const paper = getComputedStyle(r).getPropertyValue('--paper').trim()
     // Browser/status-bar chrome is outside the CSS filter, so pass its rendered color.
-    document.querySelector('meta[name=theme-color]').content = displayBackground(paper, eyeComfort)
+    const background = displayBackground(paper, eyeComfort)
+    r.style.setProperty('--display-background', background)
+    document.querySelector('meta[name=theme-color]').content = background
     return () => {
       r.removeAttribute('data-eye-comfort')
       r.style.removeProperty('--eye-comfort-filter')
+      r.style.removeProperty('--display-background')
     }
   }, [theme, isDark, eyeComfort])
 
