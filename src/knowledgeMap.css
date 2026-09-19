@@ -391,3 +391,162 @@ html[data-knowledge-map] body{padding:0}
 }
 @media(prefers-reduced-transparency:reduce),(prefers-contrast:more){.kg-canvas-tools{background:var(--sheet);backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media(prefers-contrast:more){.kg-canvas .react-flow__node-knowledge .kg-node,.kg-workspace .kg-branch-toggle{border-color:var(--ink)}}
+
+/* Learning sequence and compact, neutral-ink notes. Color marks meaning, not blocks. */
+.kg-learning-path{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:0 28px 36px;scrollbar-width:none}
+.kg-path-intro{max-width:780px;margin:0 auto 24px;padding:20px 22px;background:var(--sheet);border:1px solid var(--rule);border-radius:12px}
+.kg-path-intro h3{font-size:21px;line-height:1.5;letter-spacing:-.025em;font-weight:650}
+.kg-path-intro p{font-size:14px;line-height:1.85;margin:10px 0;color:var(--ink2)}
+.kg-path-intro small{font-size:11px;color:var(--ink2)}
+.kg-path-stage{max-width:780px;margin:0 auto 28px;border-left:2px solid var(--rule);padding:0 0 0 22px}
+.kg-path-stage-heading{display:flex;align-items:flex-start;gap:12px}
+.kg-path-stage-heading>span{display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;border-radius:50%;font:12px var(--f-num);background:var(--accent-soft);color:var(--accent-ink);margin-left:-37px;outline:6px solid var(--paper)}
+.kg-path-stage h3{font-size:17px;line-height:1.6;font-weight:650}
+.kg-path-stage-heading p{font-size:13px;margin:4px 0;color:var(--ink)}
+.kg-path-mechanism{font-size:12px;line-height:1.8;color:var(--ink2);margin:8px 0 12px}
+.kg-path-chapter{border-bottom:1px solid var(--rule)}
+.kg-path-chapter>button{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:13px 4px;background:transparent}
+.kg-path-chapter>button>span:nth-child(2){flex:1;min-width:0}
+.kg-path-no{font-size:10px;color:var(--ink2);white-space:nowrap}
+.kg-path-chapter strong{display:block;font-size:13px;font-weight:600;line-height:1.65}
+.kg-path-chapter small{display:block;color:var(--ink2);font-size:12px;margin-top:4px;line-height:1.6}
+.kg-path-chapter>button[aria-expanded=true]{color:var(--accent-ink)}
+.kg-path-leaves{padding:4px 0 14px}
+.kg-path-leaves h4{font-size:11px;color:var(--ink2);font-weight:500;margin:15px 0 7px}
+.kg-path-leaves button{display:block;text-align:left;width:100%;padding:12px 14px;margin:5px 0;background:var(--sheet);border:1px solid var(--rule)}
+.kg-path-leaves button span{display:block;font-size:12px;color:var(--ink2);line-height:1.8;margin-top:4px}
+.kg-distilled{font-size:14px;line-height:1.85;color:var(--ink)}
+
+
+.kg-intuition{margin:0 0 18px!important;font-size:15px;line-height:1.85}
+.kg-intuition>span{display:block;color:var(--ink2);font-size:10px;margin-bottom:3px}
+.kg-distilled .nb-markdown{font-size:14px;line-height:1.85;color:var(--ink);overflow-wrap:anywhere}
+.kg-distilled .nb-markdown p{margin:0 0 10px}.kg-distilled .nb-markdown strong{color:var(--pen-blue);font-weight:650}
+.kg-formula-block{margin:18px 0 12px;padding:14px 12px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;min-width:0}
+.kg-formula-block h3{font-size:11px;font-weight:500;color:var(--ink2);margin:0 0 12px}
+.kg-formula-block .nb-markdown{overflow-x:auto;max-width:100%;padding-bottom:4px;scrollbar-width:thin}
+.kg-formula-block .nb-markdown::-webkit-scrollbar{display:block;height:4px}
+.kg-formula-block .nb-markdown math{font-size:1.15em;math-style:normal}.kg-formula-block .nb-markdown math[display=block]{margin:12px 0;overflow:visible}
+.kg-symbols{font-size:12px;line-height:1.85;color:var(--ink2);margin:9px 0 0}
+.kg-boundary,.kg-caution{margin:12px 0;line-height:1.85;font-size:13px}
+.kg-boundary>strong,.kg-caution>strong{font-size:11px;margin-right:8px;font-weight:650;padding:2px 5px;border-radius:3px;white-space:nowrap}
+.kg-boundary>strong{color:var(--pen-green);background:color-mix(in srgb,var(--pen-green) 8%,transparent)}
+.kg-caution>strong{color:var(--pen-red);background:color-mix(in srgb,var(--pen-red) 8%,transparent)}
+.kg-mini-example{border-top:1px solid var(--rule);padding:12px 0;margin-top:14px;font-size:12px}
+.kg-mini-example summary{cursor:pointer;color:var(--ink2);min-height:28px;list-style:disclosure-closed}
+.kg-mini-example[open]>summary{list-style:disclosure-open}
+.kg-mini-example p{margin:6px 0}
+
+.kg-concept-diagram{margin:18px 0;max-width:380px}
+.kg-concept-diagram svg{display:block;width:100%;height:auto;color:var(--ink2)}
+.kg-concept-diagram rect{fill:var(--paper);stroke:var(--rule)}
+.kg-concept-diagram text{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.kg-concept-diagram path{fill:none;stroke:currentColor;stroke-width:1.4}
+.kg-concept-diagram circle{fill:var(--pen-blue)}
+.kg-concept-diagram .kg-svg-curve{stroke:var(--pen-blue);stroke-width:2.5}
+.kg-concept-diagram .kg-svg-condition{fill:var(--pen-green);font-size:10px}
+.kg-concept-diagram .kg-svg-heading{fill:var(--pen-blue);font-weight:650}
+.kg-concept-diagram figcaption{font-size:10px;color:var(--ink2);line-height:1.8;margin:5px 0}
+.kg-related{margin-top:20px;border-top:1px solid var(--rule);padding-top:14px}
+.kg-related h3{font-size:11px;color:var(--ink2);font-weight:500;margin:0 0 7px}
+.kg-related button{display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px;width:100%;background:transparent;padding:8px 0;color:var(--accent-ink);font-size:12px}
+.kg-pen-core{--pen:var(--pen-blue)}.kg-pen-trap{--pen:var(--pen-red)}.kg-pen-extra{--pen:var(--ink2)}
+@media(max-width:540px){
+ .kg-learning-path{padding:0 16px 24px}.kg-path-intro{padding:16px;margin-bottom:20px}.kg-path-intro h3{font-size:19px}
+ .kg-path-stage{margin-left:10px;padding-left:17px}.kg-path-stage-heading>span{margin-left:-32px}
+ .kg-path-chapter>button{gap:8px}.kg-path-no{font-size:9px}.kg-view-switch button{padding-inline:10px}
+ .kg-formula-block{padding:12px 8px}.kg-distilled .nb-markdown{font-size:14px}
+}
+
+/* Fullscreen belongs to the entire note, including its tools and paging controls. */
+#app.kg-page:has(.kg-detail.is-reading){max-width:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.kg-workspace:has(.kg-detail.is-reading){border:0;border-radius:0}
+.kg-workspace:has(.kg-detail.is-reading)>.kg-header,
+.kg-workspace:has(.kg-detail.is-reading)>.kg-toolbar{display:none}
+.kg-body:has(.kg-detail.is-reading)>.kg-navigator,
+.kg-body:has(.kg-detail.is-reading)>.kg-study{visibility:hidden;pointer-events:none}
+.kg-body.has-detail .kg-detail.is-reading{box-shadow:none}
+.kg-detail.is-reading .kg-detail-scroll{padding-bottom:max(24px,env(safe-area-inset-bottom))}
+.kg-detail.is-reading .kg-detail-top button{min-height:44px}
+/* The whole parent node is one target; the plus/minus is a state indicator. */
+.kg-canvas .kg-node .kg-node-read.kg-node-branch{padding-right:36px!important}
+.kg-branch-indicator{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:18px;height:18px;font:18px/1 var(--f-num);color:var(--accent-ink);pointer-events:none}
+.kg-node-branch[aria-expanded=true]{background:var(--accent-soft)!important}
+.kg-node-read:focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px}
+@media(max-width:600px){
+ .kg-gesture-hint{max-width:calc(100% - 24px);font-size:10px;white-space:normal;text-align:center}
+}
+
+/* Compact reading rhythm: keep type legible and spend less space on chrome. */
+.kg-workspace{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.kg-context{padding:10px 16px 8px;gap:8px}
+.kg-context h2{font-size:16px}.kg-context-label{margin-bottom:2px}.kg-context p{margin-top:2px}
+.kg-learning-path{padding:0 16px 20px}
+.kg-path-intro{max-width:1000px;padding:12px 16px;margin-bottom:16px;border-radius:8px}
+.kg-path-intro h3{font-size:19px;line-height:1.45}.kg-path-intro p{margin:6px 0;line-height:1.7}
+.kg-path-stage{max-width:1000px;margin-bottom:18px;padding-left:18px}
+.kg-path-stage-heading>span{margin-left:-33px}
+.kg-path-stage-heading p{margin:2px 0}.kg-path-mechanism{margin:5px 0 7px;line-height:1.65}
+.kg-path-chapter>button{padding:9px 3px;gap:9px}.kg-path-chapter small{margin-top:2px}
+.kg-path-leaves{padding:0 0 8px}.kg-path-leaves h4{margin:10px 0 4px}
+.kg-path-leaves button{padding:8px 10px;margin:4px 0}.kg-path-leaves button span{margin-top:2px;line-height:1.65}
+.kg-detail-scroll{padding:8px 14px 14px}.kg-detail h2{margin-bottom:8px}
+.kg-detail-path{margin:2px 0 6px;line-height:1.5}
+.kg-detail.is-reading .kg-detail-scroll,.kg-detail.is-reading .kg-detail-top,.kg-detail.is-reading .kg-point-nav{max-width:1040px}
+.kg-detail.is-reading .kg-detail-scroll{padding:10px 20px max(16px,env(safe-area-inset-bottom))}
+.kg-detail.is-reading h2{font-size:23px;margin-bottom:8px}
+
+.kg-intuition{margin:0 0 10px!important;line-height:1.7;font-size:15px}
+.kg-intuition>span{display:inline;margin:0 8px 0 0;white-space:nowrap}
+.kg-distilled,.kg-distilled .nb-markdown{line-height:1.7}
+.kg-distilled .nb-markdown p{margin-bottom:8px}
+.kg-formula-block{margin:10px 0;padding:10px;border-radius:6px}.kg-formula-block h3{margin-bottom:8px}
+.kg-symbols{margin-top:6px;line-height:1.7}
+.kg-boundary,.kg-caution{margin:8px 0;line-height:1.7}
+.kg-concept-diagram{margin:10px 0;max-width:340px}.kg-concept-diagram figcaption{line-height:1.65;margin-top:3px}
+.kg-mini-example{margin-top:8px;padding:8px 0}
+.kg-related{margin-top:12px;padding-top:9px}.kg-related button{padding:6px 0;min-height:36px}
+@media(max-width:600px){
+ .kg-header{flex-wrap:nowrap;gap:4px;padding:2px 6px;min-height:44px}
+ .kg-heading{display:none}
+ .kg-subject{order:initial;flex:1;width:auto;min-width:0}
+ .kg-subject .seg button{font-size:11px;padding:7px 4px;min-height:36px}
+ .kg-workspace .kg-header .kg-icon-btn{width:32px;min-width:32px;height:40px;min-height:40px}
+ .kg-workspace .kg-header>.theme-toggle.is-icon-only{width:36px;min-width:36px;height:40px;min-height:40px}
+ .kg-toolbar{padding:4px 8px;gap:5px}.kg-view-switch button{padding:4px 8px}
+ .kg-context{padding:6px 10px}.kg-context h2{font-size:13px}.kg-context-label{display:none}
+ .kg-context .kg-text-button{padding:6px 8px;min-height:32px}
+ .kg-learning-path{padding:0 10px 16px}.kg-path-intro{padding:10px 12px;margin-bottom:14px}
+ .kg-path-intro h3{font-size:18px}.kg-path-intro p{font-size:13px}.kg-path-intro small{font-size:10px}
+ .kg-path-stage{margin-left:10px;padding-left:15px}.kg-path-stage-heading>span{margin-left:-30px}
+ .kg-path-stage h3{font-size:16px}.kg-path-chapter>button{padding:8px 2px}
+ .kg-detail-scroll,.kg-detail.is-reading .kg-detail-scroll{padding:8px 12px max(14px,env(safe-area-inset-bottom))}
+ .kg-detail.is-reading h2{font-size:20px}.kg-point-nav{padding:0 6px 2px}
+ .kg-detail-top{padding:0 6px}.kg-detail-path{font-size:10px}
+ .kg-formula-block{padding:8px}.kg-intuition{font-size:14px}
+}
+
+/* Text-sized nodes: compact geometry with one coherent hit target. */
+.kg-canvas .react-flow__node-knowledge .kg-node{border-radius:6px;box-shadow:none}
+.kg-canvas .kg-node .kg-node-read{padding:5px 10px!important;border-radius:5px!important}
+.kg-canvas .kg-node .kg-node-read.kg-node-branch{padding-right:26px!important}
+.kg-canvas .kg-node .kg-node-read strong{font-size:13px;line-height:18px;word-break:break-all;line-break:anywhere;overflow-wrap:anywhere;letter-spacing:0}
+.kg-branch-indicator{right:7px;width:12px;height:14px;font-size:15px;font-weight:500}
+.kg-node.is-selected{outline-offset:1px}
+/* Render the exact lines used by the geometry calculation, avoiding browser-specific rewraps. */
+.kg-canvas .kg-node .kg-node-read strong{display:block;flex-shrink:0;overflow:visible;width:100%}
+.kg-node-line{display:block;white-space:nowrap;line-height:18px}
+
+/* Keep the note toolbar aligned even in the narrow desktop side panel. */
+.kg-detail-top{display:grid;grid-template-columns:minmax(0,1fr) auto 36px 36px;align-items:center;gap:2px;padding:3px 8px;min-height:42px}
+.kg-note-tools{gap:0;margin:0;overflow:hidden}
+.kg-note-tools>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kg-detail-top .spk,.kg-detail-top .kg-icon-btn,.kg-detail-top .kg-reading-toggle{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;min-width:36px;height:36px;min-height:36px;padding:0;border-radius:6px}
+.kg-note-practice{display:inline-flex;align-items:center;justify-content:center;gap:3px;height:32px;min-height:32px;padding:0 8px;border-radius:6px;font-size:12px;line-height:1}
+.kg-note-practice svg{flex-shrink:0}
+.kg-detail.is-reading .kg-detail-top button{min-height:36px}
+@media(pointer:coarse){
+ .kg-detail-top{grid-template-columns:minmax(0,1fr) auto 40px 40px;padding:0 6px;min-height:44px}
+ .kg-detail-top .spk,.kg-detail-top .kg-icon-btn,.kg-detail-top .kg-reading-toggle{width:40px;min-width:40px;height:44px;min-height:44px}
+ .kg-detail-top .kg-note-practice{height:44px;min-height:44px;background:transparent;padding:0 6px}
+}

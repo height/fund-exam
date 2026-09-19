@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { KNOWLEDGE } from '../src/data/knowledge.js'
-import { STUDY_PENS, studyNoteSpeech } from '../src/lib/studyNotes.js'
-import { ancestorsOf, indexKnowledge, layoutKnowledge, searchKnowledge, toggleBranch, knowledgeNodeSize, chapterLabel } from '../src/lib/knowledgeGraph.js'
+import { studyNoteSpeech, distilledStudyText } from '../src/lib/studyNotes.js'
+import { ancestorsOf, indexKnowledge, layoutKnowledge, searchKnowledge, toggleBranch, knowledgeNodeSize, chapterLabel, branchViewport, knowledgeLabelLines } from '../src/lib/knowledgeGraph.js'
 
 test('搜索覆盖新增三色笔记中的规则与例子', () => {
   const legal = indexKnowledge(KNOWLEDGE.科目一)
@@ -12,19 +12,24 @@ test('搜索覆盖新增三色笔记中的规则与例子', () => {
   assert.deepEqual(searchKnowledge(investing, '连续三期 固定').map(p => p.t), ['指数跟踪与跟踪误差'])
 })
 
-test('笔记朗读完整覆盖内容，按必背、易错、速记排序且不读按钮', () => {
-  assert.deepEqual(STUDY_PENS.map(p => p.key), ['core', 'trap', 'extra'])
+test('朗读使用浓缩内容且覆盖公式条件，不自动重复折叠的讲义补充', () => {
   for (const chapters of Object.values(KNOWLEDGE)) {
     for (const point of chapters.flatMap(ch => ch.c.flatMap(sec => sec.c))) {
       const speech = studyNoteSpeech(point)
       assert.ok(speech.startsWith(point.t))
-      assert.ok(speech.indexOf('易混易错') < speech.indexOf('理解速记'))
-      assert.ok(speech.indexOf('核心必背') < speech.indexOf('易混易错'))
-      for (const text of Object.values(point.review).flat()) assert.ok(speech.includes(text), point.t)
+      assert.equal(speech, `${point.t}。\n${distilledStudyText(point.study)}`)
+      assert.ok(speech.includes(point.study.caution))
+      if (point.study.condition) assert.ok(speech.includes(point.study.condition))
       assert.ok(speech.length < 2000, `${point.t}超过语音单次上限`)
       assert.doesNotMatch(speech, /上一考点|下一考点|专注阅读|只看必背/)
     }
   }
+})
+
+test('搜索能够用新白话、公式符号和条件定位原考点', () => {
+  const index = indexKnowledge(KNOWLEDGE.科目二)
+  assert.ok(searchKnowledge(index, 'MAR 非零').some(n => n.t === '风险调整收益'))
+  assert.ok(searchKnowledge(index, '照片 录像').some(n => n.t === '三张主要财务报表'))
 })
 
 for (const [subject, chapters] of Object.entries(KNOWLEDGE)) {
@@ -85,7 +90,53 @@ test('节点矩形按标题宽度收紧，长标题换行且不裁切', () => {
   const short = knowledgeNodeSize({ t: '权益投资' })
   const long = knowledgeNodeSize({ t: '基金管理人的合规管理、风险管理和内部控制' })
   assert.ok(short.width < long.width)
-  assert.equal(short.height, 40)
+  assert.equal(short.height, 34)
   assert.ok(long.height > short.height)
   assert.ok(long.width <= 250)
+})
+
+test('移动脑图向右展开，节点保留完整点击区域和子树折叠状态', () => {
+  const index = indexKnowledge(KNOWLEDGE.科目二)
+  const open = new Set(['ch-0', 'ch-0.0', 'ch-1'])
+  const graph = layoutKnowledge(index, 0, open, '科目二', true)
+  assert.equal(graph.nodes.filter(n => n.data.entry.depth === 1).length, 18)
+  assert.ok(graph.nodes.every(n => !n.data.left && n.width <= 164 && n.height >= 44))
+  const collapsed = toggleBranch(open, 'ch-0')
+  assert.deepEqual([...collapsed], ['ch-1'])
+  const reopened = toggleBranch(collapsed, 'ch-0')
+  assert.ok(!reopened.has('ch-0.0'))
+})
+
+test('长标题按整字换行计算高度，与实际呈现使用同样的行', () => {
+  const title = '私募证券投资基金的募集、备案及份额申赎'
+  const size = knowledgeNodeSize({ t: title, branch: true }, true)
+  const lines = knowledgeLabelLines(title, size.width, true)
+  assert.equal(lines.join(''), title)
+  assert.equal(lines.length, 3)
+  assert.equal(size.height, 66)
+  for (const [subject, chapters] of Object.entries(KNOWLEDGE)) {
+    const index = indexKnowledge(chapters)
+    const graph = layoutKnowledge(index, null, new Set(index.entries.map(n => n.id)), subject, true)
+    for (const node of graph.nodes) {
+      assert.equal(node.data.lines.join(''), node.data.label)
+      assert.ok(node.height >= node.data.lines.length * 18 + 12)
+    }
+  }
+})
+
+test('展开保持可读缩放、桌面点击锚点，并将移动端子节点移入可见区域', () => {
+  const target = { position: { x: 900, y: 800 }, width: 160, height: 48, data: { left: false } }
+  const desktop = branchViewport(target, { x: 400, y: 300 }, { zoom: 1.2 }, 1200, 800)
+  assert.equal(desktop.zoom, 1.2)
+  assert.equal(desktop.x + (900 + 80) * desktop.zoom, 400)
+  assert.equal(desktop.y + (800 + 24) * desktop.zoom, 300)
+  const children = [{ position: { x: 1078, y: 720 }, width: 164, height: 48 }, { position: { x: 1078, y: 880 }, width: 164, height: 48 }]
+  const mobile = branchViewport(target, { x: 100, y: 24 }, { zoom: .3 }, 390, 600, children)
+  assert.equal(mobile.zoom, 1)
+  for (const node of [target, ...children]) {
+    assert.ok(node.position.x * mobile.zoom + mobile.x >= 0)
+    assert.ok((node.position.x + node.width) * mobile.zoom + mobile.x <= 390)
+    assert.ok(node.position.y * mobile.zoom + mobile.y >= 0)
+    assert.ok((node.position.y + node.height) * mobile.zoom + mobile.y <= 600)
+  }
 })

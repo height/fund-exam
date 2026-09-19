@@ -1,21 +1,23 @@
 import { KNOWLEDGE } from '../data/knowledge.js'
 import { indexKnowledge } from './knowledgeGraph.js'
+import { distilledStudyText } from './studyNotes.js'
 
 const normalize = text => String(text || '').normalize('NFKC').toLocaleLowerCase()
 const grams = text => {
   const result = new Set()
-  for (const word of normalize(text).match(/[\p{Script=Han}]+|[a-z][a-z0-9]*/gu) || []) {
+  // Conjunctions are boundaries: “与利率” must not outrank the actual “债券” topic.
+  for (const word of normalize(text).replace(/[与的及]/g, ' ').match(/[\p{Script=Han}]+|[a-z][a-z0-9]*/gu) || []) {
     if (/^[a-z]/.test(word)) result.add(word)
     else for (let size = 2; size <= 3; size++) for (let i = 0; i <= word.length - size; i++) result.add(word.slice(i, i + size))
   }
   return result
 }
-const ignored = new Set(['基金', '知识', '笔记', '内容', '整理', '科目', '章节', '帮我', '归类', '考点', '这个', '学习', '一下', '什么', '相关', '说明', '可以', '要求', '进行', '如何'])
+const ignored = new Set(['基金', '知识', '笔记', '内容', '整理', '科目', '章节', '帮我', '归类', '考点', '这个', '学习', '一下', '一点', '精简', '什么', '相关', '说明', '可以', '要求', '进行', '如何'])
 const indexes = new Map()
 function subjectIndex(subject) {
   if (indexes.has(subject)) return indexes.get(subject)
   const entries = indexKnowledge(KNOWLEDGE[subject] || []).entries.filter(n => !n.children.length).map(n => {
-    const text = [...new Set([n.d, ...Object.values(n.review || {}).flat()].filter(Boolean))].join('\n')
+    const text = [...new Set([n.study ? distilledStudyText(n.study) : n.d, ...Object.values(n.review || {}).flat()].filter(Boolean))].join('\n')
     return { id: n.id, subject, chapter: n.chapter, title: n.t, text, titleTerms: grams(n.t), summaryTerms: grams(n.d), terms: grams(n.t + '\n' + text) }
   })
   const frequency = new Map()

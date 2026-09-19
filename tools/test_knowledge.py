@@ -44,9 +44,12 @@ def run(browser, engine, mobile):
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.goto(URL+'#/map')
+    expect(page.get_by_role('tab', name='主线', exact=True)).to_have_attribute('aria-selected', 'true')
+    expect(page.get_by_role('heading', name='受人之托，怎样把钱管得合规、可靠？')).to_be_visible()
+    page.get_by_role('tab', name='脑图', exact=True).click()
     check(page, 8)
-    expect(page.get_by_role('button', name='阅读：一、金融市场与资产管理', exact=True)).to_be_visible()
-    expect(page.get_by_role('button', name='阅读：八、基金行业文化建设', exact=True)).to_be_visible()
+    expect(page.get_by_role('button', name='展开：金融市场与资产管理', exact=True)).to_be_visible()
+    expect(page.get_by_role('button', name='展开：基金行业文化建设', exact=True)).to_be_visible()
     fit(page)
     canvas = page.locator('.kg-canvas').bounding_box()
     for node in page.locator('.kg-node').all():
@@ -61,10 +64,11 @@ def run(browser, engine, mobile):
     click_node(page, '阅读：金融市场五要素')
     detail = page.get_by_role('complementary', name='考点详情')
     expect(detail).to_contain_text('主体、客体')
-    assert '页' not in detail.inner_text()
+    expect(detail.locator('.kg-pen-legend')).to_have_count(0)
+    expect(detail.locator('.kg-reference')).to_have_count(0)
     expect(detail.get_by_role('button', name='朗读考点笔记', exact=True)).to_be_visible()
     # Do not send lecture content to a live speech provider during UI tests.
-    assert detail.locator('.kg-note-group').evaluate_all('(els) => els.map(el => el.getAttribute("aria-label"))') == ['核心必背', '易混易错', '理解速记']
+    expect(detail.get_by_role('article', name='浓缩学习要点')).to_be_visible()
     expect(detail.get_by_role('button', name='只看必背', exact=True)).to_have_count(0)
     expect(detail.locator('.kg-detail-action')).to_have_count(0)
     assert detail.locator('.kg-detail-scroll').evaluate("el => getComputedStyle(el, '::-webkit-scrollbar').display") == 'none'
@@ -72,14 +76,14 @@ def run(browser, engine, mobile):
         page.get_by_role('button', name='章节导航', exact=True).click()
         page.get_by_role('button', name='关闭章节导航', exact=True).click()
         expect(detail).to_be_visible()
-    page.get_by_role('button', name='专注阅读', exact=True).click()
+    page.get_by_role('button', name='笔记全屏', exact=True).click()
     expect(detail).to_have_class(re.compile('is-reading'))
     expect(detail.get_by_role('button', name='上一考点', exact=True)).to_be_disabled()
     page.get_by_role('button', name='下一考点', exact=True).click()
     expect(detail.get_by_role('heading', name='金融工具、资产与产品', exact=True)).to_be_visible()
     page.get_by_role('button', name='上一考点', exact=True).click()
     expect(detail.get_by_role('heading', name='金融市场五要素', exact=True)).to_be_visible()
-    page.get_by_role('button', name='返回脑图', exact=True).click()
+    page.get_by_role('button', name='退出笔记全屏', exact=True).click()
     page.get_by_role('button', name='关闭考点详情').click()
     assert page.evaluate("document.activeElement.tagName !== 'INPUT'")
     click_node(page, '展开：基金行业文化建设')
@@ -106,8 +110,9 @@ def run(browser, engine, mobile):
     if mobile:
         assert page.locator('.kg-search input').evaluate('el => getComputedStyle(el).fontSize') == '16px'
     page.get_by_role('tab', name=re.compile('科目二 投资基础')).click()
+    page.get_by_role('tab', name='脑图', exact=True).click()
     check(page, 18)
-    expect(page.get_by_role('button', name='阅读：十八、基金销售基础知识', exact=True)).to_be_visible()
+    expect(page.get_by_role('button', name='展开：基金销售基础知识', exact=True)).to_be_visible()
     page.get_by_role('searchbox', name='搜索知识图谱').fill('var 置信')
     page.get_by_role('complementary', name='搜索结果').get_by_role('button', name=re.compile('VaR、ES与压力测试')).click()
     check(page, 18)
@@ -120,11 +125,14 @@ def run(browser, engine, mobile):
     page.get_by_role('button', name='关闭考点详情').click()
     page.get_by_role('tab', name='脑图', exact=True).click()
     check(page, 18)
-    page.get_by_role('button', name='切换到深色主题').click()
+    for _ in range(4):
+        if page.locator('html').get_attribute('data-theme') == 'dark': break
+        page.locator('.theme-toggle').click()
     expect(page.locator('.react-flow')).to_have_class(re.compile('dark'))
     fit(page)
-    assert page.locator('.kg-branch-toggle').evaluate_all('els=>els.every(e=>Math.abs(e.getBoundingClientRect().width-e.getBoundingClientRect().height)<1)')
-    assert page.locator('.kg-node-read strong').evaluate_all('els=>els.every(e=>e.scrollHeight<=e.clientHeight+1)'), 'node label clipped'
+    assert page.locator('.kg-node-branch').evaluate_all('els=>els.every(e=>e.closest(".kg-node").querySelectorAll("button").length===1 && getComputedStyle(e.querySelector(".kg-branch-indicator")).pointerEvents==="none")')
+    clipped = page.locator('.kg-node-read strong').evaluate_all('els=>els.filter(e=>e.scrollHeight>e.clientHeight+1).map(e=>({text:e.textContent,scroll:e.scrollHeight,client:e.clientHeight,width:e.clientWidth,font:getComputedStyle(e).fontSize}))')
+    assert not clipped, f'node label clipped: {clipped}'
     page.screenshot(path=str(OUT/f'{engine}-{"mobile" if mobile else "desktop"}-all-chapters.png'))
     page.get_by_role('searchbox', name='搜索知识图谱').fill('var 置信')
     page.get_by_role('complementary', name='搜索结果').get_by_role('button', name=re.compile('VaR、ES与压力测试')).click()

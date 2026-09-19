@@ -8,19 +8,22 @@ import { studyNoteSpeech } from '../lib/studyNotes'
 import { KNOWLEDGE } from '../data/knowledge'
 import { PASS, SUBJ_SHORT, chapterStats } from '../lib/bank'
 import { ancestorsOf, chapterLabel, indexKnowledge, layoutKnowledge,
-  searchKnowledge, toggleBranch } from '../lib/knowledgeGraph'
+  searchKnowledge, toggleBranch, branchViewport } from '../lib/knowledgeGraph'
 import { useStore } from '../lib/store'
 import '../knowledgeMap.css'
 import StudyNotes from '../components/StudyNotes'
+import KnowledgePath from '../components/KnowledgePath'
+import { KNOWLEDGE_PATHS, KNOWLEDGE_LINKS } from '../data/knowledgePaths'
 
 const motionDuration = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220
 const nodeTypes = { knowledge: memo(KnowledgeNode) }
 const ariaLabels = {
-  'node.a11yDescription.default': '按 Tab 选择节点，按 Enter 阅读，使用展开按钮查看下一级。',
+  'node.a11yDescription.default': '点击父节点展开或收起，点击考点阅读笔记；也可按 Tab 选择、Enter 操作。',
   'minimap.ariaLabel': '知识图谱小地图',
 }
 
 function KnowledgeNode({ data }) {
+  const gesture = useRef(null)
   const { entry, root, overview, expanded, selected, onSelect, onToggle, accuracy } = data
   const branch = entry.children.length > 0
   const label = data.label || entry.t
@@ -32,15 +35,25 @@ function KnowledgeNode({ data }) {
       id={data.left ? 'right-in' : 'left-in'} />}
     {(branch || entry.depth === 0) && <Handle type="source" position={data.left ? Position.Left : Position.Right} id={data.left ? 'left' : 'right'} />}
     {entry.depth === 0 && <Handle type="source" position={Position.Left} id="left" />}
-    <ReadElement className="kg-node-read nodrag nopan" onClick={() => onSelect(entry.id)}
-      aria-label={`阅读：${label}`}>
+    <ReadElement className={`kg-node-read nodrag${branch ? ' kg-node-branch' : ''}`}
+      onPointerDown={event => { gesture.current = { x: event.clientX, y: event.clientY, moved: false } }}
+      onPointerMove={event => {
+        const start = gesture.current
+        if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8) start.moved = true
+      }}
+      onPointerCancel={() => { if (gesture.current) gesture.current.moved = true }}
+      onClick={root ? undefined : event => {
+        const start = gesture.current
+        if (event.detail && start && (start.moved || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8)) return
+        branch ? onToggle(entry.id) : onSelect(entry.id)
+      }}
+      aria-expanded={branch ? expanded : undefined} aria-label={branch ? `${expanded ? '收起' : '展开'}：${entry.t}` : `阅读：${label}`}>
       <span className="kg-node-meta">{kind}{accuracy != null && <span className={accuracy < PASS ? 'kg-weak' : 'kg-good'}>{accuracy}% 正确率</span>}</span>
-      <strong>{label}</strong>
+      <strong>{(data.lines || [label]).map((line, i) => <span className="kg-node-line" key={i}>{line}</span>)}</strong>
       <span className="kg-node-foot">{entry.depth === 0 ? `${entry.points} 组考点` : entry.depth === 1
         ? `${entry.children.length} 节 / ${entry.points} 组考点` : entry.depth === 2 ? `${entry.points} 组考点` : '点击阅读要点'}</span>
+      {branch && <span className="kg-branch-indicator" aria-hidden="true">{expanded ? '−' : '+'}</span>}
     </ReadElement>
-    {branch && <button className="kg-branch-toggle nodrag nopan" aria-expanded={expanded}
-      aria-label={`${expanded ? '收起' : '展开'}：${entry.t}`} onClick={() => onToggle(entry.id)}><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M3 8h10" />{!expanded && <path d="M8 3v10" />}</svg></button>}
   </div>
 }
 
@@ -55,8 +68,10 @@ function CanvasControls({ graph, request, containerRef, onFit }) {
     const bounds = { x: Math.min(...xs), y: Math.min(...ys),
       width: Math.max(...graph.nodes.map(n => n.position.x + n.width)) - Math.min(...xs),
       height: Math.max(...graph.nodes.map(n => n.position.y + n.height)) - Math.min(...ys) }
-    return flow.setViewport(getViewportForBounds(bounds, element.clientWidth, element.clientHeight, .12, 1, .07),
-      { duration: motionDuration() })
+    // Reserve the corners for canvas controls instead of fitting nodes underneath them.
+    const insetY = Math.min(56, element.clientHeight * .15)
+    const viewport = getViewportForBounds(bounds, Math.max(1, element.clientWidth - 32), Math.max(1, element.clientHeight - insetY * 2), .12, 1, .07)
+    return flow.setViewport({ ...viewport, x: viewport.x + 16, y: viewport.y + insetY }, { duration: motionDuration() })
   }, [flow, graph, containerRef])
   // Positions are known: navigation can run immediately after DOM layout, without
   // a deferred auto-fit racing a user's zoom/fit command after switching views.
@@ -67,11 +82,19 @@ function CanvasControls({ graph, request, containerRef, onFit }) {
     const position = () => {
       if (!element.clientWidth || !element.clientHeight) return
       const target = graph.nodes.find(n => n.id === request.id)
-      if (target && request.center) {
-        const z = element.clientWidth < 600 ? .85 : 1
+      if (request.viewport) {
+        flow.setViewport(request.viewport, { duration: 0 })
+      } else if (target && request.anchor) {
+        const children = graph.nodes.filter(n => target.data.entry.children.includes(n.id))
+        flow.setViewport(branchViewport(target, request.anchor, request.previousViewport, element.clientWidth, element.clientHeight, children), { duration: motionDuration() })
+      } else if (target && request.center) {
+        const z = 1
         flow.setViewport({ x: element.clientWidth / 2 - (target.position.x + target.width / 2) * z,
           y: element.clientHeight / 2 - (target.position.y + target.height / 2) * z, zoom: z },
           { duration: motionDuration() })
+      } else if (element.clientWidth < 600 && !request.fitAll) {
+        const first = graph.nodes.find(n => n.data.entry.depth === 1)
+        if (first) flow.setViewport({ x: 20 - first.position.x, y: 24 - first.position.y, zoom: 1 }, { duration: 0 })
       } else fit()
     }
     const observer = new ResizeObserver(() => {
@@ -124,7 +147,7 @@ export default function KnowledgeMap({ go }) {
   return <section className="kg-workspace" aria-label="知识图谱学习工作台">
     <header className="kg-header">
       <button className="kg-icon-btn" aria-label="返回首页" onClick={() => go('home')}><Icon name="back" /></button>
-      <div className="kg-heading"><h1>知识图谱</h1><span>从章节脉络，读懂每个考点</span></div>
+      <div className="kg-heading"><h1>知识图谱</h1><span>先理解原理，再记住判断与边界</span></div>
       <div className="kg-subject"><SubjectSeg /></div>
       <ThemeToggle />
     </header>
@@ -134,18 +157,27 @@ export default function KnowledgeMap({ go }) {
 
 function SubjectKnowledgeMap({ go }) {
   const { records, subject, isDark } = useStore()
+  const flow = useReactFlow()
+  const [compact, setCompact] = useState(() => matchMedia('(max-width: 600px)').matches)
+  useEffect(() => {
+    const media = matchMedia('(max-width: 600px)'), update = () => setCompact(media.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
   const index = useMemo(() => indexKnowledge(KNOWLEDGE[subject] || []), [subject])
   const [chapterIndex, setChapterIndex] = useState(null)
   const [open, setOpen] = useState(() => new Set())
   const [selectedId, setSelectedId] = useState(null)
   const [query, setQuery] = useState('')
-  const [mode, setMode] = useState('map')
+  const [mode, setMode] = useState('path')
   const [navOpen, setNavOpen] = useState(false)
   const [request, setRequest] = useState({ id: 'subject' })
   const [announcement, setAnnouncement] = useState('')
   const [mini, setMini] = useState(false)
   const [reading, setReading] = useState(false)
   const noteScrollRef = useRef(null)
+  const beforeFullscreen = useRef(null)
+  const fullscreenButtonRef = useRef(null)
   const viewRef = useRef(null)
   const canvasRef = useRef(null), searchRef = useRef(null), detailRef = useRef(null), lastFocus = useRef(null), activeChapterRef = useRef(null)
   useEffect(() => {
@@ -156,7 +188,7 @@ function SubjectKnowledgeMap({ go }) {
   const pointIndex = points.findIndex(n => n.id === selectedId)
   const results = useMemo(() => searchKnowledge(index, query), [index, query])
   const statsMap = useMemo(() => Object.fromEntries(chapterStats(records, subject, true).map(c => [c.chapter, c])), [records, subject])
-  const graph = useMemo(() => layoutKnowledge(index, chapterIndex, open, SUBJ_SHORT[subject]), [index, chapterIndex, open, subject])
+  const graph = useMemo(() => layoutKnowledge(index, chapterIndex, open, SUBJ_SHORT[subject], compact), [index, chapterIndex, open, subject, compact])
   const allExpanded = index.entries.filter(n => n.children.length).every(n => open.has(n.id))
   const totalPoints = index.chapters.reduce((n, ch) => n + ch.points, 0)
 
@@ -174,9 +206,28 @@ function SubjectKnowledgeMap({ go }) {
     setRequest({ id, center: true })
   }, [index, chapterIndex, chooseChapter])
   const toggle = useCallback(id => {
+    const node = graph.nodes.find(n => n.id === id)
+    if (!node) return
+    const previousViewport = flow.getViewport()
+    const anchor = { x: (node.position.x + node.width / 2) * previousViewport.zoom + previousViewport.x,
+      y: (node.position.y + node.height / 2) * previousViewport.zoom + previousViewport.y }
     setOpen(previous => toggleBranch(previous, id))
-    setRequest({ id, center: true })
-  }, [])
+    setSelectedId(null)
+    setChapterIndex(node.data.entry.chapterIndex)
+    setRequest({ id, anchor, previousViewport })
+    setAnnouncement(`${open.has(id) ? '已收起' : '已展开'}：${node.data.entry.t}`)
+  }, [graph, flow, open])
+  function toggleFullscreen() {
+    if (reading) {
+      setReading(false)
+      if (beforeFullscreen.current) setRequest({ viewport: beforeFullscreen.current })
+      requestAnimationFrame(() => fullscreenButtonRef.current?.focus({ preventScroll: true }))
+    } else {
+      beforeFullscreen.current = flow.getViewport()
+      setNavOpen(false)
+      setReading(true)
+    }
+  }
   function reveal(entry) {
     searchRef.current?.blur()
     lastFocus.current = searchRef.current
@@ -204,14 +255,24 @@ function SubjectKnowledgeMap({ go }) {
   }, [selectedId])
   useEffect(() => {
     const onKey = e => {
-      if (e.key === '/' && !e.target.closest('input,textarea,[contenteditable="true"]')) {
+      if (e.key === '/' && !reading && !e.target.closest('input,textarea,[contenteditable="true"]')) {
         e.preventDefault(); searchRef.current?.focus(); setNavOpen(true)
       }
-      if (e.key === 'Escape') { setQuery(''); setNavOpen(false); setSelectedId(null); setReading(false) }
+      if (e.key === 'Escape') {
+        if (reading) toggleFullscreen()
+        else if (selectedId) closeDetail()
+        else { setQuery(''); setNavOpen(false) }
+      }
+      if (e.key === 'Tab' && reading) {
+        const focusable = [...detailRef.current?.closest('.kg-detail')?.querySelectorAll('button:not(:disabled),summary,a[href]') || []].filter(el => el.getClientRects().length)
+        const first = focusable[0], last = focusable.at(-1)
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus() }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus() }
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [reading, selectedId])
   const nodes = useMemo(() => graph.nodes.map(node => ({ ...node,
     focusable: false, draggable: false, selectable: false,
     data: { ...node.data, selected: selectedId === node.id, onSelect: select, onToggle: toggle,
@@ -219,6 +280,8 @@ function SubjectKnowledgeMap({ go }) {
   })), [graph, selectedId, select, toggle, statsMap])
   const selectedChapter = selected && index.chapters[selected.chapterIndex]
   const stat = selected && statsMap[selected.chapter]
+  const path = KNOWLEDGE_PATHS[subject]
+  const related = (KNOWLEDGE_LINKS[`${subject}|${selected?.t}`] || []).map(title => points.find(point => point.t === title)).filter(Boolean)
 
   return <>
     <div className="kg-toolbar">
@@ -231,6 +294,7 @@ function SubjectKnowledgeMap({ go }) {
         {query ? <button aria-label="清空搜索" onClick={() => { setQuery(''); searchRef.current?.focus() }}><Icon name="x" size={14} /></button> : <kbd>/</kbd>}
       </label>
       <div ref={viewRef} className="kg-view-switch" role="tablist" aria-label="图谱视图">
+        <button role="tab" aria-selected={mode === 'path'} onClick={() => { setMode('path'); setNavOpen(false); setReading(false) }}>主线</button>
         <button role="tab" aria-selected={mode === 'map'} onClick={() => { setMode('map'); setNavOpen(false); setReading(false) }}>脑图</button>
         <button role="tab" aria-selected={mode === 'outline'} onClick={() => { setMode('outline'); setNavOpen(false); setReading(false) }}>大纲</button>
       </div>
@@ -270,12 +334,12 @@ function SubjectKnowledgeMap({ go }) {
             <h2>{SUBJ_SHORT[subject]}</h2>
             <p>{`${index.chapters.length} 章，${totalPoints} 组考点`}</p>
           </div>
-          <button className="kg-text-button" onClick={() => {
+          {mode !== 'path' && <button className="kg-text-button" onClick={() => {
             setOpen(new Set(allExpanded ? [] : index.entries.filter(n => n.children.length).map(n => n.id)))
-            setRequest({ id: 'subject' }); setSelectedId(null)
-          }}>{allExpanded ? '收起全部' : '展开全部'}</button>
+            setRequest({ id: 'subject', fitAll: true }); setSelectedId(null)
+          }}>{allExpanded ? '收起全部' : '展开全部'}</button>}
         </div>
-        {mode === 'map' ? <div ref={canvasRef} className="kg-canvas" data-testid="knowledge-canvas">
+        {mode === 'path' ? <KnowledgePath path={path} index={index} chapterIndex={chapterIndex} onChapter={chooseChapter} onSelect={reveal} /> : mode === 'map' ? <div ref={canvasRef} className="kg-canvas" data-testid="knowledge-canvas">
           <ReactFlow nodes={nodes} edges={graph.edges} nodeTypes={nodeTypes} nodesDraggable={false} nodesConnectable={false} proOptions={{ hideAttribution: true }}
             elementsSelectable={false} edgesFocusable={false} nodesFocusable={false} deleteKeyCode={null}
             minZoom={.12} maxZoom={2} panOnDrag zoomOnPinch zoomOnScroll zoomOnDoubleClick={false}
@@ -287,7 +351,7 @@ function SubjectKnowledgeMap({ go }) {
               maskColor="var(--kg-map-mask)" bgColor="var(--sheet)" position="bottom-right" />}
             <Panel position="top-right"><button className="kg-minimap-toggle" aria-label="小地图" aria-pressed={mini} onClick={() => setMini(!mini)}>小地图</button></Panel>
           </ReactFlow>
-          <div className="kg-gesture-hint">拖动画布移动 · 滚轮或双指缩放</div>
+          <div className="kg-gesture-hint">点击节点展开 / 收起 · 点击考点阅读 · 拖动与双指缩放</div>
         </div> : <div className="kg-outline" aria-label="知识大纲">
           {index.chapters.map(ch => <section key={ch.id} className="kg-outline-chapter">
             <button className="kg-outline-ch-title" onClick={() => chooseChapter(ch.chapterIndex)}>{chapterLabel(ch)}</button>
@@ -307,7 +371,7 @@ function SubjectKnowledgeMap({ go }) {
             })}
           </section>)}
         </div>}
-        <footer className="kg-status"><span>{mode === 'map' ? `显示 ${nodes.length} 个节点` : '大纲阅读'}<span className="kg-status-path"> / 章 → 节 → 考点</span></span>
+        <footer className="kg-status"><span>{mode === 'path' ? '原理 → 章节 → 判断' : mode === 'map' ? `显示 ${nodes.length} 个节点` : '大纲阅读'}<span className="kg-status-path"> / {totalPoints} 组考点</span></span>
           <span>点击考点阅读要点</span></footer>
       </section>
       {selected && <aside className={`kg-detail${reading ? ' is-reading' : ''}`} role="complementary" aria-label="考点详情"
@@ -316,7 +380,7 @@ function SubjectKnowledgeMap({ go }) {
           {selected.d && <Speaker key={selected.id} getText={() => mdToSpeech(studyNoteSpeech(selected))} label="朗读考点笔记" />}</div>
           <button className="kg-note-practice" aria-label="练习本章题目" disabled={!stat?.total} onClick={() => go('practice', { scope: `ch:${selected.chapter}`, order: 'seq' })}>
             {stat?.total ? `练习 ${stat.total} 题` : '暂无题目'} <Icon name="chevronRight" size={16} /></button>
-          <button className="kg-reading-toggle" aria-label={reading ? '返回脑图' : '专注阅读'} title={reading ? '返回脑图' : '专注阅读'} aria-pressed={reading} onClick={() => setReading(!reading)}><Icon name={reading ? 'shrink' : 'expand'} size={16} /></button>
+          <button ref={fullscreenButtonRef} className="kg-reading-toggle" aria-label={reading ? '退出笔记全屏' : '笔记全屏'} title={reading ? '退出笔记全屏' : '笔记全屏'} aria-pressed={reading} onClick={toggleFullscreen}><Icon name={reading ? 'shrink' : 'expand'} size={16} /></button>
           <button className="kg-icon-btn" aria-label="关闭考点详情" onClick={closeDetail}><Icon name="x" size={18} /></button></div>
         {pointIndex >= 0 && <nav className="kg-point-nav" aria-label="连续复习">
           <button disabled={pointIndex === 0} onClick={() => reveal(points[pointIndex - 1])}>上一考点</button>
@@ -326,9 +390,10 @@ function SubjectKnowledgeMap({ go }) {
         <div className="kg-detail-scroll" ref={noteScrollRef}>
           <p className="kg-detail-path">第 {selected.chapterIndex + 1} 章 / {selectedChapter.t}{selected.depth === 3 && <><br />{index.byId.get(selected.parent).t}</>}</p>
           <h2 ref={detailRef} tabIndex={-1}>{selected.t}</h2>
-          {selected.review ? <StudyNotes review={selected.review} />
+          {selected.review ? <StudyNotes key={selected.id} review={selected.review} study={selected.study} />
             : selected.d ? <div className="kg-detail-copy"><span className="kg-note-label">学习要点</span><p>{selected.d}</p></div>
             : <div className="kg-detail-children">{selected.children.map(id => <button key={id} onClick={() => reveal(index.byId.get(id))}>{index.byId.get(id).t}<Icon name="chevronRight" size={16} /></button>)}</div>}
+          {!!related.length && <nav className="kg-related" aria-label="关联知识"><h3>连起来理解</h3>{related.map(entry => <button key={entry.id} onClick={() => reveal(entry)}>{entry.t}<Icon name="chevronRight" size={14} /></button>)}</nav>}
 
         </div>
       </aside>}

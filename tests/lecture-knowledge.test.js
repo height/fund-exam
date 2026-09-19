@@ -32,7 +32,7 @@ test('跨章知识拆开后，风险、业绩、分配与销售各有正确章�
   assert.deepEqual(find('销售渠道与策略'), ['基金销售基础知识'])
 })
 
-test('全部170组冲刺笔记包含三色内容、补充知识和速记，无展示页码', () => {
+test('全部170组讲义补充继续保留，但不以最少字数要求鼓励重复', () => {
   const points = Object.values(KNOWLEDGE).flatMap(chs => chs.flatMap(ch => ch.c.flatMap(sec => sec.c)))
   assert.equal(points.length, 170)
   for (const point of points) {
@@ -40,7 +40,6 @@ test('全部170组冲刺笔记包含三色内容、补充知识和速记，无�
     assert.ok(point.review.core.length >= 3, point.t)
     assert.ok(point.review.trap.length && point.review.extra.length, point.t)
     const text = Object.values(point.review).flat().join('')
-    assert.ok(text.length > 200 && text.length > point.d.length * 1.7, point.t)
     assert.doesNotMatch(text, /讲义.{0,4}页|第\s*\d+\s*页|2017版章节/)
     assert.equal(new Set(Object.values(point.review).flat()).size, Object.values(point.review).flat().length, point.t)
   }

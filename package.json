@@ -7,7 +7,7 @@
     "build": "node tools/build-lecture-knowledge.mjs --check && node tools/apply-lecture-classification.mjs --check && node tools/validate-question-bank.mjs && vite build",
     "update:knowledge": "node tools/build-lecture-knowledge.mjs",
     "repair:chapters": "node tools/apply-lecture-classification.mjs && python3 tools/apply_chapters.py",
-    "test:knowledge": "node --test tests/lecture-knowledge.test.js tests/knowledge-graph.test.js",
+    "test:knowledge": "node --test tests/lecture-knowledge.test.js tests/knowledge-graph.test.js tests/knowledge-distillation.test.js",
     "preview": "vite preview",
     "test:formula": "node --test tests/formula.test.js",
     "test:formula:browser": "python3 tools/test_formula_webkit.py",
