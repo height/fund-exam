@@ -17,6 +17,12 @@
   --ink:#f5f5f7;--ink2:#a5a5ad;--accent:#0071e3;--accent-ink:#69afff;
   --accent-soft:#182e49;--nav-bg:rgba(30,30,33,.9);--shadow:0 4px 24px #0002;--grain:none;
 }
+/* Filter the document root so fixed toolbars keep the viewport as their containing block. */
+:root[data-eye-comfort]{filter:brightness(.82) saturate(.85) sepia(.12)}
+@media print{:root[data-eye-comfort]{filter:none}}
+.theme-toggle-face{position:relative}
+.theme-comfort-eye{position:absolute;right:-1px;bottom:0;display:grid;place-items:center;width:13px;height:11px;border-radius:4px;background:var(--sheet2);color:color-mix(in srgb,var(--ink2) 65%,var(--sheet2));filter:grayscale(1)}
+
 html{font-size:100%;scroll-padding-top:5rem}
 body{font-size:1rem;line-height:1.6;padding-bottom:calc(88px + env(safe-area-inset-bottom) + var(--calc-h))}
 #app{gap:.875rem;padding:1rem 1.25rem 1.5rem}

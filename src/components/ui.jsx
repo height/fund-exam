@@ -8,7 +8,7 @@ import { askAI, askDemo, getCfg, getKey, mdToSpeech, setKey, speak, stopSpeak } 
 import { track } from '../lib/analytics'
 import { SUBJECTS, SUBJ_SHORT, stats } from '../lib/bank'
 import { ExplainBody, Md, Plain } from '../lib/format'
-import { useStore } from '../lib/store'
+import { DISPLAY_MODES, useStore } from '../lib/store'
 
 /** 内联 SVG 图标，路径来自 Lucide/Feather（ISC 协议）。不装图标包，用到哪个抄哪个 */
 const ICONS = {
@@ -172,13 +172,17 @@ export function SubjectSeg() {
 }
 
 export function ThemeToggle({ iconOnly = true }) {
-  const { isDark, setTheme } = useStore()
-  const label = `切换到${isDark ? '浅色' : '深色'}主题`
+  const { isDark, eyeComfort, displayMode, setDisplayMode, toast } = useStore()
+  const current = DISPLAY_MODES.findIndex(mode => mode.id === displayMode)
+  const next = DISPLAY_MODES[(current + 1) % DISPLAY_MODES.length]
+  const label = `当前${DISPLAY_MODES[current].label}，点击切换到${next.label}`
   return (
-    <button className={`btn-sm btn-ghost theme-toggle${iconOnly ? ' is-icon-only' : ''}`} aria-label={label} title={label}
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}>
-      <span className="theme-toggle-face"><Icon name={isDark ? 'sun' : 'moon'} /></span>
-      {!iconOnly && (isDark ? ' 浅色' : ' 深色')}
+    <button className={`btn-sm btn-ghost theme-toggle${iconOnly ? ' is-icon-only' : ''}${eyeComfort ? ' is-comfort' : ''}`} aria-label={label} title={label}
+      onClick={async () => { await setDisplayMode(next.id); toast(`已切换到${next.label}`) }}>
+      <span className="theme-toggle-face"><Icon name={isDark ? 'moon' : 'sun'} />
+        {eyeComfort && <span className="theme-comfort-eye" aria-hidden="true"><Icon name="eye" size={10} /></span>}
+      </span>
+      {!iconOnly && ` ${DISPLAY_MODES[current].label}`}
     </button>
   )
 }

@@ -82,10 +82,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0,0,0,0);white-space:nowrap;border:0}
-/* 双击放大在答题时最烦：连点两个选项就被当成双击。manipulation 只掐双击缩放，
-   保留滚动和双指缩放，是这一条里唯一不伤无障碍的做法。
-   保留双指缩放，方便按阅读需要放大内容。 */
-html{touch-action:manipulation}
+/* Keep the app viewport at its original scale while allowing normal scrolling. */
+html{touch-action:pan-x pan-y}
 body{margin:0;background:var(--paper) var(--grain);color:var(--ink);font:16px/1.65 var(--f-body);
   padding-bottom:calc(64px + env(safe-area-inset-bottom) + var(--calc-h));-webkit-font-smoothing:antialiased;
   text-wrap:pretty}

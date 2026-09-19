@@ -6,7 +6,7 @@ import { track } from '../lib/analytics'
 import { reconcileRecord, reconcileExam } from '../lib/questionQuality'
 import { BANK, qById } from '../lib/bank'
 import { idb, kvSet } from '../lib/db'
-import { THEMES, useStore } from '../lib/store'
+import { DISPLAY_MODES, useStore } from '../lib/store'
 import { FORMULA_LESSONS, FORMULA_MASTERY_KEY } from '../data/formulaLessons'
 import { FORMULA_PROGRESS_KEY, emptyProgress, mergeProgress } from '../lib/formulaProgress'
 import { loadFormulaProgress, saveFormulaProgress } from '../lib/formulaStorage'
@@ -96,7 +96,7 @@ function CountdownSettings() {
 }
 
 export default function Data({ go, page }) {
-  const { records, setRecords, theme, setTheme, examDate, toast, ask } = useStore()
+  const { records, setRecords, displayMode, setDisplayMode, examDate, toast, ask } = useStore()
   const [exams, setExams] = useState([])
   const [ai, setAi] = useState(loadStore)
   const [testing, setTesting] = useState(false)
@@ -241,8 +241,8 @@ export default function Data({ go, page }) {
         <section className="settings-section">
           <h2>外观</h2>
           <div className="seg settings-theme" aria-label="外观主题">
-            {THEMES.map(([v, t]) => <button key={v} aria-pressed={theme === v}
-              className={theme === v ? 'on' : ''} onClick={() => setTheme(v)}>{t}</button>)}
+            {DISPLAY_MODES.map(({ id, label }) => <button key={id} aria-pressed={displayMode === id}
+              className={displayMode === id ? 'on' : ''} onClick={() => setDisplayMode(id)}>{label}</button>)}
           </div>
         </section>
         <section className="settings-section">

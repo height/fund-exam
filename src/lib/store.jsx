@@ -3,13 +3,18 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { readPracticePreferences, savePracticePreferences } from './practicePreferences'
 import { qById } from './bank'
 import { reconcileRecord, reconcileExam } from './questionQuality'
-import { idb, kvGet, kvSet, openDB } from './db'
+import { idb, kvBatch, kvGet, kvSet, openDB } from './db'
 import { examDateStamp } from './examCountdown'
 
 const Ctx = createContext(null)
 export const useStore = () => useContext(Ctx)
 
-export const THEMES = [['auto', '跟随系统'], ['light', '浅色'], ['dark', '深色']]
+export const DISPLAY_MODES = [
+  { id: 'light', label: '浅色', theme: 'light', eyeComfort: false },
+  { id: 'light-comfort', label: '浅色护眼', theme: 'light', eyeComfort: true },
+  { id: 'dark', label: '深色', theme: 'dark', eyeComfort: false },
+  { id: 'dark-comfort', label: '深色护眼', theme: 'dark', eyeComfort: true },
+]
 
 
 export function StoreProvider({ children }) {
@@ -18,6 +23,7 @@ export function StoreProvider({ children }) {
   const [subject, setSubjectState] = useState('科目一')
   const [autoNext, setAutoNextState] = useState(true)
   const [theme, setThemeState] = useState('auto')
+  const [eyeComfort, setEyeComfortState] = useState(false)
   const [examDate, setExamDateState] = useState('')
   const [toastMsg, setToastMsg] = useState('')
   const [dialog, setDialog] = useState(null)
@@ -43,6 +49,7 @@ export function StoreProvider({ children }) {
       setSubjectState(['科目一', '科目二'].includes(savedSubject) ? savedSubject : await kvGet('subject', '科目一'))
       setAutoNextState(await kvGet('autoNext', true))
       setThemeState(await kvGet('theme', 'auto'))
+      setEyeComfortState(await kvGet('eyeComfort', false) === true)
       const savedExamDate = await kvGet('examDate', '')
       setExamDateState(examDateStamp(savedExamDate) === null ? '' : savedExamDate)
       setReady(true)
@@ -64,6 +71,20 @@ export function StoreProvider({ children }) {
     document.querySelector('meta[name=theme-color]').content = getComputedStyle(r).getPropertyValue('--paper').trim()
   }, [theme, isDark])
 
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-eye-comfort', eyeComfort)
+    return () => document.documentElement.removeAttribute('data-eye-comfort')
+  }, [eyeComfort])
+
+  const displayMode = `${isDark ? 'dark' : 'light'}${eyeComfort ? '-comfort' : ''}`
+  const setDisplayMode = useCallback(async id => {
+    const mode = DISPLAY_MODES.find(mode => mode.id === id)
+    if (!mode) return
+    await kvBatch([{ k: 'theme', v: mode.theme }, { k: 'eyeComfort', v: mode.eyeComfort }])
+    setThemeState(mode.theme)
+    setEyeComfortState(mode.eyeComfort)
+  }, [])
+
   const toast = useCallback(m => {
     setToastMsg(m)
     clearTimeout(toastTimer.current)
@@ -80,7 +101,6 @@ export function StoreProvider({ children }) {
 
   const setSubject = useCallback(s => { setSubjectState(s); savePracticePreferences({ subject: s }); kvSet('subject', s) }, [])
   const setAutoNext = useCallback(v => { setAutoNextState(v); kvSet('autoNext', v) }, [])
-  const setTheme = useCallback(t => { setThemeState(t); kvSet('theme', t) }, [])
   const setExamDate = useCallback(async value => {
     if (value !== '' && examDateStamp(value) === null) throw new Error('请选择有效的考试日期')
     await kvSet('examDate', value)
@@ -117,7 +137,7 @@ export function StoreProvider({ children }) {
 
   const value = {
     ready, records, setRecords, subject, setSubject, autoNext, setAutoNext,
-    theme, setTheme, isDark, toast, toastMsg, recordAnswer, patchRecord, ask, dialog,
+    theme, isDark, eyeComfort, displayMode, setDisplayMode, toast, toastMsg, recordAnswer, patchRecord, ask, dialog,
     examDate, setExamDate,
   }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
