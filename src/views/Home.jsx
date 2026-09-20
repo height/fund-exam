@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Icon, PageHeader, SubjectSeg, ThemeToggle } from '../components/ui'
-import { BANK, PASS, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
+import { BANK, PASS, MAY_2026_SOURCE, MAY_2026_LABEL, bySubject, chapterStats, effort, getRandomN, stats } from '../lib/bank'
 import { idb } from '../lib/db'
+import { examScore, examPassed } from '../lib/examScore'
 import { numberQuestions } from '../lib/numbers'
 import { useStore } from '../lib/store'
 import { examCountdownDays } from '../lib/examCountdown'
@@ -116,7 +117,7 @@ export default function Home({ go }) {
         <div className="hero-foot">
           <span>已做<b>{st.done}<i>/{total}</i></b></span>
           <span>错题待清<b style={st.wrong ? { color: 'var(--bad)' } : null}>{st.wrong}</b></span>
-          <span>最近模拟考<b>{last ? (last.score ?? '已作废') : '未考'}</b></span>
+          <span>最近模拟考<b>{last ? (examScore(last.right, last.total) ?? '已作废') : '未考'}</b></span>
         </div>
       </div>
 
@@ -194,8 +195,8 @@ export default function Home({ go }) {
           <div className="list">
             {exams.map(e => (
               <div className="list-item" key={e.id}>
-                <span className={`score-chip ${e.score >= PASS ? 'pass' : 'fail'}`}>{e.score ?? '已作废'}</span>
-                <span className="grow muted">{e.voidedQuestionIds?.length > 0 && `已作废 ${e.voidedQuestionIds.length} 题 · `}答对 {e.right}/{e.total} · 用时 {Math.round(e.usedMs / 60000)} 分</span>
+                <span className={`score-chip ${examPassed(e, PASS) ? 'pass' : 'fail'}`}>{examScore(e.right, e.total) ?? '已作废'}</span>
+                <span className="grow muted">{e.source === MAY_2026_SOURCE && `${MAY_2026_LABEL} · `}{e.voidedQuestionIds?.length > 0 && `已作废 ${e.voidedQuestionIds.length} 题 · `}答对 {e.right}/{e.total} · 用时 {Math.round(e.usedMs / 60000)} 分</span>
                 <span className="muted num">
                   {new Date(e.ts).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
                 </span>

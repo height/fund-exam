@@ -22,6 +22,8 @@ export const SUBJ_SHORT = { 科目一: '法律法规', 科目二: '投资基础'
 export const EXAM_N = 100
 export const EXAM_MIN = 120
 export const PASS = 60
+export const MAY_2026_SOURCE = '真题2026-05'
+export const MAY_2026_LABEL = '2026 年 5 月真题'
 
 /* 官方教材章序。题库的 chapter 只会取 CHAPTERS 里的值，由 tools/apply_chapters.py 保证 */
 export { CHAPTERS }
@@ -37,6 +39,7 @@ export const CHAPTER_EXAM_N = 30
 export const minutesFor = n => Math.max(5, Math.round((n * EXAM_MIN) / EXAM_N))
 
 export const bySubject = s => BANK.filter(q => q.subject === s)
+export const may2026Questions = s => bySubject(s).filter(q => q.source === MAY_2026_SOURCE || q.sourceRefs?.some(ref => ref.source === MAY_2026_SOURCE))
 // 历史记录迁移仍需读取已隔离题的版本与复核原因。
 export const qById = id => questions.find(q => q.id === id)
 

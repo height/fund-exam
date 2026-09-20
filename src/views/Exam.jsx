@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, PageHeader, SubjectSeg } from '../components/ui'
-import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFor, pickExamSet, qById } from '../lib/bank'
+import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, MAY_2026_SOURCE, MAY_2026_LABEL, bySubject, may2026Questions, minutesFor, pickExamSet, qById, shuffle } from '../lib/bank'
 import { answeredRecord } from '../lib/practiceRecord'
 import { reconcileExam } from '../lib/questionQuality'
+import { examScore, examPassed } from '../lib/examScore'
 import { track } from '../lib/analytics'
 import { idb, kvGet, kvSet } from '../lib/db'
 import { Stem, fmtTime } from '../lib/format'
@@ -16,6 +17,8 @@ const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 export default function Exam({ go, setQuiz, chapter, scope, review }) {
   const { subject, records, setRecords, toast, ask } = useStore()
   const numberMode = scope === 'numbers'
+  const [paper, setPaper] = useState('full')
+  const pastPaperMode = !numberMode && !chapter && paper === MAY_2026_SOURCE
   const reviewIds = review?.split(',').filter(Boolean) || null
   const activeKey = numberMode ? 'activeNumberExam' : 'activeExam'
   const [stage, setStage] = useState('loading') // loading | resume | intro | running | result
@@ -33,7 +36,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
         toast('原试卷题目已修订或暂停使用，本场已作废并留存备份，请重新开考')
         setStage('intro'); return
       }
-      if (a && a.endTs > Date.now()) { setEx(a); setStage('resume'); return }
+      if (a && a.endTs > Date.now()) { setPaper(a.source || 'full'); setEx(a); setStage('resume'); return }
       if (a) await kvSet(activeKey, null)
       setStage('intro')
     })()
@@ -48,13 +51,15 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
   async function begin() {
     const qs = numberMode
       ? pickNumberExamSet(subject, reviewIds)
-      : pickExamSet(subject, chapter)
+      : pastPaperMode ? shuffle(may2026Questions(subject)) : pickExamSet(subject, chapter)
+    if (!qs.length) { toast('当前范围暂无可用题目，请切换科目或考试范围'); return }
     const now = Date.now()
     // mins 存进这场考试：单章卷比整套短，交卷算用时得按本场时长封顶，
     // 不能再拿 EXAM_MIN 当上限，否则单章考的用时会被记成最多 120 分钟
-    const mins = numberMode || chapter ? minutesFor(qs.length) : EXAM_MIN
+    const mins = numberMode || chapter || pastPaperMode ? minutesFor(qs.length) : EXAM_MIN
     const fresh = {
       subject, chapter: numberMode ? undefined : chapter, mins, kind: numberMode ? 'numbers' : undefined,
+      source: pastPaperMode ? MAY_2026_SOURCE : undefined,
       ids: qs.map(q => q.id), answers: {},
       questionRevisions: Object.fromEntries(qs.map(q => [q.id, q.contentRevision || 0])),
       startTs: now, endTs: now + mins * 60000, i: 0,
@@ -62,7 +67,8 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
     await kvSet(activeKey, fresh)
     track('exam_started', {
       subject,
-      exam_type: numberMode ? 'numbers' : chapter ? 'chapter' : 'full',
+      exam_type: numberMode ? 'numbers' : pastPaperMode ? 'past_paper' : chapter ? 'chapter' : 'full',
+      source: fresh.source,
       question_count: qs.length,
     })
     setEx(fresh)
@@ -87,8 +93,8 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
     }
     setRecords(next)
     const rec = {
-      id: Date.now(), subject: e.subject, chapter: e.chapter, kind: e.kind, ts: Date.now(),
-      score: Math.round((right / qs.length) * 100), right, total: qs.length,
+      id: Date.now(), subject: e.subject, chapter: e.chapter, kind: e.kind, source: e.source, ts: Date.now(),
+      score: examScore(right, qs.length), right, total: qs.length,
       usedMs: Math.min(Date.now() - e.startTs, (e.mins || EXAM_MIN) * 60000),
       ids: e.ids, answers: e.answers, questionRevisions: e.questionRevisions,
       voidedQuestionIds: e.voidedQuestionIds, superseded: e.superseded,
@@ -97,7 +103,8 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
     await kvSet(e.kind === 'numbers' ? 'activeNumberExam' : 'activeExam', null)
     track('exam_submitted', {
       subject: e.subject,
-      exam_type: e.kind === 'numbers' ? 'numbers' : e.chapter ? 'chapter' : 'full',
+      exam_type: e.kind === 'numbers' ? 'numbers' : e.source ? 'past_paper' : e.chapter ? 'chapter' : 'full',
+      source: e.source,
       question_count: qs.length,
       answered_count: Object.keys(e.answers).length,
     })
@@ -118,7 +125,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
       />
       {ex.voidedQuestionIds?.length > 0 && <p className="muted">原卷有 {ex.voidedQuestionIds.length} 道题因复核修订或暂停使用，已移出本场计分并留存旧记录；继续完成其余题目。</p>}
       <div className="card">
-        <div className="row between"><b>有一场没考完</b><span className="chip">{ex.subject}</span></div>
+        <div className="row between"><b>{ex.source === MAY_2026_SOURCE ? `${MAY_2026_LABEL} · 未完成` : '有一场没考完'}</b><span className="chip">{ex.subject}</span></div>
         <div className="row between">
           <span className="muted">剩余时间</span>
           <span className="timer">{fmtTime(ex.endTs - Date.now())}</span>
@@ -143,11 +150,11 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
   const allow = reviewIds?.length ? new Set(reviewIds) : null
   const pool = numberMode
     ? numberQuestions(subject).filter(q => !allow || allow.has(q.id)).length
-    : chapter
+    : pastPaperMode ? may2026Questions(subject).length : chapter
       ? bySubject(subject).filter(q => q.chapter === chapter).length
       : bySubject(subject).length
-  const n = Math.min(numberMode ? NUMBER_EXAM_N : chapter ? CHAPTER_EXAM_N : EXAM_N, pool)
-  const mins = numberMode || chapter ? minutesFor(n) : EXAM_MIN
+  const n = pastPaperMode ? pool : Math.min(numberMode ? NUMBER_EXAM_N : chapter ? CHAPTER_EXAM_N : EXAM_N, pool)
+  const mins = numberMode || chapter || pastPaperMode ? minutesFor(n) : EXAM_MIN
   return (
     <>
       <PageHeader
@@ -157,6 +164,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
           ? `${mins} 分钟 · ${n} 道单选 · ${PASS} 分及格`
           : chapter
           ? `只考「${chapter}」 · ${mins} 分钟 · ${n} 题`
+          : pastPaperMode ? `只考 ${MAY_2026_LABEL} · ${n} 题 · ${mins} 分钟`
           : `真考规格 · ${EXAM_MIN} 分钟 · ${EXAM_N} 题 · ${PASS} 分及格`}
         onBack={chapter || numberMode
           ? () => go(numberMode ? 'numbers' : 'chapters', numberMode ? { mode: 'exam' } : {})
@@ -165,8 +173,15 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
       />
       {!chapter && <SubjectSeg />}
       <div className="card">
+        {!chapter && !numberMode && <>
+          <h2>考试范围</h2>
+          <div className="seg" role="group" aria-label="考试范围">
+            <button className={!pastPaperMode ? 'on' : ''} aria-pressed={!pastPaperMode} onClick={() => setPaper('full')}>全题库模拟</button>
+            <button className={pastPaperMode ? 'on' : ''} aria-pressed={pastPaperMode} onClick={() => setPaper(MAY_2026_SOURCE)}>{MAY_2026_LABEL}</button>
+          </div>
+        </>}
         <div className="stats">
-          <div className="stat"><b>{n}</b><span>抽题</span></div>
+          <div className="stat"><b>{n}</b><span>{pastPaperMode ? '真题' : '抽题'}</span></div>
           <div className="stat"><b>{mins}</b><span>分钟</span></div>
           <div className="stat"><b>{PASS}</b><span>及格分</span></div>
         </div>
@@ -175,9 +190,11 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
             ? <>{SUBJ_FULL[subject]}　{reviewIds?.length ? `本次错题共 ${pool} 题` : `数字题库共 ${pool} 题，每次随机抽`}</>
             : chapter
             ? <>{SUBJ_FULL[subject]}　本章题库共 {pool} 题，每次随机抽</>
+            : pastPaperMode
+            ? <>{SUBJ_FULL[subject]}　已收录可用真题共 {pool} 题，全部出卷、随机排序。时长按题量折算，成绩按百分制计算。</>
             : <>{SUBJ_FULL[subject]}　按章节分层抽题，覆盖各知识点</>}
         </div>
-        <button className="btn-pri" style={{ padding: 15 }} disabled={!n} onClick={begin}>开始考试</button>
+        <button className="btn-pri" style={{ padding: 15 }} disabled={!n} onClick={begin}>{pastPaperMode ? '开始 2026 年 5 月真题考试' : '开始考试'}</button>
       </div>
       <div className="card">
         <div className="muted">中途关掉页面没关系：倒计时按真实时间走，回来能接着考，时间到自动交卷。</div>
@@ -245,7 +262,7 @@ function Running({ ex, setEx, onSubmit, toast, ask, go }) {
       {/* 底栏在考试中收起了，这里得留一个出口——离开不交卷，倒计时照走 */}
       <PageHeader
         variant="subpage"
-        title={ex.kind === 'numbers' ? '数字模拟' : ex.chapter ? '章节考试' : '模拟考试'}
+        title={ex.kind === 'numbers' ? '数字模拟' : ex.source === MAY_2026_SOURCE ? MAY_2026_LABEL : ex.chapter ? '章节考试' : '模拟考试'}
         subtitle={<span className={`timer ${left < 10 * 60000 ? 'low' : ''}`}>{fmtTime(left)} 剩余</span>}
         onBack={leave}
         backLabel="离开"
@@ -303,8 +320,10 @@ function Result({ rec, go }) {
   const [detail, setDetail] = useState(null)
   const detailRef = useRef(null)
   const qs = rec.ids.map(qById)
-  const pass = rec.score >= PASS
+  const pass = examPassed(rec, PASS)
+  const score = examScore(rec.right, rec.total)
   const numberMode = rec.kind === 'numbers'
+  const pastPaperMode = rec.source === MAY_2026_SOURCE
 
   useEffect(() => {
     if (detail !== null) {
@@ -319,16 +338,16 @@ function Result({ rec, go }) {
   return (
     <>
       <PageHeader
-        title={numberMode ? '数字模拟成绩' : '模拟考成绩'}
+        title={numberMode ? '数字模拟成绩' : pastPaperMode ? `${MAY_2026_LABEL}成绩` : '模拟考成绩'}
         subtitle={`${rec.subject} · 答对 ${rec.right}/${rec.total} · 用时 ${Math.round(rec.usedMs / 60000)} 分钟`}
       />
       <div className="card" style={{ alignItems: 'center', textAlign: 'center', gap: 6 }}>
-        <div className="eyebrow">{rec.subject} {numberMode ? '数字模拟练习' : '模拟考'}成绩</div>
+        <div className="eyebrow">{rec.subject} {numberMode ? '数字模拟练习' : pastPaperMode ? MAY_2026_LABEL : '模拟考'}成绩</div>
         <div className="num" style={{
           fontSize: 64, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-.03em',
           color: pass ? 'var(--ok)' : 'var(--bad)',
-        }}>{rec.score}</div>
-        <div style={{ fontWeight: 600 }}>{pass ? `已过 ${PASS} 分及格线` : `差 ${PASS - rec.score} 分及格`}</div>
+        }}>{score}</div>
+        <div style={{ fontWeight: 600 }}>{pass ? `已过 ${PASS} 分及格线` : `再答对 ${Math.ceil(rec.total * PASS / 100) - rec.right} 题即可及格`}</div>
         <div className="muted">答对 {rec.right}/{rec.total} · 用时 {Math.round(rec.usedMs / 60000)} 分钟</div>
       </div>
 

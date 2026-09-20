@@ -1,0 +1,1830 @@
+{
+  "reviewedAt": "2026-09-20",
+  "source": "真题2026-05",
+  "policy": "先按题干及无序选项集合匹配，再按历史ID识别已修订题，最后人工比较题干、选项与正确结论。相同考点改写保守跳过；多解及矛盾题不入库。相似度仅供人工筛选。",
+  "files": [
+    {
+      "subject": "科目一",
+      "path": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sha256": "8a2f9fdb1688e70e2be06ebae2af8fdcc654819b9bde32dd3a920eae8984a947",
+      "questionCount": 82
+    },
+    {
+      "subject": "科目二",
+      "path": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sha256": "206ef4d08844bb83870c18f656012a5975f8fb571d23f2197eb8c3a3e2cfd538",
+      "questionCount": 100
+    }
+  ],
+  "questions": [
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 1,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "da1765251d00",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 2,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "3a443a8c4c42",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 3,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "70b6c239fd0d",
+      "reason": "人工确认同题：仅来源年份前缀、语序、选项顺序或近义措辞不同，正确结论一致。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 4,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "add",
+      "id": "5c677afed7c8",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "关于提高基金职业道德修养的途径和方法，以下说法错误的是（）。",
+        "options": [
+          "职业道德修养他律比自律更加重要",
+          "正确树立基金职业道德观念是提高职业道德修养的内在动力",
+          "基金职业道德修养的具体内容是基金职业道德规范",
+          "基金职业道德修养要求从业人员积极参加职业道德实践"
+        ],
+        "answer": 0,
+        "explain": "A项，职业道德修养自律比他律更加重要。",
+        "id": "5c677afed7c8",
+        "subject": "科目一",
+        "chapter": "基金职业道德规范",
+        "source": "真题2026-05"
+      },
+      "answerPage": 14
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 5,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "3bb34ad81e0b",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 6,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "similar",
+      "relatedId": "91422e41ff40",
+      "reason": "同样考查禁止短期考核与过度激励，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 7,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "0cad47b40a42",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 8,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "694adf79057e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 9,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "reject",
+      "reason": "两处填空要求董事会和高级管理人员两个主体，但选项为单个主体，题型与答案不匹配。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 10,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "c83649d7d0cf",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 11,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "f114978acb4d",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 12,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "similar",
+      "relatedId": "0dd36b42d25c",
+      "reason": "同样考查诚实守信中的公平合法竞争，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 13,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "da154e398caa",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 14,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "be3b9fee7738",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 15,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "similar",
+      "relatedId": "8eff69f61aea",
+      "reason": "同样考查非标股权只能由封闭式计划投资，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 16,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "c24d69d2608f",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 17,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "ea5ad6d9ab5e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 18,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "2ba669ce57be",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 19,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "8e6216049fa1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 20,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "58f80b043214",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 21,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "2966da5fc01b",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 22,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "50de4b308d1f",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 23,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "936115a24c92",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 24,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "9fef94d8c6fb",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 25,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "1c4927106c7f",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 26,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "6dff43f84b8e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 27,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "69febe3ea5de",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 28,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "aaa8184fbcaa",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 29,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "e04b0c5ee0d2",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 30,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "761c5ee934a9",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 31,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "c8dfa593b27a",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 32,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 5,
+      "action": "similar",
+      "relatedId": "67a231b647bf",
+      "reason": "与公募产品不得直接投资未上市股权的既有考点重复，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 33,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "763ef13151b5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 34,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "f175fb124e5a",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 35,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "add",
+      "id": "6e14dda22885",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "关于中国证券投资基金业协会，以下表述错误的是（）。",
+        "options": [
+          "中国证券投资基金业协会的职责包括制定和实施行业自律规则，监督、检查会员及其从业人员的执业行为",
+          "中国证券投资基金业协会的最高权力机构为理事会",
+          "基金管理人、基金托管人应当加入中国证券投资基金业协会",
+          "中国证券投资基金业协会是证券投资基金行业的自律性组织，是社会团体法人"
+        ],
+        "answer": 1,
+        "explain": "B项错误，根据《证券投资基金法》及协会章程，最高权力机构为会员大会，而非理事会。",
+        "id": "6e14dda22885",
+        "subject": "科目一",
+        "chapter": "基金法律法规体系和监管体系",
+        "source": "真题2026-05"
+      },
+      "answerPage": 18
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 36,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "4acd1a752264",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 37,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "10311504bfeb",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 38,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "similar",
+      "relatedId": "3f71237a69ab",
+      "reason": "同样考查串通互相交易拉升股价属于操纵市场，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 39,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "reject",
+      "reason": "B和D均为禁止行为，单选题无唯一答案；解析仍引用不存在的罗马数字组合。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 40,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "ec0d4db99c11",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 41,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "acf37c139968",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 42,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "ea6b79165650",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 43,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "06f058fcd8c7",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 44,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "e51d3e7bd7f0",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 45,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 7,
+      "action": "similar",
+      "relatedId": "3bd547f202ae",
+      "reason": "同样考查托管人资产保管、清算、监督职责，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 46,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 7,
+      "action": "reject",
+      "reason": "B涉及原机构内部激励信息、D涉及未公开投研信息，均可能违反保密要求；既有同题干版本选项有实质差异，不覆盖。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 47,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "50f2affe8d02",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 48,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "cd51bdaacf1f",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 49,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "2a5a465b3dae",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 50,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 8,
+      "action": "reject",
+      "reason": "原答案B与解析列举的财产分离对象矛盾，且A、C、D均涉及分离要求，无法作为有效单选题。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 51,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "c2c5b2f5cc2c",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 52,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "dafd5a0a4440",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 53,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "faaea13de7ee",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 54,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "add",
+      "id": "8ef0ba3dace8",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "下列关于私募股权投资基金投资限制的说法，错误的是（）。",
+        "options": [
+          "投资区域性股权市场可转债的，投资金额应当不超过基金实缴金额的50%",
+          "投资资产支持证券的，限于不动产持有型资产支持证券",
+          "投资上市公司股票的，应当通过定向增发、大宗交易和协议转让等方式，不得参与公开发行或者公开交易，但符合规定的情形除外",
+          "投资首发企业股票，存托凭证的，应当通过战略配售、基石投资等方式，不得参与网下申购和网上申购"
+        ],
+        "answer": 0,
+        "explain": "A项错误，根据《私募投资基金备案指引第2号》第十三条第（七）项，投资区域性股权市场可转债的，投资金额应当不超过基金实缴金额的20%，而非50%。",
+        "id": "8ef0ba3dace8",
+        "subject": "科目一",
+        "chapter": "基金活动的法规要求",
+        "source": "真题2026-05"
+      },
+      "answerPage": 20
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 55,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "b954104120d5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 56,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "2dae8c2c9a6b",
+      "reason": "人工确认同题：仅来源年份前缀、语序、选项顺序或近义措辞不同，正确结论一致。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 57,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "add",
+      "id": "216317955086",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "关于申请注册基金从业资格的必备条件，以下表述错误的是（）。",
+        "options": [
+          "最近3年未被中国证监会撤销基金从业资格或者被中国证券投资基金业协会取消基金从业资格",
+          "通过基金从业资格考试，或者符合中国证券投资基金业协会规定的其他条件",
+          "最近3年未因犯罪被判处刑罚",
+          "品行良好，具有良好的职业道德"
+        ],
+        "answer": 0,
+        "explain": "A项错误，应当为最近5年未被中国证监会撤销基金从业资格或者被中国证券投资基金业协会取消基金从业资格，而非3年。",
+        "id": "216317955086",
+        "subject": "科目一",
+        "chapter": "基金市场参与主体及其从业人员的法规要求",
+        "source": "真题2026-05"
+      },
+      "answerPage": 21
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 58,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "54f103387329",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 59,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "150b49e9ffd1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 60,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "d0d6c18eaf70",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 61,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "8c7251f0b3f3",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 62,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "fb3dda535a68",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 63,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "41479fb94f28",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 64,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "dbe764de426f",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 65,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "16d61265e7ea",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 66,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "a457163b5abf",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 67,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 11,
+      "action": "similar",
+      "relatedId": "d9b6175b21f8",
+      "reason": "既有案例已区分购买本人管理基金与违规拼单、推介，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 68,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "d31dff379173",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 69,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "f81d4cf1ab11",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 70,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "d52fd9b33b07",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 71,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "58c034faa662",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 72,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "38ff5c9777f0",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 73,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "ffad6a554116",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 74,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "0f7dbbeba1c1",
+      "reason": "人工确认同题：仅来源年份前缀、语序、选项顺序或近义措辞不同，正确结论一致。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 75,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "0ea7712a13c5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 76,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "96ae8d650818",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 77,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "21ed3734bc89",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 78,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 13,
+      "action": "similar",
+      "relatedId": "a787248f837b",
+      "reason": "与现有公募管理资格主体组合题考查结论重叠，保守去重。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 79,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "51f832b7a12e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 80,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 13,
+      "action": "add",
+      "id": "dd65c5927f79",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "《公开募集证券投资基金管理人监督管理办法》首次引入了公募基金管理人的退出机制，下列不属于公募基金管理人退出情形的是（）。",
+        "options": [
+          "被中国证监会公开谴责",
+          "破产",
+          "解散",
+          "风险处置"
+        ],
+        "answer": 0,
+        "explain": "公募基金管理人退出的情形分为三种：解散、破产及风险处置。",
+        "id": "dd65c5927f79",
+        "subject": "科目一",
+        "chapter": "基金市场参与主体及其从业人员的法规要求",
+        "source": "真题2026-05"
+      },
+      "answerPage": 24
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 81,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "ea4c42255ac0",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目一",
+      "sourceQuestionNo": 82,
+      "sourceFile": "materials/01_科目一_基金法律法规/05_历年真题/2026年5月_回忆版82题.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "35e2617298f1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 1,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "ed085523bdc1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 2,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "6e2fd8f73d8d",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 3,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "7703d5938390",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 4,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "3852dd0128c9",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 5,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "a16715a7c4bd",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 6,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 1,
+      "action": "existing",
+      "id": "36e7c3e11655",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 7,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "04dc65330d49",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 8,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "fb6ad0c8ff47",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 9,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "ccc45974d80c",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 10,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "e838c79652ef",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 11,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "f3682f43e1a5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 12,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 2,
+      "action": "existing",
+      "id": "62febe65efa8",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 13,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "06300c64d7e0",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 14,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "aee57125f42e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 15,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "7e81d30a6ca6",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 16,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "77dd577be391",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 17,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "73e7b21132cf",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 18,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "f9f7e50e4d6c",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 19,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "existing",
+      "id": "14b246984f52",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 20,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 3,
+      "action": "add",
+      "id": "8e81e5bb6552",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "关于保证金交易，以下表述错误的是（）。",
+        "options": [
+          "融券交易不会放大投资收益或损失",
+          "保证金交易既适用于融资买入的情况，也适用于融券卖出的情况",
+          "融资交易既放大了潜在收益，也增大了相应的风险敞口",
+          "现货交易的违约风险低于保证金交易"
+        ],
+        "answer": 0,
+        "explain": "选项A错误，选项C正确：保证金交易(也称为杠杆交易)是指投资者从证券经纪商借入资金或证券，以较少自有资金撬动更大规模投资头寸的交易方式。这种交易机制使投资者能够以较小的资本基础参与超出其自身资金能力的交易，既放大了潜在收益，同时也增大了相应的风险敞口。选项B正确：在保证金交易中，投资者用于交易的自有资金或证券被称为“保证金”。保证金与总投资额(或总证券价值)的比率则称为“保证金率”。这种机制既适用于借入资金购买证券的情况(融资),也适用于借入证券进行卖出的情况(融券)。选项D正确：证券市场的主要交易模式是“一手交钱，一手交货”,即如果投资者要买入一定数量的证券必须具有与市场价格等值的货币资金；如果投资者要卖出证券，证券账户上必须有属于投资者支配范围内的足量的可交易证券，这样的交易称为现货交易。现货交易将违约风险降到最低。",
+        "id": "8e81e5bb6552",
+        "subject": "科目二",
+        "chapter": "投资交易管理",
+        "source": "真题2026-05"
+      },
+      "answerPage": 21
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 21,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "2cae236455a3",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 22,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "3c02c7c2644c",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 23,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "07e0ed01c334",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 24,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "763377fe1b89",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 25,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 4,
+      "action": "existing",
+      "id": "d05b51a6d42e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 26,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "b332844d6b44",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 27,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "f392de8018b2",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 28,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "21183ad95978",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 29,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 5,
+      "action": "add",
+      "id": "c7dc405a9bc6",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "某私人银行理财顾问小刘向其高净值客户介绍产品及投资管理流程特点。以下表述正确的是（）。\nI.公募基金通常采用定制化投资管理模式，发行前会征集个别投资者的需求以设计产品和投资条款\nII.私募资产管理计划业绩比较基准通常由投资者与基金管理人商定\nIII.公募基金通常采用标准化投资管理模式，其产品要素由基金管理人预先设定\nIV.私募资产管理计划通常采用定制化投资管理模式，根据特定投资者的需求设计产品和投资条款",
+        "options": [
+          "Ⅰ、Ⅱ、Ⅲ、Ⅳ",
+          "Ⅱ、Ⅳ",
+          "Ⅲ、Ⅳ",
+          "Ⅱ、Ⅲ、Ⅳ"
+        ],
+        "answer": 3,
+        "explain": "Ⅱ、Ⅳ正确：基金管理公司私募基金和资产管理计划主要服务于机构投资者或高净值客户，强调投资者需求导向。这种模式的特点是可以根据客户的具体需求定制投资策略，提供更加个性化的服务。Ⅲ正确，Ⅰ错误：公募基金投资面向的是广大不特定的投资者，其投资导向以基金管理人策略为主。在这种模式下，基金管理人设计投资策略，投资者则根据自身需求选择合适的基金产品。故本题选D，选项ABC错误。",
+        "id": "c7dc405a9bc6",
+        "subject": "科目二",
+        "chapter": "投资管理流程",
+        "source": "真题2026-05"
+      },
+      "answerPage": 22
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 30,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 5,
+      "action": "existing",
+      "id": "4abf8c6dfaca",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 31,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "c51314209e1e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 32,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "6ccb8823bff7",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 33,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "15bc1a721225",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 34,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "4e167e610182",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 35,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "23633329abdd",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 36,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 6,
+      "action": "existing",
+      "id": "50adb472706e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 37,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "4219a0000bbb",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 38,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "76e5e9087e23",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 39,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "84f50c514731",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 40,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "739269c9842a",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 41,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "4e07c1f649c1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 42,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 7,
+      "action": "existing",
+      "id": "a264df95b865",
+      "reason": "人工确认同题：仅来源年份前缀、语序、选项顺序或近义措辞不同，正确结论一致。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 43,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "c0c62c05f9fe",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 44,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "473650dbd0f1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 45,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "c7490ba020a5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 46,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "similar",
+      "relatedId": "a9b36f6e077c",
+      "reason": "同样考查商品基金的门槛、效率及配置作用，保守去重。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 47,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "45a0bd7e84d9",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 48,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "237920396c15",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 49,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 8,
+      "action": "existing",
+      "id": "3ed4ae7320bd",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 50,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "27115c06c9aa",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 51,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "d1adb8f88f2c",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 52,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "5f2a863f999e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 53,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "dce499752640",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 54,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "677472064229",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 55,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "366938fc5d2d",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 56,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 9,
+      "action": "existing",
+      "id": "6186832b0f76",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 57,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "6b9cf34592ba",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 58,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 10,
+      "action": "similar",
+      "relatedId": "3304ed4f782d",
+      "reason": "同样考查普通股与优先股的表决权区别，保守去重。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 59,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "1bfb82f531b1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 60,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "fdc45db3d9ef",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 61,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 10,
+      "action": "existing",
+      "id": "ba06e3a29707",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 62,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "84abb7b38616",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 63,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "23201c000bc5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 64,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "67f963cd72a7",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 65,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "d746eca6e545",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 66,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 11,
+      "action": "existing",
+      "id": "0f62b3215c11",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 67,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "efd472ac1e00",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 68,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "47c7500f6f18",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 69,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "c757afecaec3",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 70,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "79dba242e9c2",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 71,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "b870db46ff59",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 72,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "fb8d0a66c3db",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 73,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 12,
+      "action": "existing",
+      "id": "f69adee9ae5b",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 74,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "33a9b8a90d12",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 75,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "845ea193994f",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 76,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "ec2cc3e4c9cd",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 77,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "375ab6263e58",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 78,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "add",
+      "id": "b2a446959f2c",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "关于最大回撤和最大回撤恢复时间，以下表述错误的是（）。",
+        "options": [
+          "最大回撤指标的局限性之一是不能衡量损失发生的概率",
+          "较长的恢复时间通常表明投资策略具有较强的适应能力",
+          "最大回撤指标的局限性之一是不能衡量损失发生的频率",
+          "最大回撤是指定区间内投资组合从最高点到最低点的跌幅"
+        ],
+        "answer": 1,
+        "explain": "选项B错误：最大回撤的恢复时间(也称为回复期或恢复期)是一个重要的补充指标，它衡量投资组合从最大回撤的最低点恢复到之前的峰值所需的时间。这一指标反映了投资组合的恢复能力，对于评估长期投资策略的有效性以及投资者所需的耐心程度尤为重要。较短的恢复时间通常表明投资策略具有较强的弹性和适应能力。选项ACD正确：最大回撤是衡量投资组合下行风险的重要指标，它是指定区间内投资组合从最高点到最低点的跌幅。它只能衡量损失的幅度，而不能衡量损失发生的概率、频率及持续时间。",
+        "id": "b2a446959f2c",
+        "subject": "科目二",
+        "chapter": "投资风险管理",
+        "source": "真题2026-05"
+      },
+      "answerPage": 32
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 79,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "0cb5bb5749bb",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 80,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "a8bd0b2a5733",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 81,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 13,
+      "action": "existing",
+      "id": "cad3b907501c",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 82,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 14,
+      "action": "similar",
+      "relatedId": "27de345abaf4",
+      "reason": "同样考查转换比例等于面值除以转换价格，保守去重。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 83,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 14,
+      "action": "existing",
+      "id": "407e9024ecf1",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 84,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 14,
+      "action": "existing",
+      "id": "e4dc2267d403",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 85,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 14,
+      "action": "existing",
+      "id": "71caf9ca943e",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 86,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 14,
+      "action": "existing",
+      "id": "48b83e6a624d",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 87,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 15,
+      "action": "existing",
+      "id": "d15f362aeb33",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 88,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 15,
+      "action": "existing",
+      "id": "37c318836448",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 89,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 15,
+      "action": "existing",
+      "id": "6342a0eb2806",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。",
+      "linkSource": true
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 90,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 15,
+      "action": "existing",
+      "id": "c3d3a543f712",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 91,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 15,
+      "action": "existing",
+      "id": "ee104e4ed8e5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 92,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 15,
+      "action": "existing",
+      "id": "a8e0cef0e0b6",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 93,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 16,
+      "action": "existing",
+      "id": "480a755f89a5",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 94,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 16,
+      "action": "existing",
+      "id": "0b44d6be513d",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 95,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 16,
+      "action": "existing",
+      "id": "dd716bb6e191",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 96,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 16,
+      "action": "existing",
+      "id": "4069c1d123f3",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 97,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 16,
+      "action": "existing",
+      "id": "572e7cb191de",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 98,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 17,
+      "action": "existing",
+      "id": "b17fad9a1920",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 99,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 17,
+      "action": "existing",
+      "id": "b70b924acfdd",
+      "reason": "题干和选项集合匹配；已修订题按历史内容ID确认，保留当前修订内容。"
+    },
+    {
+      "subject": "科目二",
+      "sourceQuestionNo": 100,
+      "sourceFile": "materials/02_科目二_证券投资基金基础/05_历年真题/2026年5月_100题完整版.pdf",
+      "sourcePage": 17,
+      "action": "add",
+      "id": "618c7eac265a",
+      "reason": "题干、选项、正确结论人工复核，补充既有题库未覆盖的问法或考查点；题面与答案已对照PDF页面。",
+      "question": {
+        "q": "某投资者在评估一只基金时，发现该基金过去5年的上行捕获率为110%，下行捕获率为90%，下列说法错误的是（）。",
+        "options": [
+          "过去5年，该基金在基准上涨的市场环境中，展现出较强的收益获取能力",
+          "过去5年，由于上行捕获率高于下行捕获率，说明该基金在基准上涨的市场环境中表现更好",
+          "过去5年，该基金在基准下跌的市场环境中，展现出较好的下行风险管理能力",
+          "过去5年，该基金的上行捕获率和下行捕获率表明该基金在基准上涨和下跌过程中表现都强于基准"
+        ],
+        "answer": 1,
+        "explain": "B项错误：上行捕获率与下行捕获率对应不同的市场环境，不能仅比较两个数值的大小，就判断基金在上涨市场还是下跌市场表现更好。上行捕获率110%表示上涨期间平均涨幅超过基准；下行捕获率90%表示下跌期间平均跌幅小于基准，因此A、C、D正确。",
+        "id": "618c7eac265a",
+        "subject": "科目二",
+        "chapter": "基金业绩评价",
+        "source": "真题2026-05"
+      },
+      "answerPage": 37
+    }
+  ],
+  "verificationSources": [
+    {
+      "question": "科目一第35题",
+      "url": "https://www.amac.org.cn/gyxh/",
+      "finding": "协会最高权力机构为会员大会。"
+    },
+    {
+      "question": "科目一第54题",
+      "url": "https://www.amac.org.cn/xwfb/xhyw/202309/P020231126420863052960.pdf",
+      "finding": "第十三条第七项规定区域性股权市场可转债投资比例不超过基金实缴金额20%。"
+    },
+    {
+      "question": "科目一第57题",
+      "url": "https://fg.amac.org.cn/governmentrules_3854/zcgz_bmgz/bmgz_gmjj/bmgz_gmjj_cyry/202210/t20221024_24828.html",
+      "finding": "最近5年被撤销或取消基金从业资格属于从业限制情形。"
+    },
+    {
+      "question": "科目一第80题",
+      "url": "https://www.csrc.gov.cn/csrc/c100028/c2804580/content.shtml",
+      "finding": "监管发布说明确认建立市场化退出机制与风险处置程序。"
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import { examScore } from './examScore.js'
+
 // 待核查题保留原文和历史，但不再进入练习或计分题池。
 export const isQuestionActive = q => q?.contentReview?.status !== 'pending'
 
@@ -30,7 +32,7 @@ export function reconcileExam(exam, lookup) {
   if ('score' in exam) {
     next.total = ids.length
     next.right = ids.filter(id => answers[id] === lookup(id)?.answer).length
-    next.score = ids.length ? Math.round(next.right / ids.length * 100) : null
+    next.score = examScore(next.right, ids.length)
   }
   return next
 }
