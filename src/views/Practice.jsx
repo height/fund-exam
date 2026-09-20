@@ -10,8 +10,8 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 import { readPracticePreferences, savePracticePreferences } from '../lib/practicePreferences'
 import { courseUnit } from '../data/formulaCourses'
 import { ChapterAccuracy, ChapterAccuracyHint } from '../components/ChapterAccuracy'
-import { latestPick } from '../lib/practiceRecord'
 import PracticeSheet from '../components/PracticeSheet'
+import { practiceQuestionStatus } from '../lib/practiceSheet'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
@@ -149,7 +149,8 @@ function Runner({ session: s, setSession, onQuit }) {
 
   const q = s.qs[s.i]
   const currentPick = s.picks[s.i]
-  const picked = currentPick ?? (s.redo?.[q.id] ? undefined : latestPick(q, records[q.id]))
+  // 每轮练习重新作答；历史记录用于统计，不提前揭晓或锁住选项。
+  const picked = currentPick
   const shown = picked !== undefined
 
   const goTo = i => {
@@ -181,7 +182,7 @@ function Runner({ session: s, setSession, onQuit }) {
         for (const id of ids) delete next[id]
         return next
       })
-      setSession(previous => ({ ...previous, i: 0, picks: {}, redo: {}, done: 0, right: 0 }))
+      setSession(previous => ({ ...previous, i: 0, picks: {}, done: 0, right: 0 }))
       toast('这些题的记录已清除，可以重新练习')
     } catch {
       toast('清除失败，记录已保留，请重试')
@@ -237,7 +238,7 @@ function Runner({ session: s, setSession, onQuit }) {
     setSession(p => {
       const picks = { ...p.picks }
       delete picks[p.i]
-      return { ...p, picks, redo: { ...p.redo, [q.id]: true } }
+      return { ...p, picks }
     })
   }
 
@@ -286,7 +287,8 @@ function Runner({ session: s, setSession, onQuit }) {
           <Speaker key={q.id} getText={() => qToSpeech(q)} label="朗读题目" />
         </div>
         <Stem text={q.q} />
-        {shown && <div className="row between practice-last-result"><span className="muted">{currentPick === undefined ? '最近一次作答' : '本次作答'} · {picked === q.answer ? '答对' : '答错'}</span><button className="btn-sm btn-ghost" onClick={redo}>重做本题</button></div>}
+        {!shown && <p className="muted practice-history-status">{practiceQuestionStatus(q, records[q.id]).label} · 请选择答案</p>}
+        {shown && <div className="row between practice-last-result"><span className="muted">本次作答 · {picked === q.answer ? '答对' : '答错'}</span><button className="btn-sm btn-ghost" onClick={redo}>重做本题</button></div>}
         {saving && <p className="muted" role="status">正在保存答案…</p>}
         <Options q={q} picked={picked} reveal={shown} onPick={pick} />
         {shown && <Explain q={q} picked={picked} />}
