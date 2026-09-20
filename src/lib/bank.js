@@ -3,6 +3,7 @@ import { CHAPTERS } from '../data/chapters'
 import questions from '../data/questions.json'
 import plain from '../data/plain.json'
 import calcIds from '../data/calc.json'
+import { latestChapterScore } from './practiceRecord'
 import { isQuestionActive } from './questionQuality'
 
 export const BANK = questions.filter(isQuestionActive)
@@ -81,15 +82,19 @@ export function effort(records) {
 export function chapterStats(records, s, book = false) {
   const m = {}
   bySubject(s).forEach(q => {
-    const c = (m[q.chapter] ??= { chapter: q.chapter, total: 0, done: 0, seen: 0, hit: 0 })
+    const c = (m[q.chapter] ??= { chapter: q.chapter, total: 0, done: 0, seen: 0, hit: 0, questions: [] })
     c.total++
+    c.questions.push(q)
     const r = records[q.id]
     if (r?.seen) { c.done++; c.seen += r.seen; c.hit += r.right }
   })
   // 按教材顺序看时，一题都没有的章也要露出来——否则会以为题库覆盖全了
   if (book) for (const name of CHAPTERS[s] || []) m[name] ??= { chapter: name, total: 0, done: 0, seen: 0, hit: 0 }
   return Object.values(m)
-    .map(c => ({ ...c, acc: c.seen ? Math.round((c.hit / c.seen) * 100) : null }))
+    .map(({ questions = [], ...c }) => {
+      const latest = latestChapterScore(questions, records)
+      return { ...c, ...latest, acc: latest.assessed ? Math.floor(latest.correct / latest.assessed * 100) : null }
+    })
     .sort(book
       ? (a, b) => chapterNo(s, a.chapter) - chapterNo(s, b.chapter)
       : (a, b) => (a.acc ?? 999) - (b.acc ?? 999))

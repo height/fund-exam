@@ -26,7 +26,7 @@ export default function PracticeSheet({ session, records, onJump, onClose, onCle
     <div className="panel" ref={panel}>
       <div className="row between"><h2>全部题目</h2><button onClick={onClose} disabled={busy}>关闭</button></div>
       <p className="muted">当前练习共 {session.qs.length} 题 · 已做 {answered} 题，点击题号跳转。</p>
-      <div className="practice-sheet-legend"><span className="right">✓ 答对 / 曾答对</span><span className="wrong">× 答错 / 曾答错</span><span>未做</span><span>描边为当前题</span></div>
+      <div className="practice-sheet-legend"><span className="right">✓ 最近答对</span><span className="wrong">× 最近答错</span><span>未做</span><span>描边为当前题</span></div>
       <div className="sheet">
         {session.qs.map((q, i) => {
           const state = practiceQuestionStatus(q, records[q.id], session.picks[i])
@@ -35,7 +35,7 @@ export default function PracticeSheet({ session, records, onJump, onClose, onCle
             onClick={() => onJump(i)}><span>{i + 1}</span><small>{state.tone === 'r' ? '✓' : state.tone === 'w' ? '×' : '·'}</small></button>
         })}
       </div>
-      <p className="muted">优先显示本轮结果；历史记录中曾答错的题标红，即使后来也答对过。</p>
+      <p className="muted">按最近一次作答显示；旧记录无法确认最新结果时显示为已做，重做后更新。</p>
       <button className="btn-danger" disabled={busy || !answered} onClick={onClear}>{busy ? '正在清除…' : '清除这些题的记录'}</button>
     </div>
   </div>

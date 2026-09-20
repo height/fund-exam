@@ -5,6 +5,7 @@ import { qById } from './bank'
 import { reconcileRecord, reconcileExam } from './questionQuality'
 import { idb, kvBatch, kvGet, kvSet, openDB } from './db'
 import { examDateStamp } from './examCountdown'
+import { answeredRecord } from './practiceRecord'
 import { applyComfortColors } from './displayColor'
 
 const Ctx = createContext(null)
@@ -111,21 +112,11 @@ export function StoreProvider({ children }) {
 
   /** 记一次作答，返回是否答对。答对即移出错题本 */
   const recordAnswer = useCallback(async (q, pickedIdx) => {
-    const ok = pickedIdx === q.answer
-    setRecords(prev => {
-      const old = prev[q.id] || { qid: q.id, subject: q.subject, seen: 0, right: 0, wrong: 0 }
-      const r = {
-        ...old, contentRevision: q.contentRevision || 0,
-        seen: old.seen + 1,
-        right: old.right + (ok ? 1 : 0),
-        wrong: old.wrong + (ok ? 0 : 1),
-        wrongFlag: !ok,
-        lastTs: Date.now(),
-      }
-      idb.put('records', r)
-      return { ...prev, [q.id]: r }
-    })
-    return ok
+    const old = await idb.get('records', q.id)
+    const record = answeredRecord(q, old, pickedIdx)
+    await idb.put('records', record)
+    setRecords(prev => ({ ...prev, [q.id]: record }))
+    return record.lastCorrect
   }, [])
 
   const patchRecord = useCallback((qid, patch) => {

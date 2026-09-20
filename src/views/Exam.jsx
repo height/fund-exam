@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Explain, Icon, Options, PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, EXAM_MIN, EXAM_N, PASS, SUBJ_FULL, bySubject, minutesFor, pickExamSet, qById } from '../lib/bank'
+import { answeredRecord } from '../lib/practiceRecord'
 import { reconcileExam } from '../lib/questionQuality'
 import { track } from '../lib/analytics'
 import { idb, kvGet, kvSet } from '../lib/db'
@@ -80,11 +81,7 @@ export default function Exam({ go, setQuiz, chapter, scope, review }) {
       const old = next[q.id] || { qid: q.id, subject: q.subject, seen: 0, right: 0, wrong: 0 }
       const ok = p === q.answer
       if (ok) right++
-      const r = {
-        ...old, contentRevision: q.contentRevision || 0, seen: old.seen + 1,
-        right: old.right + (ok ? 1 : 0), wrong: old.wrong + (ok ? 0 : 1),
-        wrongFlag: !ok, lastTs: Date.now(),
-      }
+      const r = answeredRecord(q, old, p)
       next[q.id] = r
       await idb.put('records', r)
     }

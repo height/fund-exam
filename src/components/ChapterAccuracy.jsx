@@ -9,7 +9,7 @@ export function ChapterAccuracy({ chapter, summary = `${chapter.total} 题 · �
     {percent === null
       ? <span className="chapter-accuracy-track is-pending" aria-hidden="true" />
       : <span className="chapter-accuracy-track" role="meter"
-        aria-label={`${chapter.chapter}累计正确率`} aria-valuemin={0} aria-valuemax={100}
+        aria-label={`${chapter.chapter}最近作答正确率`} aria-valuemin={0} aria-valuemax={100}
         aria-valuenow={percent} aria-valuetext={label}>
         <span className="chapter-accuracy-fill" style={{ width: `${percent}%` }} />
         <span className="chapter-accuracy-pass" aria-hidden="true" />
@@ -18,5 +18,5 @@ export function ChapterAccuracy({ chapter, summary = `${chapter.total} 题 · �
 }
 
 export function ChapterAccuracyHint() {
-  return <p className="chapter-accuracy-hint">每章做满 10 道不同题后评估；正确率按累计作答计算，短线标记 60% 合格线。</p>
+  return <p className="chapter-accuracy-hint">每章确认 10 道不同题后评估；正确率按每题最近一次作答计算，重做会更新结果，短线标记 60% 合格线。</p>
 }

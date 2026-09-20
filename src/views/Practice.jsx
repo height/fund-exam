@@ -10,6 +10,7 @@ import { useQuestionNav } from '../lib/useQuestionNav'
 import { readPracticePreferences, savePracticePreferences } from '../lib/practicePreferences'
 import { courseUnit } from '../data/formulaCourses'
 import { ChapterAccuracy, ChapterAccuracyHint } from '../components/ChapterAccuracy'
+import { latestPick } from '../lib/practiceRecord'
 import PracticeSheet from '../components/PracticeSheet'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
@@ -77,8 +78,8 @@ function Setup({ onStart, go }) {
   const chs = chapterStats(records, subject, true)
   const allChapters = chs.reduce((sum, c) => ({
     ...sum, total: sum.total + c.total, done: sum.done + c.done,
-    seen: sum.seen + c.seen, hit: sum.hit + c.hit,
-  }), { chapter: '全部章节', total: 0, done: 0, seen: 0, hit: 0 })
+    seen: sum.seen + c.seen, hit: sum.hit + c.hit, assessed: sum.assessed + c.assessed, correct: sum.correct + c.correct,
+  }), { chapter: '全部章节', total: 0, done: 0, seen: 0, hit: 0, assessed: 0, correct: 0 })
   const [chapter, setChapter] = useState(() => {
     const saved = readPracticePreferences().chapters?.[subject]
     return chs.some(c => c.chapter === saved) ? saved : ''
@@ -142,15 +143,23 @@ function Runner({ session: s, setSession, onQuit }) {
   const [sheet, setSheet] = useState(false)
   const [clearing, setClearing] = useState(false)
   const jumpTimer = useRef(0)
+  const answerLock = useRef(false)
+  const [saving, setSaving] = useState(false)
   useEffect(() => () => clearTimeout(jumpTimer.current), [])
 
   const q = s.qs[s.i]
-  const picked = s.picks[s.i]
+  const currentPick = s.picks[s.i]
+  const picked = currentPick ?? (s.redo?.[q.id] ? undefined : latestPick(q, records[q.id]))
   const shown = picked !== undefined
 
-  const goTo = i => { clearTimeout(jumpTimer.current); setSession(p => ({ ...p, i })) }
+  const goTo = i => {
+    clearTimeout(jumpTimer.current)
+    if (s.key && s.order === 'seq') kvSet(s.key, i).catch(() => toast('续练位置保存失败'))
+    setSession(p => ({ ...p, i }))
+  }
 
   function openSheet() {
+    if (answerLock.current) return
     clearTimeout(jumpTimer.current)
     setSheet(true)
   }
@@ -172,16 +181,17 @@ function Runner({ session: s, setSession, onQuit }) {
         for (const id of ids) delete next[id]
         return next
       })
-      setSession(previous => ({ ...previous, i: 0, picks: {}, done: 0, right: 0 }))
+      setSession(previous => ({ ...previous, i: 0, picks: {}, redo: {}, done: 0, right: 0 }))
       toast('这些题的记录已清除，可以重新练习')
     } catch {
       toast('清除失败，记录已保留，请重试')
     } finally { setClearing(false) }
   }
 
-  function prev() { if (s.i > 0) goTo(s.i - 1) }
+  function prev() { if (!answerLock.current && s.i > 0) goTo(s.i - 1) }
 
   async function next() {
+    if (answerLock.current) return
     if (s.i === s.qs.length - 1) {
       if (s.key) await kvSet(s.key, 0)
       track('practice_completed', {
@@ -194,29 +204,45 @@ function Runner({ session: s, setSession, onQuit }) {
       return onQuit()
     }
     const i = s.i + 1
-    if (s.key && s.order === 'seq') await kvSet(s.key, i)
     goTo(i)
   }
 
   async function pick(idx) {
-    if (shown) return
+    if (shown || answerLock.current) return
+    answerLock.current = true
+    setSaving(true)
     const at = s.i
-    const ok = await recordAnswer(q, idx)
-    track('practice_answered', { subject: q.subject, scope: s.scope })
-    setSession(p => ({
-      ...p, picks: { ...p.picks, [at]: idx }, done: p.done + 1, right: p.right + (ok ? 1 : 0),
-    }))
-    // 自动跳转前确认用户没有自己翻走
-    if (ok && autoNext && at < s.qs.length - 1) {
-      jumpTimer.current = setTimeout(() => setSession(p => {
-        if (p.i !== at) return p
-        if (p.key && p.order === 'seq') kvSet(p.key, at + 1)
-        return { ...p, i: at + 1 }
-      }), reduceMotion ? 300 : 750)
-    }
+    try {
+      const ok = await recordAnswer(q, idx)
+      if (s.key && s.order === 'seq') kvSet(s.key, at).catch(() => toast('答案已保存，续练位置保存失败'))
+      track('practice_answered', { subject: q.subject, scope: s.scope })
+      setSession(p => ({
+        ...p, picks: { ...p.picks, [at]: idx }, done: p.done + 1, right: p.right + (ok ? 1 : 0),
+      }))
+      // 自动跳转前确认用户没有自己翻走
+      if (ok && autoNext && at < s.qs.length - 1) {
+        jumpTimer.current = setTimeout(() => setSession(p => {
+          if (p.i !== at) return p
+          if (p.key && p.order === 'seq') kvSet(p.key, at + 1)
+          return { ...p, i: at + 1 }
+        }), reduceMotion ? 300 : 750)
+      }
+    } catch { toast('保存失败，请重新选择答案') }
+    finally { answerLock.current = false; setSaving(false) }
+  }
+
+  function redo() {
+    if (answerLock.current) return
+    clearTimeout(jumpTimer.current)
+    setSession(p => {
+      const picks = { ...p.picks }
+      delete picks[p.i]
+      return { ...p, picks, redo: { ...p.redo, [q.id]: true } }
+    })
   }
 
   async function quit() {
+    if (answerLock.current) return
     if (!await ask({
       title: '退出练习？',
       body: s.done ? `本轮做了 ${s.done} 题，记录都已保存，下次可以接着来。` : '还没答题，直接退出。',
@@ -231,7 +257,7 @@ function Runner({ session: s, setSession, onQuit }) {
     onQuit()
   }
 
-  useQuestionNav({ onPick: pick, onPrev: prev, onNext: next, enabled: !sheet && !dialog && !clearing })
+  useQuestionNav({ onPick: pick, onPrev: prev, onNext: next, enabled: !sheet && !dialog && !clearing && !saving })
 
   return (
     <>
@@ -260,6 +286,8 @@ function Runner({ session: s, setSession, onQuit }) {
           <Speaker key={q.id} getText={() => qToSpeech(q)} label="朗读题目" />
         </div>
         <Stem text={q.q} />
+        {shown && <div className="row between practice-last-result"><span className="muted">{currentPick === undefined ? '最近一次作答' : '本次作答'} · {picked === q.answer ? '答对' : '答错'}</span><button className="btn-sm btn-ghost" onClick={redo}>重做本题</button></div>}
+        {saving && <p className="muted" role="status">正在保存答案…</p>}
         <Options q={q} picked={picked} reveal={shown} onPick={pick} />
         {shown && <Explain q={q} picked={picked} />}
       </div>

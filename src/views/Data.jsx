@@ -196,6 +196,8 @@ export default function Data({ go, page }) {
               superseded: [...(old.superseded || []), ...(r.superseded || [])],
               seen: old.seen + r.seen, right: old.right + r.right, wrong: old.wrong + r.wrong,
               wrongFlag: (old.lastTs || 0) > (r.lastTs || 0) ? old.wrongFlag : r.wrongFlag,
+              lastPicked: (old.lastTs || 0) > (r.lastTs || 0) ? old.lastPicked : r.lastPicked,
+              lastCorrect: (old.lastTs || 0) > (r.lastTs || 0) ? old.lastCorrect : r.lastCorrect,
               lastTs: Math.max(old.lastTs || 0, r.lastTs || 0),
             }
           : r
