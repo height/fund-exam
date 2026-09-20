@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Icon, PageHeader, SubjectSeg } from '../components/ui'
 import { CHAPTER_EXAM_N, PASS, chapterStats, minutesFor } from '../lib/bank'
 import { useStore } from '../lib/store'
-import { ChapterAccuracy, ChapterAccuracyHint } from '../components/ChapterAccuracy'
+import { CHAPTER_DETAILS } from '../data/chapters'
 
 /*
  * 章节练习：按官方教材目录列章，点一章直接练或直接考。
@@ -57,18 +57,24 @@ export default function Chapters({ go }) {
             <span className="ch-no num">{String(i + 1).padStart(2, '0')}</span>
             <span className="ch-body">
               <b>{c.chapter}</b>
-              {mode === 'exam' && c.total > 0 && <small className="muted">
-                {Math.min(CHAPTER_EXAM_N, c.total)} 题 · {minutesFor(Math.min(CHAPTER_EXAM_N, c.total))} 分钟 · 交卷后解析
-              </small>}
-              <ChapterAccuracy chapter={c} />
+              <small className="muted">
+                {c.total
+                  ? <>
+                      {mode === 'practice'
+                        ? `${CHAPTER_DETAILS[subject][c.chapter].sections.length} 节 · ${c.total} 题${c.done ? ` · 已做 ${c.done}` : ''}`
+                        : `${Math.min(CHAPTER_EXAM_N, c.total)} 题 · ${minutesFor(Math.min(CHAPTER_EXAM_N, c.total))} 分钟 · 交卷后解析`}
+                    </>
+                  : '暂无题目'}
+              </small>
             </span>
             <span className="ch-trailing">
+              {c.acc !== null && <span className={`ch-acc num ${c.acc < PASS ? 'under' : ''}`}
+                aria-label={`正确率 ${c.acc}%`}>{c.acc}%</span>}
               <Icon name="chevronRight" size={16} />
             </span>
           </button>
         ))}
       </div>
-      <ChapterAccuracyHint />
     </>
   )
 }

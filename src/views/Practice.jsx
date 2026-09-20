@@ -3,14 +3,12 @@ import { Explain, Icon, Options, PageHeader, Speaker, SubjectSeg, ThemeToggle } 
 import { qToSpeech } from '../lib/ai'
 import { track } from '../lib/analytics'
 import { BANK, CALC_IDS, RANDOM_SIZES, bySubject, chapterStats, getRandomN, setRandomN, shuffle } from '../lib/bank'
-import { clearPracticeRecords, kvGet, kvSet } from '../lib/db'
+import { kvGet, kvSet } from '../lib/db'
 import { Stem } from '../lib/format'
 import { useStore } from '../lib/store'
 import { useQuestionNav } from '../lib/useQuestionNav'
 import { readPracticePreferences, savePracticePreferences } from '../lib/practicePreferences'
 import { courseUnit } from '../data/formulaCourses'
-import { ChapterAccuracy, ChapterAccuracyHint } from '../components/ChapterAccuracy'
-import PracticeSheet from '../components/PracticeSheet'
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches
 
@@ -107,13 +105,11 @@ function Setup({ onStart, go }) {
         const count = available.filter(q => q.chapter === c.chapter).length
         return <button key={c.chapter} className={`ch-row ${chapter === c.chapter ? 'selected' : ''}`} aria-pressed={chapter === c.chapter} onClick={() => chooseChapter(c.chapter)}>
           <span className="ch-no">{String(i + 1).padStart(2, '0')}</span>
-          <span className="ch-body"><b>{c.chapter}</b><ChapterAccuracy chapter={c}
-            summary={scope === 'all' ? undefined : `已做 ${c.done}/${c.total} · ${scope === 'new' ? '未做' : '错题'} ${count}`} /></span>
+          <span className="ch-body"><b>{c.chapter}</b><small className="muted">{count ? `${count} 题${c.done ? ` · 已做 ${c.done}` : ''}` : '此范围暂无题目'}</small></span>
           <span className="chapter-check" aria-hidden="true">{chapter === c.chapter ? '✓' : ''}</span>
         </button>
       })}
     </div>
-    <ChapterAccuracyHint />
     <footer className="practice-dock" aria-label="练习操作">
       <div className="practice-dock-inner">
         <div className="practice-dock-options">
@@ -131,9 +127,7 @@ function Setup({ onStart, go }) {
 }
 
 function Runner({ session: s, setSession, onQuit }) {
-  const { records, setRecords, autoNext, recordAnswer, toast, ask, dialog } = useStore()
-  const [sheet, setSheet] = useState(false)
-  const [clearing, setClearing] = useState(false)
+  const { records, autoNext, recordAnswer, toast, ask } = useStore()
   const jumpTimer = useRef(0)
   useEffect(() => () => clearTimeout(jumpTimer.current), [])
 
@@ -141,36 +135,7 @@ function Runner({ session: s, setSession, onQuit }) {
   const picked = s.picks[s.i]
   const shown = picked !== undefined
 
-  const goTo = i => { clearTimeout(jumpTimer.current); setSession(p => ({ ...p, i })) }
-
-  function openSheet() {
-    clearTimeout(jumpTimer.current)
-    setSheet(true)
-  }
-
-  async function clearSheet() {
-    if (clearing) return
-    if (!await ask({
-      title: '清除这些题的记录？',
-      body: `将清除当前答题卡 ${s.qs.length} 道题的累计作答记录、错题标记和本轮进度，章节已做题数及正确率也会重新计算。其他题目、笔记和模拟考成绩保留。清除后无法撤销。`,
-      ok: '确认清除', cancel: '保留记录', danger: true,
-    })) return
-    setClearing(true)
-    clearTimeout(jumpTimer.current)
-    try {
-      const ids = s.qs.map(q => q.id)
-      await clearPracticeRecords(ids, s.key)
-      setRecords(previous => {
-        const next = { ...previous }
-        for (const id of ids) delete next[id]
-        return next
-      })
-      setSession(previous => ({ ...previous, i: 0, picks: {}, done: 0, right: 0 }))
-      toast('这些题的记录已清除，可以重新练习')
-    } catch {
-      toast('清除失败，记录已保留，请重试')
-    } finally { setClearing(false) }
-  }
+  const goTo = i => setSession(p => ({ ...p, i }))
 
   function prev() { if (s.i > 0) goTo(s.i - 1) }
 
@@ -224,7 +189,7 @@ function Runner({ session: s, setSession, onQuit }) {
     onQuit()
   }
 
-  useQuestionNav({ onPick: pick, onPrev: prev, onNext: next, enabled: !sheet && !dialog && !clearing })
+  useQuestionNav({ onPick: pick, onPrev: prev, onNext: next })
 
   return (
     <>
@@ -235,7 +200,7 @@ function Runner({ session: s, setSession, onQuit }) {
         subtitle={`本轮答对 ${s.right}/${s.done}`}
         onBack={quit}
         backLabel="退出"
-        action={<><button className="practice-sheet-trigger" onClick={openSheet} aria-label="打开练习答题卡" aria-haspopup="dialog"><Icon name="grid" size={16} /><span className="num">{s.i + 1}/{s.qs.length}</span></button><ThemeToggle iconOnly /></>}
+        action={<><span className="page-head-stat num">{s.i + 1}/{s.qs.length}</span><ThemeToggle iconOnly /></>}
         progress={((s.i + 1) / s.qs.length) * 100}
       />
 
@@ -266,9 +231,6 @@ function Runner({ session: s, setSession, onQuit }) {
           </button>
         </div>
       </div>
-      {sheet && !dialog && <PracticeSheet session={s} records={records} busy={clearing}
-        onClose={() => setSheet(false)} onClear={clearSheet}
-        onJump={i => { goTo(i); setSheet(false) }} />}
     </>
   )
 }
