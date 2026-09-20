@@ -218,7 +218,7 @@ button{min-height:44px}button:active:not(:disabled){transform:scale(.975);transi
 .chapter-summary{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink2)}
 .chapter-list{overflow:hidden;border-radius:14px;background:var(--sheet)}
 .chapter-list .ch-row{display:grid;grid-template-columns:26px minmax(0,1fr) 52px;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border:0;border-radius:0;box-shadow:none;background:transparent;position:relative}
-.chapter-list .ch-row+.ch-row::before{content:"";position:absolute;top:0;left:48px;right:12px;height:1px;background:var(--rule)}
+.chapter-list .ch-row+.ch-row::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:#a0a0a024}
 .chapter-list .ch-no{display:grid;place-items:center;min-width:0;width:26px;height:26px;padding:0;border-radius:7px;background:var(--sheet2);color:var(--ink2);font-size:11px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .chapter-list .ch-body{gap:3px}.chapter-list .ch-body b{font-size:14px;font-weight:500;line-height:1.45;overflow-wrap:anywhere}
 .chapter-list .ch-body small{font-size:11px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

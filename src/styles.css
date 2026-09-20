@@ -884,14 +884,13 @@ button.tl-date.hidden{padding:2px 10px;border-radius:99px;background:var(--sheet
 .ch-acc.under{color:var(--bad)}
 
 /* Chapter accuracy: color belongs to the bar; neutral labels stay readable in both themes. */
-.chapter-accuracy{--accuracy-color:#8B2635;display:flex;flex-direction:column;gap:6px;margin-top:0;min-width:0;padding-bottom:2px}
+.chapter-accuracy{--accuracy-color:var(--rule);display:flex;flex-direction:column;gap:6px;margin-top:0;min-width:0;padding-bottom:2px}
 .chapter-accuracy.is-weak{--accuracy-color:#D34855}
 .chapter-accuracy.is-pass{--accuracy-color:#E68A32}
 .chapter-accuracy.is-steady{--accuracy-color:#DDBB32}
 .chapter-accuracy.is-good{--accuracy-color:#35A66E}
 .chapter-accuracy.is-excellent{--accuracy-color:#22AAA7}
-.chapter-accuracy-track{display:block;position:relative;height:3px;border-radius:3px;background:var(--rule)}
-.chapter-accuracy-track.is-pending{background:var(--accuracy-color);opacity:.65}
+.chapter-accuracy-track{display:block;position:relative;height:3px;border-radius:3px;background:var(--rule);opacity:.5}
 .chapter-accuracy-fill{display:block;height:100%;border-radius:inherit;background:var(--accuracy-color)}
 .chapter-accuracy-pass{position:absolute;left:60%;top:-1px;width:1px;height:5px;background:var(--ink2)}
 .chapter-accuracy-label{font-size:11px;line-height:1.5;color:var(--ink2);font-variant-numeric:tabular-nums}

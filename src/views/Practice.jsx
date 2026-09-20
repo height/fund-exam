@@ -75,6 +75,10 @@ function Setup({ onStart, go }) {
   const [order, setOrder] = useState('seq')
   const [randN, setRandN] = useState(getRandomN)
   const chs = chapterStats(records, subject, true)
+  const allChapters = chs.reduce((sum, c) => ({
+    ...sum, total: sum.total + c.total, done: sum.done + c.done,
+    seen: sum.seen + c.seen, hit: sum.hit + c.hit,
+  }), { chapter: '全部章节', total: 0, done: 0, seen: 0, hit: 0 })
   const [chapter, setChapter] = useState(() => {
     const saved = readPracticePreferences().chapters?.[subject]
     return chs.some(c => c.chapter === saved) ? saved : ''
@@ -101,7 +105,10 @@ function Setup({ onStart, go }) {
     <div className="chapter-summary"><span>选择章节</span><button className="btn-ghost" onClick={() => go('exam', chapter ? { ch: chapter } : {})}>模拟考 <Icon name="chevronRight" size={14} /></button></div>
     <div className="chapter-list practice-chapter-picker" role="group" aria-label="章节">
       <button className={`ch-row ${!chapter ? 'selected' : ''}`} aria-pressed={!chapter} onClick={() => chooseChapter('')}>
-        <span className="ch-no"><Icon name="list" size={14} /></span><span className="ch-body"><b>全部章节</b><small className="muted">{available.length} 题</small></span><span className="chapter-check" aria-hidden="true">{!chapter ? '✓' : ''}</span>
+        <span className="ch-no"><Icon name="list" size={14} /></span>
+        <span className="ch-body"><b>全部章节</b><ChapterAccuracy chapter={allChapters}
+          summary={scope === 'all' ? undefined : `已做 ${allChapters.done}/${allChapters.total} · ${scope === 'new' ? '未做' : '错题'} ${available.length}`} /></span>
+        <span className="chapter-check" aria-hidden="true">{!chapter ? '✓' : ''}</span>
       </button>
       {chs.map((c, i) => {
         const count = available.filter(q => q.chapter === c.chapter).length
