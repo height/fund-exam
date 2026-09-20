@@ -5,18 +5,18 @@ from playwright.sync_api import sync_playwright, expect
 from test_notebook import APP, OUT, seed
 
 
-def cached(page):
-    return page.evaluate("""() => new Promise(resolve => {
+def cached(page, subject="科目二"):
+    return page.evaluate("""subject => new Promise(resolve => {
       const r = indexedDB.open('fund-quiz'); r.onsuccess = () => {
-        const db = r.result, q = db.transaction('kv').objectStore('kv').get('notebook-cheatsheet:last');
+        const db = r.result, q = db.transaction('kv').objectStore('kv').get('notebook-cheatsheet:subject:' + subject);
         q.onsuccess = () => { resolve(q.result?.v || null); db.close() }
       }
-    })""")
+    })""", subject)
 
 
 def navigate(page, name):
-    page.evaluate('name => { location.hash = "#/" + name }', name)
-    page.wait_for_function('name => location.hash === "#/" + name', arg=name)
+    page.evaluate("""name => { location.hash = '#/' + name + (name === 'cheatsheet' ? '?subject=' + encodeURIComponent('科目二') : '') }""", name)
+    page.wait_for_function('name => location.hash.startsWith("#/" + name)', arg=name)
 
 
 def run():
@@ -37,6 +37,9 @@ def run():
                 'title': '债券价格', 'points': ['其他条件不变，市场利率上升时债券价格下降。'],
                 'markdown': '其他条件不变，市场利率上升时债券价格下降。', 'excerpt': '债券价格', 'context': '',
                 'evidence': [], 'createdAt': 1, 'updatedAt': 1})
+            seed(page, {'id': 'subject-one-source', 'status': 'ready', 'subject': '科目一', 'chapter': '基金法律法规体系和监管体系',
+                'title': '合规管理', 'points': ['遵守法律法规'], 'markdown': '遵守法律法规', 'excerpt': '合规管理',
+                'context': '', 'evidence': [], 'createdAt': 1, 'updatedAt': 1})
             navigate(page, 'cheatsheet')
             page.get_by_role('button', name='生成小抄', exact=True).click()
             bar = page.get_by_role('complementary', name='小抄生成任务')
@@ -49,6 +52,11 @@ def run():
             bar.get_by_role('button').click()
             page.get_by_role('button', name='取消生成', exact=True).wait_for()
             assert len(requests) == 1
+            page.get_by_role('tab', name='科目一', exact=True).click()
+            expect(page.get_by_role('heading', name='科目二 · 复习小抄', exact=True)).to_have_count(0)
+            expect(bar).to_contain_text('科目二')
+            bar.get_by_role('button').click()
+            expect(page.get_by_role('tab', name='科目二', exact=True)).to_have_attribute('aria-selected', 'true')
             navigate(page, 'home')
             page.wait_for_selector('.notebook-home')
             page.screenshot(path=str(OUT / f'{engine}-cheatsheet-global-busy.png'), animations='disabled')
@@ -57,6 +65,7 @@ def run():
                 assert held
                 route = held.pop(0)
                 source = json.loads(route.request.post_data_json['messages'][-1]['content'].splitlines()[-1])
+                assert all(n['id'] == ('subject-one-source' if source['subject'] == '科目一' else 'background-source') for n in source['notes'])
                 plan = {'groups': [{'title': '基础知识', 'topics': [{'title': label, 'sourceIds': [n['id'] for n in source['notes']], 'requirements': ['保留条件']}]}]}
                 route.fulfill(status=200, content_type='application/json', body=json.dumps({'choices': [{'message': {'content': json.dumps(plan, ensure_ascii=False)}}]}))
                 for _ in range(100):
@@ -93,6 +102,24 @@ def run():
             page.reload()
             page.get_by_role('region', name='上次生成的小抄').wait_for()
             assert len(requests) == 2 and cached(page) == saved
+            page.screenshot(path=str(OUT / f'{engine}-cheatsheet-subject-tabs.png'), animations='disabled')
+            page.get_by_role('tab', name='科目一', exact=True).click()
+            page.get_by_role('button', name='生成小抄', exact=True).click()
+            page.wait_for_timeout(100)
+            finish('科目一独立小抄')
+            page.get_by_role('tab', name='科目二', exact=True).click()
+            expect(page.get_by_role('region', name='上次生成的小抄')).to_be_visible()
+            expect(page.get_by_role('button', name='重新生成', exact=True)).to_be_disabled()
+            bar.get_by_role('button', name='保留', exact=True).click()
+            expect(bar).to_have_count(0)
+            saved_one = cached(page, '科目一')
+            assert saved_one['notes'][0]['title'] == '科目一独立小抄'
+            assert cached(page) == saved
+            page.reload()
+            page.get_by_role('region', name='上次生成的小抄').wait_for()
+            page.get_by_role('tab', name='科目一', exact=True).click()
+            expect(page.get_by_role('heading', name='科目一 · 复习小抄', exact=True)).to_be_visible()
+            page.get_by_role('tab', name='科目二', exact=True).click()
 
             page.get_by_role('button', name='重新生成', exact=True).click()
             expect(bar).to_contain_text('正在生成小抄')
@@ -130,6 +157,7 @@ def run():
             for route in held:
                 try: route.abort()
                 except Exception: pass
+            assert cached(page, '科目一') == saved_one
             assert not errors, errors
             browser.close()
             print(engine + ' global generation, keep/discard, retry and cancellation passed')

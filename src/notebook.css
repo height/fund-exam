@@ -427,3 +427,13 @@
 .cs-section-label{color:var(--ink2);font-size:11px}.cs-review{margin-top:12px;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;font-size:12px;line-height:1.6}.cs-review summary{cursor:pointer;color:var(--pen-caution,#a33432)}.cs-review ul{padding-left:18px}
 
 .cs-generation-controls{display:flex;flex-wrap:wrap}.cs-generation-controls .cs-model-select{flex:1 1 220px;min-width:0;min-height:44px;box-sizing:border-box}.cs-generation-controls .cs-model-select select{min-width:0;width:100%;text-overflow:ellipsis}.cs-generation-controls>label:not(.cs-model-select){flex:0 0 auto}.cs-generation-controls>button{flex:0 0 auto}@media(max-width:600px){.cs-generation-controls .cs-model-select{flex-basis:100%}.cs-generation-controls>button{margin-left:auto}}
+
+.cs-subject-picker{display:flex;flex-direction:column;gap:10px}
+.cs-subject-tabs{display:flex;border-bottom:1px solid var(--rule)}
+.cs-subject-tabs button{position:relative;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:10px 12px;border:0;border-radius:0;background:transparent;color:var(--ink2);font:inherit;font-size:14px}
+.cs-subject-tabs button small{font-size:10px;font-weight:400;color:var(--ink2)}
+.cs-subject-tabs button[aria-selected="true"]{color:var(--accent-ink);font-weight:600}
+.cs-subject-tabs button[aria-selected="true"]::after{content:"";position:absolute;bottom:-1px;left:12px;right:12px;height:2px;background:var(--accent-ink)}
+.cs-subject-tabs button:focus-visible{outline:2px solid var(--accent-ink);outline-offset:-3px;border-radius:4px}
+.cs-subject-picker p{margin:0;color:var(--ink2);font-size:11px}
+.cs-subject-panel{display:flex;flex-direction:column;gap:22px;min-width:0}

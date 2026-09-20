@@ -38,7 +38,7 @@ def run():
             page.evaluate("localStorage.setItem('ai-config',JSON.stringify({active:'deepseek',providers:{deepseek:{url:'https://notebook.test/chat/completions',model:'test',key:'test-only'}}}))")
             for i in reversed(range(18)):
                 seed(page, {'id':f'source-{i:02d}','status':'ready','subject':'科目二','chapter':'投资风险管理','title':'最大回撤' if i%2 else '组合收益率','points':['规则与条件'],'markdown':'规则与条件','excerpt':'规则','context':'规则','createdAt':i+1,'updatedAt':i+1})
-            page.evaluate("location.hash='#/cheatsheet'")
+            page.evaluate("location.hash='#/cheatsheet?subject=科目二'")
             page.get_by_role('button',name='生成小抄',exact=True).click()
             page.get_by_role('button',name='查看 / 打印',exact=True).wait_for()
             assert len(calls)==4, len(calls)

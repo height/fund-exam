@@ -116,7 +116,7 @@ export default function App() {
       <a className="skip" href="#app" onClick={e => { e.preventDefault(); document.getElementById('app')?.focus() }}>跳到主要内容</a>
       <main id="app" tabIndex={-1} data-view={view} className={view === 'map' ? 'kg-page' : view === 'notebook' ? 'notebook-page' : undefined} key={`${view}:${params.scope || ''}:${params.order || ''}`}>
         {view === 'home' && <Home go={go} />}
-        {view === 'cheatsheet' && <Cheatsheet go={go} generation={cheatsheet} />}
+        {view === 'cheatsheet' && <Cheatsheet go={go} generation={cheatsheet} initialSubject={params.subject} />}
         {view === 'notebook' && <Notebook go={go} noteId={params.note} editRequested={params.edit === '1'} />}
         {view === 'practice' && <Practice go={go} setQuiz={setQuiz} initialScope={params.scope} initialOrder={params.order} />}
         {view === 'exam' && <Exam go={go} setQuiz={setQuiz} chapter={params.ch}

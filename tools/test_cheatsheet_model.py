@@ -33,7 +33,7 @@ with sync_playwright() as p:
             route.fulfill(status=200,content_type='application/json',body=json.dumps({'choices':[{'message':{'content':json.dumps(result,ensure_ascii=False)}}]}))
         page.route('https://selected.test/chat/completions',reply)
         page.route('https://default.test/**',lambda route: (_ for _ in ()).throw(AssertionError('must not use default provider')))
-        page.evaluate("location.hash='#/cheatsheet'")
+        page.evaluate("location.hash='#/cheatsheet?subject=科目二'")
         selector=page.get_by_role('combobox',name='小抄生成模型',exact=True)
         assert selector.input_value()==''
         assert selector.locator('option[value=zenmux]').evaluate('(option)=>option.disabled')

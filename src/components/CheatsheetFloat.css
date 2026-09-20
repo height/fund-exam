@@ -11,3 +11,5 @@
 @keyframes cs-float-spin{to{transform:rotate(360deg)}}
 @keyframes cs-float-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.cs-float,.cs-float-spinner{animation:none}}
+
+.cs-float-subject{font-size:10px;color:var(--ink2);white-space:nowrap;padding-left:6px}

@@ -1,6 +1,6 @@
 // Owned by App, so subscribing/unsubscribing a page never cancels its request.
 export function createCheatsheetTask({ load, generate, save, timeout = 1200000 }) {
-  let state = { result: null, draft: null, cacheLoading: true, status: 'idle', progress: null, error: '', effort: '' }
+  let state = { results: {}, subject: '', draft: null, cacheLoading: true, status: 'idle', progress: null, error: '', effort: '' }
   let loading, controller, request
   const listeners = new Set()
   const update = patch => { state = { ...state, ...patch }; listeners.forEach(listener => listener()) }
@@ -9,19 +9,19 @@ export function createCheatsheetTask({ load, generate, save, timeout = 1200000 }
     getSnapshot: () => state,
     subscribe: listener => { listeners.add(listener); return () => listeners.delete(listener) },
     load: () => loading ||= Promise.resolve().then(load)
-      .then(result => update({ result }))
+      .then(results => update({ results }))
       .catch(() => update({ error: '上次小抄读取失败，可重新生成' }))
       .finally(() => update({ cacheLoading: false })),
     async start(input, retry = false) {
       if (busy() || state.cacheLoading || (state.draft && !retry)) return
       const snapshot = structuredClone(input)
-      if (!snapshot.notes.length) return
+      if (!snapshot.subject || !snapshot.notes.length || snapshot.notes.some(n => n.subject !== snapshot.subject)) return
       request = snapshot
       const ctl = new AbortController()
       controller = ctl
       let timedOut = false
       const timer = setTimeout(() => { timedOut = true; ctl.abort() }, timeout)
-      update({ status: 'generating', draft: null, progress: null, error: '', effort: snapshot.effort })
+      update({ subject: snapshot.subject, status: 'generating', draft: null, progress: null, error: '', effort: snapshot.effort })
       try {
         const draft = await generate(snapshot, ctl.signal, progress => {
           if (!ctl.signal.aborted) update({ progress })
@@ -45,7 +45,7 @@ export function createCheatsheetTask({ load, generate, save, timeout = 1200000 }
       update({ status: 'saving', error: '' })
       try {
         await save(draft)
-        update({ result: draft, draft: null, status: 'idle' })
+        update({ results: { ...state.results, [state.subject]: draft }, draft: null, status: 'idle' })
         return true
       } catch {
         update({ status: 'ready', error: '本地保存失败，请重试保留，或打开小抄下载。' })

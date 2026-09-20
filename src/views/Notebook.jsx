@@ -48,7 +48,7 @@ export default function Notebook({ go, noteId, editRequested }) {
   const createNote = () => openNote(null, 'create', { subject: chapter !== 'all' ? chapter.split(':')[0] : subject === 'all' ? undefined : subject })
 
   return <>
-    <PageHeader variant="subpage" title="我的笔记本" onBack={() => go('home')} backLabel="首页" action={<div className="nb-print-action"><button className="nb-print-button" aria-label="小抄生成页面" onClick={() => go('cheatsheet')}><Icon name="sparkle" size={15} /><span>小抄</span></button><ThemeToggle iconOnly /></div>} />
+    <PageHeader variant="subpage" title="我的笔记本" onBack={() => go('home')} backLabel="首页" action={<div className="nb-print-action"><button className="nb-print-button" aria-label="小抄生成页面" onClick={() => go('cheatsheet', subject === 'all' ? {} : { subject })}><Icon name="sparkle" size={15} /><span>小抄</span></button><ThemeToggle iconOnly /></div>} />
     <div className="nb-summary"><div><b>{ready.length}</b><span>条精华</span><small>记住关键，也保留必要的复杂</small></div>
       <div className="nb-summary-actions"><button type="button" className="btn-pri btn-sm" disabled={loading || !!error} onClick={createNote}>＋ 新建笔记</button>{pending > 0 && <button className="nb-inbox-link" onClick={() => changeMode('inbox')}>{pending} 条待处理 <Icon name="chevronRight" size={16} /></button>}</div></div>
     <div className="nb-controls"><label className="nb-search"><Icon name="search" /><input type="search" aria-label="搜索笔记" placeholder="搜索考点或原文" value={query} onChange={e => setQuery(e.target.value)} /></label>
