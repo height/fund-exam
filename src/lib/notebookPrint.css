@@ -80,3 +80,46 @@ math{font-size:.95em;max-width:100%;overflow-wrap:anywhere}math[display=block]{m
 
 /* Keep the original dense two-column sheet; only expose the planned knowledge groups. */
 .sheet-group-title{font-size:8.5pt;line-height:1.35;margin:1.2mm 0 1mm;padding:.7mm 1mm;border-left:1.5pt solid var(--pen-key);background:#eef3f9;color:#204e83;break-after:avoid}.sheet-review-flag{font-size:6.5pt;font-weight:400;color:inherit}.print-review{max-width:794px;margin:8px auto;padding:8px 12px;font-size:12px;line-height:1.5;background:#fff7ed;color:#794b18}.print-review summary{cursor:pointer}@media print{.print-review{display:none}}
+
+/* Reviewed A4 cheatsheet 2.0 baseline; see docs/cheatsheet-style.md. */
+.paper{font-size:7.5pt;line-height:1.48}
+.sheet-title{border-bottom:1.2pt solid #263b50;padding-bottom:1.4mm;margin-bottom:1.6mm}
+.sheet-title h1{font-size:10.5pt;font-weight:700}
+.chapter>h2,.sheet-group-title{font-size:8.3pt;line-height:1.3;background:#244d70;color:#fff;border:0;border-top:1pt solid #244d70;border-bottom:.35pt solid #244d70;padding:.9mm 1mm;margin:2.3mm 0 1.2mm;letter-spacing:.025em;font-weight:700;break-after:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.entry:first-child .sheet-group-title{margin-top:0}
+.entry{margin-bottom:1.6mm;padding-bottom:1.1mm;border-bottom:.3pt solid #d5dbe0}
+.entry>h3{display:block;background:#e3edf8;color:#163e65;border:0;border-left:2.2pt solid #3976ac;border-radius:0;padding:.75mm 1mm;margin:0 0 1mm;font-size:8pt;font-weight:750;line-height:1.45}
+.entry-index{display:inline-block;color:#fff;font:700 7pt Arial,sans-serif;background:#315f89;border:.3pt solid #315f89;padding:.2mm .65mm;margin-right:1.1mm;vertical-align:.1mm}
+.nb-markdown h1,.nb-markdown h2,.nb-markdown h3,.nb-markdown h4{font-size:7.5pt;line-height:1.45;color:#24435e;background:none;padding:0;margin:1.2mm 0 .6mm;border:0}
+.nb-markdown p{margin:.55mm 0}.nb-markdown li{margin:.35mm 0}
+.nb-markdown strong{color:var(--pen-key)}
+.nb-markdown mark{font-weight:600;padding:0 .04em;background:#f0f7f1}
+.nb-markdown mark[data-pen=key]{background:#eff4fa}
+.nb-markdown mark[data-pen=caution]{background:#fcf1ef}
+.nb-markdown table{font-size:7pt;line-height:1.44;table-layout:auto;margin:.7mm 0}
+.nb-markdown th,.nb-markdown td{padding:.55mm .65mm;border-color:#b8c3cc}
+.nb-markdown th{background:#eef2f6;color:#28485e;font-weight:650}
+.nb-markdown td:first-child{font-weight:550}
+.nb-markdown table:has(th:nth-child(2):last-child) th:first-child{width:27%}
+.nb-markdown table:has(th:nth-child(3):last-child) th:first-child{width:21%}
+.nb-markdown table:has(th:nth-child(4):last-child) th:first-child{width:19%}
+.nb-markdown section:has(math){padding:.55mm .65mm;margin:.6mm 0;background:#f5f7f9;border-left:1pt solid #9aafc0;break-inside:avoid}
+.nb-markdown math{font-size:1em}
+.nb-markdown svg,.nb-diagram svg{background:#fff!important;margin:.6mm auto!important}
+.nb-markdown figcaption{font-size:6.5pt;margin:.3mm 0;color:#65717b}
+.sheet-review-flag{font-size:6pt;color:#8d5941}
+.entry.allow-split{break-inside:auto;-webkit-column-break-inside:auto;page-break-inside:auto}
+.entry.allow-split .nb-markdown>p,.entry.allow-split .nb-markdown>ul,.entry.allow-split .nb-markdown>ol,.entry.allow-split figure,.entry.allow-split svg{break-inside:avoid}
+@media print{
+ .paper{font-size:7.5pt;line-height:1.48}.sheet-columns{column-fill:balance}
+ .sheet-end{display:none}
+ .print-watermark{bottom:0;font-size:6pt;background:white;opacity:.6}
+ .print-watermark img{width:3mm;height:3mm}
+}
+@page{
+ @bottom-center{
+  content:"第 " counter(page) " 页 / 共 " counter(pages) " 页";
+  font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:7pt;font-weight:400;color:#586675;vertical-align:middle;
+ }
+}

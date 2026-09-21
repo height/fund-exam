@@ -18,7 +18,7 @@ export function notebookPrintHTML(notes, { sourceCount = notes.length, generated
     <header className="print-toolbar"><div>{/^(https?|file):\/\//.test(returnUrl) && <a id="back" href={returnUrl} aria-label="返回小抄生成页">← 返回</a>}<strong>复习小抄</strong><span>{sourceCount} 条笔记 → {ready.length} 个考点</span></div>
       <label>预览 <select id="scale" defaultValue="fit"><option value="fit">适应屏幕</option><option value="1">100%</option><option value="1.5">150%</option></select></label>
       <button id="download">下载 HTML</button><button id="print">打印 / 另存 PDF</button>
-      <p id="print-help">请核对后打印。A4 纵向自动分页，请选择彩色打印，关闭页眉页脚、使用 100% 缩放。原笔记保持不变。</p>
+      <p id="print-help">请核对后打印。A4 纵向自动分页，请选择彩色打印，关闭浏览器页眉页脚、使用 100% 缩放。页底自带“第 X 页 / 共 Y 页”（支持页边距页码的浏览器）。原笔记保持不变。</p>
     </header>
     {ready.some(n => n.reviewNotes?.length) && <details className="print-review"><summary>待核对事项</summary><ul>{ready.flatMap(n => (n.reviewNotes || []).map((text, i) => <li key={`${n.id}-${i}`}><strong>{n.title}</strong>：{text}</li>))}</ul></details>}
     <div className="preview"><div className="paper-frame"><main className="paper">

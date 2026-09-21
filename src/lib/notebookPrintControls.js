@@ -14,25 +14,40 @@
   const preview = document.querySelector('.preview')
   const scale = document.querySelector('#scale')
   const figures = [...document.querySelectorAll('.nb-markdown svg,.nb-markdown img,.nb-diagram svg')]
+  // Normalize canvas backgrounds only in this export; preserve colored nodes and source notes.
+  for (const svg of figures.filter(figure => figure.tagName.toLowerCase() === 'svg')) {
+    svg.style.setProperty('background', '#fff', 'important')
+    const box = svg.viewBox.baseVal
+    if (!(box.width > 0 && box.height > 0)) continue
+    for (const rect of svg.querySelectorAll('rect')) {
+      const coversCanvas = Math.abs(rect.x.baseVal.value - box.x) < 0.1
+        && Math.abs(rect.y.baseVal.value - box.y) < 0.1
+        && Math.abs(rect.width.baseVal.value - box.width) < 0.1
+        && Math.abs(rect.height.baseVal.value - box.height) < 0.1
+      if (coversCanvas) rect.style.setProperty('fill', '#fff', 'important')
+    }
+  }
   const fitFigures = () => {
     const sheet = document.querySelector('.sheet-columns')
     const css = getComputedStyle(sheet)
     const count = Number(css.columnCount) || 2
     const columnWidth = (sheet.clientWidth - (count - 1) * (parseFloat(css.columnGap) || 0)) / count
-    const factor = 0.85
     for (const figure of figures) {
       const box = figure.viewBox?.baseVal
       const width = box?.width || figure.naturalWidth
       const height = box?.height || figure.naturalHeight
       if (!(width > 0 && height > 0)) continue
       // One scale factor for both dimensions: no distortion, cropping or enlarged bitmaps.
-      const ratio = Math.min(columnWidth * Math.min(factor, 1) / width, 46 * 96 / 25.4 * factor / height, 1)
+      const ratio = Math.min(columnWidth / width, 45 * 96 / 25.4 / height, 1)
       figure.style.width = `${width * ratio}px`
       figure.style.height = `${height * ratio}px`
     }
   }
   const fit = () => {
     fitFigures()
+    document.querySelectorAll('.entry').forEach(entry => {
+      entry.classList.toggle('allow-split', entry.offsetHeight > 360)
+    })
     const available = preview.clientWidth - 24
     const ratio = scale.value === 'fit' ? Math.min(1, available / paper.offsetWidth) : Number(scale.value)
     paper.style.transform = `scale(${ratio})`
