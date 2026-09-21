@@ -1,0 +1,701 @@
+{
+  "reviewedAt": "2026-09-21",
+  "scope": "已有review标记、已隔离、所有过期提示及相关旧规则线索；不是全题库逐题教材对照认证。 包含讲义分类复核中的4个pending标记（1个已在原集合内）。",
+  "questions": [
+    {
+      "id": "8b47b3a92a00",
+      "decision": "维持移出",
+      "reason": "D同时含金融市场和金融场所，其中金融市场明确为体系组成；题干仅问“不包含”，无法把这一混合选项整体排除，且“场所”缺少定义。",
+      "sources": []
+    },
+    {
+      "id": "475e043b21ca",
+      "decision": "复核保留",
+      "reason": "用分类层级说明干扰项错误，删除只因新教材未出现就判错的理由。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "996e4ab7af59",
+      "decision": "新增移出",
+      "reason": "旧保本基金产品语境已调整，安全垫公式本身不错误；按本次清理历史产品题的要求移出练习池，不将公式判错。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c100028/c1001584/content.shtml"
+      ]
+    },
+    {
+      "id": "6f91ab8034fe",
+      "decision": "维持移出",
+      "reason": "C期权无限期持有错误；B期货必须在到期前交割也过度绝对，D所有基金没有强制到期日也不成立，无法唯一选择C。",
+      "sources": []
+    },
+    {
+      "id": "1599b818bfc2",
+      "decision": "复核保留",
+      "reason": "基金财产独立，已形成的应付管理人业绩报酬属管理人债权，答案仍有效。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c101939/c1045353/content.shtml"
+      ]
+    },
+    {
+      "id": "e5374cfd8432",
+      "decision": "复核保留",
+      "reason": "纠正把股票占比60%直接认作股票基金的旧解释，混合基金定义答案不变。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c106256/c1653978/content.shtml"
+      ]
+    },
+    {
+      "id": "bf4ffdf15401",
+      "decision": "复核保留",
+      "reason": "托管资格条件并无公司须有50名从业人员这一项，答案仍有效。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c106256/c1653705/content.shtml"
+      ]
+    },
+    {
+      "id": "478d0c8b04eb",
+      "decision": "复核保留",
+      "reason": "依法依约分配收益属于管理人职责，其余行为禁止，答案仍有效。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c101939/c1045353/content.shtml"
+      ]
+    },
+    {
+      "id": "616aaa768457",
+      "decision": "维持移出",
+      "reason": "C建立持有人利益绑定机制与D按合同章程合理确定薪酬均可成立，解析仅用另一措辞否定D，没有证明D违反治理或合规要求。",
+      "sources": []
+    },
+    {
+      "id": "0e8afd99f502",
+      "decision": "维持移出",
+      "reason": "A托管人根据需要向基金管理人提供本基金投资信息并非当然泄密；解析未区分正常履职信息交流与对外泄密，A与D可能同时成立。",
+      "sources": []
+    },
+    {
+      "id": "1b99ec05104a",
+      "decision": "复核保留",
+      "reason": "保证收益率不是适当性评估所需的投资者信息。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "e6ac3f7d5e76",
+      "decision": "复核保留",
+      "reason": "保留由机构办理资格注册的答案，删去未核实的执业年检表述。",
+      "sources": [
+        "https://www.amac.org.cn/xwfb/xhyw/202311/t20231124_24147.html"
+      ]
+    },
+    {
+      "id": "ace9e6ea1eb6",
+      "decision": "复核保留",
+      "reason": "利用未公开重大业绩信息交易属于内幕交易，备案与否不改变结论。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "8ef3481f3296",
+      "decision": "复核保留",
+      "reason": "挪用一只基金财产补另一计划属于挪用受托资产和不公平对待。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "16d61265e7ea",
+      "decision": "复核保留",
+      "reason": "核对交易所当前沪港通定义，股票ETF仍属于可纳入基金品种。",
+      "sources": [
+        "https://www.sse.com.cn/services/hkexsc/"
+      ]
+    },
+    {
+      "id": "3bf807471388",
+      "decision": "复核保留",
+      "reason": "三年转让限制例外中的员工激励以实控地位不变为前提，C不满足。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "35ea25ba4d41",
+      "decision": "复核保留",
+      "reason": "香港经纪商向上交所申报的方向为沪股通，答案有效。",
+      "sources": [
+        "https://www.sse.com.cn/services/hkexsc/"
+      ]
+    },
+    {
+      "id": "e266ba4e709e",
+      "decision": "复核保留",
+      "reason": "基础现金替代分类中的禁止、可以、必须三类仍有效。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "a6860d262813",
+      "decision": "新增移出",
+      "reason": "以公募分级基金为在售注册类型的解析已经失效；将全部FOF一概归入普通程序缺少产品条件和现行依据，暂不计分。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c100028/c1000726/content.shtml"
+      ]
+    },
+    {
+      "id": "ed15fad65cbd",
+      "decision": "新增移出",
+      "reason": "QDII开放日可能受境外市场节假日影响，确认时限也依基金合同；题面将一般教材流程当成统一规则，不能据此断言甲乙均错。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "538307980e58",
+      "decision": "复核保留",
+      "reason": "FOF持有本管理人基金不重复收取管理费的答案有效；分级基金仅在禁止投资的干扰项出现，不是现行在售产品题。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "9cd17cc47526",
+      "decision": "新增移出",
+      "reason": "现行销售规则要求审慎选择销售机构并持续评估，不能仅凭旧教材列举未出现盈利能力就断言该项信息错误。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c106256/c1653806/content.shtml"
+      ]
+    },
+    {
+      "id": "12cb44107791",
+      "decision": "复核保留",
+      "reason": "将含混的帮助下单改为明确的代客操作，避免把正常流程指导也判为违规。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c106256/c1653806/content.shtml"
+      ]
+    },
+    {
+      "id": "b514fb1d86ed",
+      "decision": "维持移出",
+      "reason": "组合答案排除Ⅱ“私募基金要严格监管”，解析以私募监管不同于公募为由否定严格监管，逻辑不足，Ⅱ与Ⅰ、Ⅳ并不冲突。",
+      "sources": []
+    },
+    {
+      "id": "cf876024a10c",
+      "decision": "复核保留",
+      "reason": "销售人员不得自行制作分发基金宣传推介材料，答案有效。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "7e882b453bca",
+      "decision": "复核保留",
+      "reason": "LOF交易渠道答案有效，删除转托管可以保证不折价的绝对说法。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "82078878857b",
+      "decision": "新增移出",
+      "reason": "条文列举不动产、特许收费权、经营权等，并非封闭清单；不能由未单列产权推出其一律不适用，组合题排除Ⅲ依据不足。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "277964dc3c9c",
+      "decision": "复核保留",
+      "reason": "资产配置教育的概念仍有效。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "be73cc37acb3",
+      "decision": "复核保留",
+      "reason": "已明确正回购方融资视角，流动性风险答案无歧义，保留原修订记录。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "c24d69d2608f",
+      "decision": "维持移出",
+      "reason": "题干为单选，但A风险评估疏漏、B温度控制需改进、C已设置巡查机制均能由场景支持；解析仅说“Ⅳ项错误”，疑原组合题解析与选项结构错配。",
+      "sources": []
+    },
+    {
+      "id": "c3e8ed916afa",
+      "decision": "复核保留",
+      "reason": "历史案例中的未公开重大审批信息仍属于内幕信息，不能因审批用语较早删掉有效职业道德题。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "85fba92e3c2c",
+      "decision": "维持移出",
+      "reason": "将向投资总监/总经理合规汇报内幕信息以及向客户提供交易信息统判为泄密；未交代授权、信息公开状态或是否为客户本人交易，无法认定四项全部违法。",
+      "sources": []
+    },
+    {
+      "id": "faaea13de7ee",
+      "decision": "维持移出",
+      "reason": "A学习掌握法规、B遵守法规、C监督他人行为均属守法合规要求；解析只称“Ⅳ项错误”，疑原组合题被错误拆成单选。",
+      "sources": []
+    },
+    {
+      "id": "a1bd0d666ebd",
+      "decision": "复核保留",
+      "reason": "配偶证券投资申报与发现违规后报告的职责仍有效。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "8c7251f0b3f3",
+      "decision": "维持移出",
+      "reason": "答案C称协助银行分红避税合规，解析却称监管明令禁止；需核实案例发生时点、原题版本和分红决策依据，不能沿用相反结论计分。",
+      "sources": []
+    },
+    {
+      "id": "cd04fd7b4a64",
+      "decision": "复核保留",
+      "reason": "纠正解析中股票基金60%的旧门槛，债券基金答案80%不变。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c106256/c1653978/content.shtml"
+      ]
+    },
+    {
+      "id": "10569b8f1c4c",
+      "decision": "复核保留",
+      "reason": "资产负债表基础知识有效，明确资产是资源、负债及权益是资金来源。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "01b27fbf23ca",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "48d3252c3af6",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "f4697121513d",
+      "decision": "复核保留",
+      "reason": "质押与抵押概念仍有效，删除资产类型混用的扩展解释。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "a2f872bbd1c4",
+      "decision": "复核保留",
+      "reason": "大额可转让存单流动性风险答案有效，删除不记名和不能提前支取等过度概括。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "86ce5566dda2",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "dca4b8804afe",
+      "decision": "复核保留",
+      "reason": "区分对冲平仓与现金交割，删除把期货少实物交割等同都现金结算的说法。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "1c3330065b55",
+      "decision": "维持移出",
+      "reason": "欧式期权题选项只有I—III组合，题干未提供各时间点；主代理已核对原PDF第16—17页第51题，原件同样缺失陈述，无法还原唯一答案。",
+      "sources": []
+    },
+    {
+      "id": "fa9d2482ec55",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "cbcd6d55b24e",
+      "decision": "复核保留",
+      "reason": "明确相对直接不动产持有的流动性比较，删除风险收益固定介于股债之间的断言。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "fdd25f8e7d11",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "ea31d5de6a71",
+      "decision": "复核保留",
+      "reason": "保留FOF通过商品基金间接配置的答案，纠正FOF只能投资基金的绝对说法。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "191caa2a1709",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "efd472ac1e00",
+      "decision": "复核保留",
+      "reason": "业绩比较基准是评估参照，不保证基金取得相同收益。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "093af7989971",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000300_Index_Methodology_cn.pdf"
+      ]
+    },
+    {
+      "id": "407e9024ecf1",
+      "decision": "维持移出",
+      "reason": "Ⅳ“超额收益率”与Ⅴ“跟踪偏离度”均指组合减基准的逐期收益差，原解析无理由排除Ⅳ而保留Ⅴ，组合答案不唯一。",
+      "sources": []
+    },
+    {
+      "id": "1b9eee7ba1a0",
+      "decision": "复核保留",
+      "reason": "按CAPM明确系统性风险的定价范围，纠正非系统性风险同样获补偿的解析。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "9522e24a6d37",
+      "decision": "新增移出",
+      "reason": "战术配置仍受投资者风险承受能力约束；无需重新估计长期偏好不等于无需考虑风险承受能力，题干与排除Ⅲ的答案不一致。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "c64da5ee7c65",
+      "decision": "维持移出",
+      "reason": "“内部信息”与“私人信息”在强式有效市场的信息集合中重合，原题不能以私人信息不属有效市场信息为由选择D；待对照教材原文重新设题。",
+      "sources": [
+        "https://rpc.cfainstitute.org/sites/default/files/-/media/documents/book/rf-publication/2003/rf-v2003-n2-3923-pdf.pdf"
+      ]
+    },
+    {
+      "id": "cdd88cee8934",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "2d7078bc4fb1",
+      "decision": "维持移出",
+      "reason": "限价指令导致未成交可能包含延迟成本及机会成本；原题未规定成本分解体系或后续是否完成交易，无法唯一排除D。",
+      "sources": []
+    },
+    {
+      "id": "5b8ba983eb0b",
+      "decision": "维持移出",
+      "reason": "原题只给市场价格下降而未给基金经理限价授权、盘口卖价和可成交量；无法唯一推出交易员必须报17元，18元限价也可能成交于更优价格。",
+      "sources": []
+    },
+    {
+      "id": "eed462a0d922",
+      "decision": "新增移出",
+      "reason": "照搬旧融资融券标的条件，未涵盖注册制首次发行股票自上市首日起纳入的例外，上市时间下限不再能无条件判真。",
+      "sources": [
+        "https://www.sse.com.cn/lawandrules/sselawsrules2025/trade/specific/margin/c/c_20260710_10825136.shtml"
+      ]
+    },
+    {
+      "id": "00020e76a6c1",
+      "decision": "复核保留",
+      "reason": "信用风险不是市场价格变动风险，删除信用风险必然非系统性的绝对分类。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "57210dca30ab",
+      "decision": "新增移出",
+      "reason": "流动性风险既可能来自个别资产，也可能表现为全市场系统性冲击；题面未限定层次，不能将其一概排除出系统性风险。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "37c54fffced3",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "f1ec2c6c6f02",
+      "decision": "新增移出",
+      "reason": "QFII/RQFII投资额度限制已取消；人民币出资不意味着境外投资者没有汇率风险，原题的风险排除结论不能成立。",
+      "sources": [
+        "https://www.safe.gov.cn/safe/2019/0910/14040.html"
+      ]
+    },
+    {
+      "id": "4069c1d123f3",
+      "decision": "复核保留",
+      "reason": "正式货币基金监管办法第七条仍规定20%上限及所列赎回例外。",
+      "sources": [
+        "https://www.csrc.gov.cn/heilongjiang/c105404/c1268904/content.shtml"
+      ]
+    },
+    {
+      "id": "dd716bb6e191",
+      "decision": "复核保留",
+      "reason": "限定规模及价值成长风格，避免将换手率对应的交易风格一概排除。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "f18885fc70c4",
+      "decision": "维持移出",
+      "reason": "原题把VaR记为负收益阈值，却将“损失超过−0.5%”直接作损失金额比较，符号语义相反；并无分布、均值条件就断言震荡加剧必使尾部概率增加，无法可靠确认II、III组合。",
+      "sources": []
+    },
+    {
+      "id": "c068cef681c5",
+      "decision": "复核保留",
+      "reason": "相对收益并不自动进行风险调整，删除把跟踪误差本身当收益指标的说法。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "d6f11d39bef1",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "c4e11bafac9a",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "c72622749d74",
+      "decision": "复核保留",
+      "reason": "补足收益再投资条件，按三年实际收益复算12.476%。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "3791c3cc8114",
+      "decision": "复核保留",
+      "reason": "补足标准差—期望收益坐标，夏普比率答案仍有效。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "87ffbef6e714",
+      "decision": "复核保留",
+      "reason": "保留常规股票基金简易程序20工作日，删除历史产品清单。",
+      "sources": [
+        "https://www.csrc.gov.cn/csrc/c101968/c4638336/content.shtml"
+      ]
+    },
+    {
+      "id": "463494e48567",
+      "decision": "维持移出",
+      "reason": "2016年8月5日15:30为周五收市后，下一日8月6日为周六，原解析把周六当赎回开放日；缺少下一实际开放日净值，无法据题面计算。",
+      "sources": []
+    },
+    {
+      "id": "93ffef27621e",
+      "decision": "维持移出",
+      "reason": "四个选项均为亚洲证券交易所，“主要”未定义规模、市场或时期，不能只因教材未列其他三个便唯一选择新加坡。",
+      "sources": []
+    },
+    {
+      "id": "594b065beb34",
+      "decision": "新增移出",
+      "reason": "以历史权证品种和不同回转周期混合考当前交易范围，未说明历史时点及市场，移出当前练习池；不把股票ETF不得当日回转这一有效知识点判错。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "3ed3866d5d41",
+      "decision": "新增移出",
+      "reason": "日本交易所格局及业务分工已变，题目把历史排名和欧洲三足鼎立说法作为当前事实；纽交所一项错误不足以保证全题唯一答案。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "1a158435b48e",
+      "decision": "复核保留",
+      "reason": "复核题干、选项及解析，基础概念与所列答案仍有效；移除无依据的过期提示。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "a8e0cef0e0b6",
+      "decision": "复核保留",
+      "reason": "沪港通现行业务规则栏目仍列2024修订版；核对5.5亿、上市6月、指数1年和60%门槛。",
+      "sources": [
+        "https://www.sse.com.cn/lawandrules/sselawsrules2025/global/hkexsc/c/c_20251017_10795123.shtml"
+      ]
+    },
+    {
+      "id": "5aa5d936ef6d",
+      "decision": "维持移出",
+      "reason": "保证金、当日无负债结算及风险准备金均承担风险控制作用；笼统问“用于应对市场风险”不能唯一定位风险准备金，缺少该制度的资金提取及应急补偿特征。",
+      "sources": []
+    },
+    {
+      "id": "cf9926d9d26c",
+      "decision": "复核保留",
+      "reason": "更新机构改革后的名称，银行间债券市场监管主体答案不变。",
+      "sources": [
+        "https://www.gov.cn/zhengce/202311/content_6914736.htm"
+      ]
+    },
+    {
+      "id": "2f75a506ae2b",
+      "decision": "复核保留",
+      "reason": "买入端不征证券交易印花税，修正选A却写A错误的措辞。",
+      "sources": [
+        "https://shanghai.chinatax.gov.cn/zcfw/zcfgk/yhs/202106/t458595.html"
+      ]
+    },
+    {
+      "id": "1383288da4a6",
+      "decision": "复核保留",
+      "reason": "按题目给定无分红配股条件复算为9元，不因题源旧而删除。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "0df0e4916126",
+      "decision": "新增移出",
+      "reason": "原题比较估值方法未限定债券是否含权和市场报价条件，解析将私募债统一按成本估值，不能支持现行口径下的唯一答案。",
+      "sources": [
+        "https://fg.amac.org.cn/governmentrules_3854/zcgz_zlgz/jjtgjfw/zlgz_jjfw_gzyw/202408/P020240828618877115329.pdf"
+      ]
+    },
+    {
+      "id": "848473611301",
+      "decision": "复核保留",
+      "reason": "现金类占比复算为15%，答案有效。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "6b9cf34592ba",
+      "decision": "复核保留",
+      "reason": "历史分红材料完整，封闭式基金现金分红及年度分配规则支持基金4，保留材料复核。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "9cbe7c7fbd53",
+      "decision": "复核保留",
+      "reason": "补足有效申请及普通货币基金T+1权益条件，分红天数差仍为6天。",
+      "sources": [
+        "https://www.csrc.gov.cn/heilongjiang/c105404/c1268904/content.shtml"
+      ]
+    },
+    {
+      "id": "9de18379080b",
+      "decision": "复核保留",
+      "reason": "养老金负债和投资期限通常较长，删除保险资金特征绝对化。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "fb21e2d52aeb",
+      "decision": "复核保留",
+      "reason": "考查机构投资者一般特征，风险承受能力更低不属于一般特征。",
+      "sources": [
+        "tools/lecture-notes.tsv（对应章节；2025教材配套讲义索引）"
+      ]
+    },
+    {
+      "id": "6393dff9bd6d",
+      "decision": "新增移出",
+      "reason": "交易型货币基金的当日回转交易有规则支持，但T+0申赎未说明是当日申购可赎回、赎回资金可用还是到账，也未限定产品，当前证据不足以逐项确认Ⅳ；移出待原件及具体业务规则核实，不认定货币基金整体过时。",
+      "sources": [
+        "https://docs.static.szse.cn/www/lawrules/rule/fund/trade/W020220610536157903323.pdf"
+      ]
+    },
+    {
+      "id": "ed085523bdc1",
+      "decision": "复核保留",
+      "reason": "交易时段一般与股票市场接近的答案有效；明确股指期货时段与国债期货例外，避免将基本同步解释为完全相同。",
+      "sources": [
+        "https://www.cffex.com.cn/cn/hs300.html",
+        "https://www.e-cffex.com.cn/u/cms/www/202007/08152235b2ys.pdf"
+      ]
+    },
+    {
+      "id": "f4e6bb3d724e",
+      "decision": "复核保留",
+      "reason": "争议是章节交叉而非知识失效；管理人投资者服务依托专业投研能力的考点有效，保留投资者服务章节。",
+      "sources": [
+        "tools/lecture-notes.tsv（科目二12.4与18.3）"
+      ]
+    }
+  ]
+}

@@ -14,7 +14,7 @@
     "repair:materials": "node tools/apply-question-materials.mjs",
     "repair:questions": "node tools/apply-question-materials.mjs && node tools/apply-question-reviews.mjs && node tools/validate-question-bank.mjs",
     "audit:questions": "node tools/audit-question-bank.mjs",
-    "test:quality": "node --test tests/question-quality.test.js && python3 -m unittest discover -s tests -p \"test_question_materials.py\"",
+    "test:quality": "node --test tests/question-quality.test.js tests/question-validity.test.js && python3 -m unittest discover -s tests -p \"test_question_materials.py\"",
     "test:knowledge:browser": "python3 tools/test_knowledge.py"
   },
   "dependencies": {

@@ -18,6 +18,7 @@ export function materialIssues(q) {
 export function questionIssues(q) {
   if (!q || typeof q !== 'object' || Array.isArray(q)) return ['题目必须是对象']
   const issues = []
+  if (q.contentReview?.status !== 'pending' && /【[^】]*过期[^】]*】/u.test(q.explain || '')) issues.push('活动题不得保留过期提示，须先复核内容或移出练习池')
   for (const field of ['id', 'q', 'explain', 'subject', 'chapter', 'source']) {
     if (!hasText(q[field])) issues.push(`${field} 缺失或为空`)
   }

@@ -38,7 +38,7 @@ export function applyReviewRepairs(bank, repairs) {
   return next
 }
 export function loadReviewRepairs() {
-  return ['question-cleanup-repairs.json', 'question-content-repairs.json', 'question-source-repairs.json']
+  return ['question-cleanup-repairs.json', 'question-content-repairs.json', 'question-source-repairs.json', 'question-validity-repairs.json']
     .flatMap(name => JSON.parse(fs.readFileSync(new URL(name, import.meta.url))))
 }
 export const loadPlainRepairs = () => JSON.parse(fs.readFileSync(new URL('./question-plain-repairs.json', import.meta.url)))
